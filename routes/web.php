@@ -1,9 +1,10 @@
 <?php
 
-use Illuminate\Auth\Events\Login;
-use Illuminate\Auth\Events\Logout;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\Authentication\Login;
+use App\Http\Controllers\Authentication\Logout;
+use Illuminate\Support\Facades\Auth;
 
 /*
 |--------------------------------------------------------------------------
@@ -17,12 +18,15 @@ use App\Http\Controllers\UserController;
 */
 
 Route::get('/', function () {
+    if(Auth::check()) {
+        return redirect()->route('cms.dashboard');
+    }
     return view('login_page');
-});
+})->name('login');
 
 Route::get('/dashboard', function () {
     return view('features.dashboard');
-});
+})->name('cms.dashboard');
 
 Route::get('/user-management', function () {
     return view('features.user_management');
