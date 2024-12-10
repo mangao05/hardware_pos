@@ -1,7 +1,7 @@
 @extends('homepage')
 
 @section('header')
-    User Management
+    Rooms
 @endsection
 
 @section('content')
@@ -11,22 +11,21 @@
     <div class="row border position-relative header-content" style="background-image: url('../img/header/header1.jpg');">
     
     </div>
-    
     <div class="row pt-2">
-        <div class="col text-end"><button class="btn button-success" data-bs-toggle="modal" data-bs-target="#exampleModal">Create User</button></div>
+        <div class="col text-end"><button class="btn button-success" data-bs-toggle="modal" data-bs-target="#exampleModal">Create Room</button></div>
     </div>
 
-    @include('modal.user-management.user_create')
+    @include('modal.rooms-management.room_create')
 
     <div class="row">
         <div class="col-12"> 
             <table class="table table-hover">
                 <thead>
-                    <th>Username</th>
-                    <th>First Name</th>
-                    <th>Last Name</th>
-                    <th>Role</th>
-                    <th>Is Active</th>
+                    <th>Name</th>
+                    <th>Price</th>
+                    <th>Type</th>
+                    <th>Pax</th>
+                    <th>Is Available?</th>
                     <th>Action</th>
                 </thead>
                 <tbody>
@@ -36,7 +35,7 @@
                         <td>test</td>
                         <td>test</td>
                         <td>
-                            <span class="badge bg-danger">Inactive</span>
+                            <span class="badge bg-danger">No</span>
                         </td>
                         <td>
                             <span class="badge bg-primary">Edit</span>
@@ -49,7 +48,7 @@
                         <td>test</td>
                         <td>test</td>
                         <td>
-                            <span class="badge bg-success">Active</span>
+                            <span class="badge bg-success">Yes</span>
                         </td>
                         <td>
                             <span class="badge bg-primary">Edit</span>

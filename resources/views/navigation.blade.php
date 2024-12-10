@@ -12,28 +12,28 @@
         </a>
     </li>
     <li>
-        <a href="#">
-            <i class='bx bx-box'></i>
-            <span class="links_name">Rooms Category</span>
-        </a>
+      <a href="{{ url('/room-category') }}" class="{{ request()->is('room-category') ? 'active' : '' }}">
+        <i class='bx bx-box' ></i>
+        <span class="links_name">Rooms Category</span>
+      </a>
     </li>
     <li>
-        <a href="#">
-            <i class='bx bx-list-ul'></i>
-            <span class="links_name">Rooms</span>
-        </a>
+      <a href="{{ url('/rooms') }}" class="{{ request()->is('rooms') ? 'active' : '' }}">
+        <i class='bx bx-list-ul' ></i>
+        <span class="links_name">Rooms</span>
+      </a>
     </li>
     <li>
-        <a href="#">
-            <i class='bx bx-pie-chart-alt-2'></i>
-            <span class="links_name">Package</span>
-        </a>
+      <a href="{{ url('/package') }}" class="{{ request()->is('package') ? 'active' : '' }}">
+        <i class='bx bx-pie-chart-alt-2' ></i>
+        <span class="links_name">Package</span>
+      </a>
     </li>
     <li>
-        <a href="#">
-            <i class='bx bx-coin-stack'></i>
-            <span class="links_name">Leisures/Add-ons</span>
-        </a>
+      <a href="{{ url('/leisures-add-ons') }}" class="{{ request()->is('leisures-add-ons') ? 'active' : '' }}">
+        <i class='bx bx-coin-stack' ></i>
+        <span class="links_name">Leisures/Add-ons</span>
+      </a>
     </li>
     <li>
         <a href="#">
@@ -47,12 +47,12 @@
             <span class="links_name">Agents</span>
         </a>
     </li>
-    <li>
-        <a href="#">
-            <i class='bx bx-cog'></i>
-            <span class="links_name">GoKart Cars</span>
-        </a>
-    </li>
+    {{-- <li>
+      <a href="#">
+        <i class='bx bx-cog' ></i>
+        <span class="links_name">GoKart Cars</span>
+      </a>
+    </li> --}}
     <li>
         <a href="#">
             <i class='bx bx-cog'></i>

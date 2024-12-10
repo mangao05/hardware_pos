@@ -24,13 +24,6 @@ Route::get('/', function () {
     return view('login_page');
 })->name('login');
 
-Route::get('/dashboard', function () {
-    return view('features.dashboard');
-})->name('cms.dashboard');
-
-Route::get('/user-management', function () {
-    return view('features.user_management');
-});
 
 Route::prefix('users')->group(function () {
     Route::get('/', [UserController::class, 'index']); // List all users
@@ -43,3 +36,27 @@ Route::prefix('users')->group(function () {
 Route::post('/login', Login::class)->name('auth.login');
 Route::post('/logout', Logout::class)->name('auth.logout');
 
+
+Route::get('/dashboard', function () {
+    return view('features.dashboard');
+})->name('cms.dashboard');
+
+Route::get('/user-management', function () {
+    return view('features.user_management');
+});
+
+Route::get('/room-category', function () {
+    return view('features.room_category');
+});
+
+Route::get('/rooms', function () {
+    return view('features.rooms');
+});
+
+Route::get('/package', function () {
+    return view('features.package');
+});
+
+Route::get('/leisures-add-ons', function () {
+    return view('features.leisures_add_ons');
+});
