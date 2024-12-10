@@ -31,7 +31,7 @@
       </div>
       <div class="col">
         <label for="">Confirm Password:</label>
-        <input type="password" class="form-control">
+        <input type="password" class="form-control" id=confirm-password>
       </div>
     </div>
 
@@ -58,6 +58,13 @@
           <option value="9">Guest Counter</option>
           <option value="10">Errand</option>
         </select>
+      </div>
+    </div>
+
+    <div class="row mt-2">
+      <div class="col">
+        <label for="">Is Active:</label>
+        <input type="checkbox" id="is_active">
       </div>
     </div>
 

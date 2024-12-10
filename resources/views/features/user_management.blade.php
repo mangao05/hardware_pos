@@ -4,6 +4,10 @@
     User Management
 @endsection
 
+@section('custom_css')
+    <link rel="stylesheet" href="{{ asset('css/user_management/user_management.css') }}">
+@endsection
+
 @section('content')
 
 
@@ -20,7 +24,7 @@
 
     <div class="row">
         <div class="col-12"> 
-            <table class="table table-hover">
+            <table class="table table-hover" id="data-table">
                 <thead>
                     <th>Username</th>
                     <th>First Name</th>
@@ -30,32 +34,7 @@
                     <th>Action</th>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>test</td>
-                        <td>test</td>
-                        <td>test</td>
-                        <td>test</td>
-                        <td>
-                            <span class="badge bg-danger">Inactive</span>
-                        </td>
-                        <td>
-                            <span class="badge bg-primary">Edit</span>
-                            <span class="badge bg-danger">Delete</span>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>test</td>
-                        <td>test</td>
-                        <td>test</td>
-                        <td>test</td>
-                        <td>
-                            <span class="badge bg-success">Active</span>
-                        </td>
-                        <td>
-                            <span class="badge bg-primary">Edit</span>
-                            <span class="badge bg-danger">Delete</span>
-                        </td>
-                    </tr>
+                    
                 </tbody>
             </table>
         </div>
@@ -66,4 +45,5 @@
 
 @section('js')
     <script src="{{ asset('js/features/user_management.js') }}"></script>
+    <script src="{{ asset('js/helper/app_helper.js') }}"></script>
 @endsection
