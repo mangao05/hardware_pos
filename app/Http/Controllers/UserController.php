@@ -17,14 +17,14 @@ class UserController extends Controller
     {
         try {
             $users = User::query();
-
+            
             // Check if soft-deleted users should be included
             if ($request->include_deleted) {
                 $users->withTrashed();
             }
 
             return response()->json([
-                'data' => $users->get(),
+                'data' => $users->with('roles.role')->get(),
                 'code' => 200,
                 'message' => 'Users retrieved successfully'
             ]);
@@ -70,6 +70,7 @@ class UserController extends Controller
 
             // Assign role to the user
             $user->roles()->create(['role_id' => $request->role]);
+            $user = User::with('roles.role')->find($user->id);
 
             DB::commit();
             return response()->json([
@@ -108,7 +109,7 @@ class UserController extends Controller
     public function update(Request $request, $id)
     {
         try {
-            $user = User::findOrFail($id);
+            $user = User::with('roles.role')->findOrFail($id);
 
             $userData = [];
 
@@ -143,7 +144,7 @@ class UserController extends Controller
                     ['role_id' => $request->role] // The values to update or create
                 );
             }
-
+            $user = User::with('roles.role')->find($user->id);
             return response()->json([
                 'data' => $user,
                 'code' => 200,
@@ -186,6 +187,7 @@ class UserController extends Controller
             DB::beginTransaction();
             $user = User::withTrashed()->findOrFail($id);
             $user->restore();
+            $user = User::with('roles.role')->find($user->id);
             DB::commit();
             return response()->json([
                 'data' => $user,
