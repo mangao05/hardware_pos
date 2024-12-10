@@ -1,10 +1,11 @@
 <?php
 
+use App\Http\Controllers\GetRoles;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\Authentication\Login;
 use App\Http\Controllers\Authentication\Logout;
-use Illuminate\Support\Facades\Auth;
 
 /*
 |--------------------------------------------------------------------------
@@ -18,7 +19,7 @@ use Illuminate\Support\Facades\Auth;
 */
 
 Route::get('/', function () {
-    if(Auth::check()) {
+    if (Auth::check()) {
         return redirect()->route('cms.dashboard');
     }
     return view('login_page');
@@ -37,9 +38,10 @@ Route::prefix('users')->group(function () {
     Route::post('/', [UserController::class, 'store']); // Create a new user
     Route::put('/{id}', [UserController::class, 'update']); // Update a user
     Route::delete('/{id}', [UserController::class, 'destroy']); // Soft delete a user
+    Route::get('/{id}', [UserController::class, 'view']); // View user details
     Route::post('/restore/{id}', [UserController::class, 'restore']); // Restore a soft-deleted user
 });
 
+Route::get('/roles', GetRoles::class)->name('role.index');
 Route::post('/login', Login::class)->name('auth.login');
 Route::post('/logout', Logout::class)->name('auth.logout');
-
