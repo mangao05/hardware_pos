@@ -9,29 +9,29 @@
     <div class="row">
       <div class="col">
         <label for="">Username:</label>
-        <input type="text" class="form-control">
+        <input type="text" class="form-control" id="username">
       </div>
     </div>
 
     <div class="row mt-2">
       <div class="col">
         <label for="">First Name:</label>
-        <input type="text" class="form-control">
+        <input type="text" class="form-control" id="firstname">
       </div>
       <div class="col">
         <label for="">Last Name:</label>
-        <input type="text" class="form-control">
+        <input type="text" class="form-control" id="lastname">
       </div>
     </div>
 
     <div class="row mt-2">
       <div class="col">
         <label for="">Password:</label>
-        <input type="text" class="form-control">
+        <input type="password" class="form-control" id="password">
       </div>
       <div class="col">
         <label for="">Confirm Password:</label>
-        <input type="text" class="form-control">
+        <input type="password" class="form-control">
       </div>
     </div>
 
@@ -45,18 +45,18 @@
     <div class="row mt-2">
       <div class="col">
         <label for="">Role:</label>
-        <select name="" id="" class="form-control">
+        <select name="" id="user_role" class="form-control">
           <option value="" disabled selected>-- Select Role --</option>
-          <option value="">Reservationist</option>
-          <option value="">Front Desk</option>
-          <option value="">Inventory Manager</option>
-          <option value="">Cashier</option>
-          <option value="">Server/Waiter</option>
-          <option value="">Food Server</option>
-          <option value="">Restaurant Inventory Manager</option>
-          <option value="">Supervisor Aide</option>
-          <option value="">Guest Counter</option>
-          <option value="">Errand</option>
+          <option value="1">Reservationist</option>
+          <option value="2">Front Desk</option>
+          <option value="3">Inventory Manager</option>
+          <option value="4">Cashier</option>
+          <option value="5">Server/Waiter</option>
+          <option value="6">Food Server</option>
+          <option value="7">Restaurant Inventory Manager</option>
+          <option value="8">Supervisor Aide</option>
+          <option value="9">Guest Counter</option>
+          <option value="10">Errand</option>
         </select>
       </div>
     </div>
@@ -65,7 +65,7 @@
   </div>
   <div class="modal-footer modal-color modal-padding">
   <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-  <button type="button" class="btn button-success">Create</button>
+  <button type="button" class="btn button-success" onclick="add_user()">Create</button>
   </div>
   </div>
   </div>

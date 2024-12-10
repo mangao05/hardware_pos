@@ -62,3 +62,8 @@
     </div>
 </div>
 @endsection
+
+
+@section('js')
+    <script src="{{ asset('js/features/user_management.js') }}"></script>
+@endsection

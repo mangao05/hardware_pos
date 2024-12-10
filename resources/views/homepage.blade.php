@@ -106,6 +106,9 @@
                 sidebarBtn.classList.replace("bx-menu-alt-right", "bx-menu");
         }
     </script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="{{ asset('js/jquery.js') }}"></script>
+    @yield('js')
 
 </body>
 
