@@ -1,9 +1,11 @@
 <?php
 
-use App\Http\Controllers\GetRoles;
 use Illuminate\Http\Request;
+use App\Http\Controllers\GetRoles;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\Rooms\RoomController;
+use App\Http\Controllers\Rooms\RoomCategoryController;
 
 /*
 |--------------------------------------------------------------------------
@@ -32,3 +34,5 @@ Route::prefix('users')->group(function () {
 
 Route::get('/roles', GetRoles::class)->name('role.index');
 
+Route::apiResource('room-categories', RoomCategoryController::class);
+Route::apiResource('rooms', RoomController::class);
