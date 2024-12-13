@@ -4,6 +4,8 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\GetRoles;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\LeisureController;
+use App\Http\Controllers\PackageController;
 use App\Http\Controllers\Rooms\RoomController;
 use App\Http\Controllers\Rooms\RoomCategoryController;
 
@@ -36,3 +38,5 @@ Route::get('/roles', GetRoles::class)->name('role.index');
 
 Route::apiResource('room-categories', RoomCategoryController::class);
 Route::apiResource('rooms', RoomController::class);
+Route::apiResource('leisures', LeisureController::class);
+Route::apiResource('packages', PackageController::class);

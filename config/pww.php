@@ -3,28 +3,42 @@
 return [
     'room_categories' => [
         'bed_types' => [
-            'king_size',
             'King Size',
-            'queen_size',
             'Queen Size',
-            'twin_beds' => 'Twin Beds',
-            'mix' => 'Mix',
-            'not_applicable' => 'Not Applicable'
+            'Twin Beds',
+            'Mix',
+            'Not Applicable'
         ],
         'near_at' => [
-            'beach' => 'Beach',
-            'restaurant' => "Restaurant",
-            'pool' => "Pool",
-            'garden' => "Garden",
-            'scenery' => "Scenery",
-            'parking_spaces' => "Parking Space",
-            'not_applicable' => "Not Applicable"
+            'Beach',
+            "Restaurant",
+            "Pool",
+            "Garden",
+            "Scenery",
+            "Parking Space",
+            "Not Applicable"
+        ]
+    ],
+    'leisure' => [
+        'types' => [
+            'Entrance',
+            'Transportation',
+            'Sports',
+            'Leisures',
+            'Items',
+            'Corkage',
+            'Misc'
+        ],
+        'counter' => [
+            'Head',
+            'Hour',
+            'Usage',
+            'Unit'
         ]
     ],
     'global' => [
         'avaialibility' => [
-            0 => 'No',
-            1 => 'Yes'
+            'No', 'Yes'
         ]
     ]
 ];

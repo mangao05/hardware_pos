@@ -13,7 +13,7 @@ class RoomCategoryController extends Controller
     public function index()
     {
         try {
-            $categories = RoomCategory::with('rooms')->get();
+            $categories = RoomCategory::with('rooms')->paginate(request()->get('per_page') ?? 10);
 
             return response()->json([
                 'message' => 'Room categories fetched successfully.',
