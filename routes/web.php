@@ -4,8 +4,12 @@ use App\Http\Controllers\GetRoles;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\LeisureController;
+use App\Http\Controllers\PackageController;
 use App\Http\Controllers\Authentication\Login;
+use App\Http\Controllers\Rooms\RoomController;
 use App\Http\Controllers\Authentication\Logout;
+use App\Http\Controllers\Rooms\RoomCategoryController;
 
 /*
 |--------------------------------------------------------------------------
@@ -45,3 +49,19 @@ Route::prefix('users')->group(function () {
 Route::get('/roles', GetRoles::class)->name('role.index');
 Route::post('/login', Login::class)->name('auth.login');
 Route::post('/logout', Logout::class)->name('auth.logout');
+
+Route::resource('room-categories', RoomCategoryController::class)->only([
+    'index', 'store', 'show', 'update', 'destroy'
+]);
+
+Route::resource('rooms', RoomController::class)->only([
+    'index', 'store', 'show', 'update', 'destroy'
+]);
+
+Route::resource('leisures', LeisureController::class)->only([
+    'index', 'store', 'show', 'update', 'destroy'
+]);
+
+Route::resource('packages', PackageController::class)->only([
+    'index', 'store', 'show', 'update', 'destroy'
+]);
