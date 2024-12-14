@@ -24,7 +24,7 @@ class UserController extends Controller
             }
 
             return response()->json([
-                'data' => $users->with('roles.role')->get(),
+                'data' => $users->with('roles.role')->paginate(request()->get('per_page') ?? 10),
                 'code' => 200,
                 'message' => 'Users retrieved successfully'
             ]);

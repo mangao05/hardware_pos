@@ -4,8 +4,14 @@ use App\Http\Controllers\GetRoles;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\AgentController;
+use App\Http\Controllers\LeisureController;
+use App\Http\Controllers\PackageController;
 use App\Http\Controllers\Authentication\Login;
+use App\Http\Controllers\RestoTableController;
+use App\Http\Controllers\Rooms\RoomController;
 use App\Http\Controllers\Authentication\Logout;
+use App\Http\Controllers\Rooms\RoomCategoryController;
 
 /*
 |--------------------------------------------------------------------------
@@ -63,3 +69,29 @@ Route::get('/package', function () {
 Route::get('/leisures-add-ons', function () {
     return view('features.leisures_add_ons');
 });
+
+
+Route::resource('room-categories', RoomCategoryController::class)->only([
+    'index', 'store', 'show', 'update', 'destroy'
+]);
+
+Route::resource('rooms', RoomController::class)->only([
+    'index', 'store', 'show', 'update', 'destroy'
+]);
+
+Route::resource('leisures', LeisureController::class)->only([
+    'index', 'store', 'show', 'update', 'destroy'
+]);
+
+Route::resource('packages', PackageController::class)->only([
+    'index', 'store', 'show', 'update', 'destroy'
+]);
+
+Route::resource('agents', AgentController::class)->only([
+    'index', 'store', 'show', 'update', 'destroy'
+]);
+
+
+Route::resource('resto-tables', RestoTableController::class)->only([
+    'index', 'store', 'show', 'update', 'destroy'
+]);

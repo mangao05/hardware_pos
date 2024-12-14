@@ -1,9 +1,15 @@
 <?php
 
-use App\Http\Controllers\GetRoles;
 use Illuminate\Http\Request;
+use App\Http\Controllers\GetRoles;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\AgentController;
+use App\Http\Controllers\LeisureController;
+use App\Http\Controllers\PackageController;
+use App\Http\Controllers\RestoTableController;
+use App\Http\Controllers\Rooms\RoomController;
+use App\Http\Controllers\Rooms\RoomCategoryController;
 
 /*
 |--------------------------------------------------------------------------
@@ -32,3 +38,9 @@ Route::prefix('users')->group(function () {
 
 Route::get('/roles', GetRoles::class)->name('role.index');
 
+Route::apiResource('room-categories', RoomCategoryController::class);
+Route::apiResource('rooms', RoomController::class);
+Route::apiResource('leisures', LeisureController::class);
+Route::apiResource('packages', PackageController::class);
+Route::apiResource('agents', AgentController::class);
+Route::apiResource('resto-tables', RestoTableController::class);
