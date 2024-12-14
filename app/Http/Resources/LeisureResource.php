@@ -20,7 +20,7 @@ class LeisureResource extends JsonResource
             'type' => $this->type,
             'price_rate' => $this->price_rate,
             'counter' => $this->counter,
-            'package' => $this->package->display_name,
+            'package' => optional($this->package)->display_name,
             'image' => $this->image ? url('storage/' . $this->image) : null, // Full URL to image
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
