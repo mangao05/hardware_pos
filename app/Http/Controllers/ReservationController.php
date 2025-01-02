@@ -14,18 +14,17 @@ class ReservationController extends Controller
     public function store(ReservationRequest $request)
     {
         try {
-            // Check if the room is available for the specified date range
             $roomId = $request->room_id;
             $checkInDate = $request->check_in_date;
             $checkOutDate = $request->check_out_date;
-
+            
             $isRoomAvailable = !Reservation::where('room_id', $roomId)
                 ->where(function ($query) use ($checkInDate, $checkOutDate) {
-                    $query->whereBetween('check_in_date', [$checkInDate, $checkOutDate])
-                        ->orWhereBetween('check_out_date', [$checkInDate, $checkOutDate])
+                    $query->whereBetween('check_in_date', [$checkInDate, date('Y-m-d', strtotime($checkOutDate . '-1 day'))])
+                        ->orWhereBetween('check_out_date', [date('Y-m-d', strtotime($checkInDate . '+1 day')), $checkOutDate])
                         ->orWhere(function ($query) use ($checkInDate, $checkOutDate) {
-                            $query->where('check_in_date', '<=', $checkInDate)
-                                ->where('check_out_date', '>=', $checkOutDate);
+                            $query->where('check_in_date', '<', $checkInDate)
+                                ->where('check_out_date', '>', $checkOutDate);
                         });
                 })
                 ->exists();
@@ -46,7 +45,7 @@ class ReservationController extends Controller
     public function index()
     {
         try {
-            $reservations = Reservation::with('room')->get();
+            $reservations = Reservation::with('room')->orderBy('check_in_date')->get();
             return $this->success($reservations);
         } catch (\Exception $e) {
             return $this->error([], $e->getMessage());
@@ -73,11 +72,11 @@ class ReservationController extends Controller
             $isRoomAvailable = !Reservation::where('room_id', $roomId)
                 ->where('id', '!=', $reservation->id) // Exclude the current reservation
                 ->where(function ($query) use ($checkInDate, $checkOutDate) {
-                    $query->whereBetween('check_in_date', [$checkInDate, $checkOutDate])
-                        ->orWhereBetween('check_out_date', [$checkInDate, $checkOutDate])
+                    $query->whereBetween('check_in_date', [$checkInDate, date('Y-m-d', strtotime($checkOutDate . '-1 day'))])
+                        ->orWhereBetween('check_out_date', [date('Y-m-d', strtotime($checkInDate . '+1 day')), $checkOutDate])
                         ->orWhere(function ($query) use ($checkInDate, $checkOutDate) {
-                            $query->where('check_in_date', '<=', $checkInDate)
-                                ->where('check_out_date', '>=', $checkOutDate);
+                            $query->where('check_in_date', '<', $checkInDate)
+                                ->where('check_out_date', '>', $checkOutDate);
                         });
                 })
                 ->exists();
