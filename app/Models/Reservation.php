@@ -11,6 +11,10 @@ class Reservation extends Model
 
     protected $guarded = [];
 
+    protected $casts = [
+        'room_details' => 'array'
+    ];
+
     public function room()
     {
         return $this->belongsTo(Room::class);

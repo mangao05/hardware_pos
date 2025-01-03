@@ -4,9 +4,12 @@ namespace App\Http\Controllers;
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
 use App\Models\Reservation;
-use App\Http\Requests\ReservationRequest;
+use Illuminate\Http\Request;
 use App\Http\Traits\ResponseFormatter;
+use App\Http\Requests\ReservationRequest;
+use App\Models\Room;
 
 class ReservationController extends Controller
 {
@@ -17,7 +20,7 @@ class ReservationController extends Controller
             $roomId = $request->room_id;
             $checkInDate = $request->check_in_date;
             $checkOutDate = $request->check_out_date;
-            
+
             $isRoomAvailable = !Reservation::where('room_id', $roomId)
                 ->where(function ($query) use ($checkInDate, $checkOutDate) {
                     $query->whereBetween('check_in_date', [$checkInDate, date('Y-m-d', strtotime($checkOutDate . '-1 day'))])
@@ -28,24 +31,43 @@ class ReservationController extends Controller
                         });
                 })
                 ->exists();
-
+            
+           
             if (!$isRoomAvailable) {
                 return $this->error([], 'The selected room is not available for the specified dates.', 422);
             }
+            $room = Room::find($roomId);
+            
+            $data = $request->validated();
+            $data['room_details'] = $room;
+            $data['price'] = $room->price;
 
-            $reservation = Reservation::create($request->validated());
+            $reservation = Reservation::create($data);
 
-            return $this->success($reservation->load('room'), 'Reservation created successfully!', 201);
+            return $this->success($reservation, 'Reservation created successfully!', 201);
         } catch (\Exception $e) {
             return $this->error([], $e->getMessage());
         }
     }
 
 
-    public function index()
+    public function index(Request $request)
     {
         try {
-            $reservations = Reservation::with('room')->orderBy('check_in_date')->get();
+
+            $query = Reservation::query();
+
+            if ($request->has('month') && $request->has('year')) {
+                $startOfMonth = Carbon::create($request->year, $request->month, 1)->startOfMonth();
+                $endOfMonth = Carbon::create($request->year, $request->month, 1)->endOfMonth();
+
+                $query->where(function ($query) use ($startOfMonth, $endOfMonth) {
+                    $query->where('check_in_date', '<=', $endOfMonth)
+                        ->where('check_out_date', '>=', $startOfMonth);
+                });
+            }
+
+            $reservations = $query->orderBy('check_in_date')->get();
             return $this->success($reservations);
         } catch (\Exception $e) {
             return $this->error([], $e->getMessage());
@@ -55,7 +77,7 @@ class ReservationController extends Controller
     public function show($id)
     {
         try {
-            $reservation = Reservation::with('room')->findOrFail($id);
+            $reservation = Reservation::findOrFail($id);
             return $this->success($reservation);
         } catch (\Exception $e) {
             return $this->error([], $e->getMessage());
@@ -85,9 +107,15 @@ class ReservationController extends Controller
                 return $this->error([], 'The selected room is not available for the specified dates.', 422);
             }
 
-            $reservation->update($request->validated());
+            $room = Room::find($roomId);
+            
+            $data = $request->validated();
+            $data['room_details'] = $room;
+            $data['price'] = $room->price;
 
-            return $this->success($reservation->load('room'), 'Reservation updated successfully!', 200);
+            $reservation->update($data);
+
+            return $this->success($reservation, 'Reservation updated successfully!', 200);
         } catch (\Exception $e) {
             return $this->error([], $e->getMessage());
         }
