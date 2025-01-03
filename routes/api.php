@@ -9,6 +9,7 @@ use App\Http\Controllers\LeisureController;
 use App\Http\Controllers\PackageController;
 use App\Http\Controllers\RestoTableController;
 use App\Http\Controllers\Rooms\RoomController;
+use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\Rooms\RoomCategoryController;
 
 /*
@@ -44,3 +45,4 @@ Route::apiResource('leisures', LeisureController::class);
 Route::apiResource('packages', PackageController::class);
 Route::apiResource('agents', AgentController::class);
 Route::apiResource('resto-tables', RestoTableController::class);
+Route::apiResource('reservations', ReservationController::class);
