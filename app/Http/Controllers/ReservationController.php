@@ -85,7 +85,15 @@ class ReservationController extends Controller
                         'reservation_id' => $reservation->id,
                         'remarks' => $reservation->remarks,
                     ];
-                    $items = collect($reservation)->only(['email', 'address', 'phone', 'nationality', 'type', 'remarks'])->toArray();
+                    $items = collect($reservation)->only([
+                            'email', 
+                            'address', 
+                            'phone', 
+                            'nationality', 
+                            'type', 
+                            'remarks',
+                            'category_id'
+                        ])->toArray();
                     foreach(array_keys($items) as $key) {
                         $response[$key] = $items[$key];
                     }
