@@ -15,9 +15,13 @@ class Reservation extends Model
         'room_details' => 'array'
     ];
 
-    public function room()
-    {
-        return $this->belongsTo(Room::class);
-    }
+    // public function room()
+    // {
+    //     return $this->belongsTo(Room::class);
+    // }
 
+    public function rooms()
+    {
+        return $this->belongsToMany(Room::class, 'room_reservation')->withTimestamps();
+    }
 }
