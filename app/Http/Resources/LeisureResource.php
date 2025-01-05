@@ -24,7 +24,8 @@ class LeisureResource extends JsonResource
             'image' => $this->image ? url('storage/' . $this->image) : null, // Full URL to image
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
-            'deleted_at' => $this->deleted_at
+            'deleted_at' => $this->deleted_at,
+            'availability' => $this->availability
         ];
     }
 }

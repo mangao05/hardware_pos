@@ -10,6 +10,9 @@
       <div class="col">
         <label for="">Username:</label>
         <input type="text" class="form-control" id="username">
+        <div>
+          <small><span id="username_error" class="text-danger"></span></small>
+        </div>
       </div>
     </div>
 
@@ -17,10 +20,16 @@
       <div class="col">
         <label for="">First Name:</label>
         <input type="text" class="form-control" id="firstname">
+        <div>
+          <small><span id="firstname_error" class="text-danger"></span></small>
+        </div>
       </div>
       <div class="col">
         <label for="">Last Name:</label>
         <input type="text" class="form-control" id="lastname">
+        <div>
+          <small><span id="lastname_error" class="text-danger"></span></small>
+        </div>
       </div>
     </div>
 
@@ -28,10 +37,16 @@
       <div class="col">
         <label for="">Password:</label>
         <input type="password" class="form-control" id="password">
+        <div>
+          <small><span id="password_error" class="text-danger"></span></small>
+        </div>
       </div>
       <div class="col">
         <label for="">Confirm Password:</label>
         <input type="password" class="form-control" id=confirm-password>
+        <div>
+          <small><span id="confirm-password_error" class="text-danger"></span></small>
+        </div>
       </div>
     </div>
 
@@ -58,6 +73,9 @@
           <option value="9">Guest Counter</option>
           <option value="10">Errand</option>
         </select>
+        <div>
+          <small><span id="user_role_error" class="text-danger"></span></small>
+        </div>
       </div>
     </div>
 
@@ -71,7 +89,7 @@
 
   </div>
   <div class="modal-footer modal-color modal-padding">
-  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+  <button type="button" class="btn btn-secondary" onclick="close_add_user()" data-bs-dismiss="modal">Close</button>
   <button type="button" class="btn button-success" onclick="add_user()">Create</button>
   </div>
   </div>

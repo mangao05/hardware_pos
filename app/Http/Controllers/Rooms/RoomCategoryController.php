@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Rooms;
 use App\Models\RoomCategory;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\CreateRoomCategoryRequest;
+use App\Http\Requests\Rooms\CreateRoomCategoryRequest;
 use App\Http\Requests\Rooms\UpdateRoomCategoryRequest;
 
 class RoomCategoryController extends Controller

@@ -70,12 +70,18 @@ Route::get('/leisures-add-ons', function () {
     return view('features.leisures_add_ons');
 });
 
+Route::get('/booking', function () {
+    return view('features.booking');
+});
+
+
+
 
 Route::resource('room-categories', RoomCategoryController::class)->only([
     'index', 'store', 'show', 'update', 'destroy'
 ]);
 
-Route::resource('rooms', RoomController::class)->only([
+Route::resource('rooms-data', RoomController::class)->only([
     'index', 'store', 'show', 'update', 'destroy'
 ]);
 

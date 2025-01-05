@@ -12,6 +12,14 @@
     <link rel="stylesheet" href="{{ asset('css/bootstrap.css') }}">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    
+    <link rel="stylesheet" type="text/css" href="{{ asset('css/datepicker.css') }}" />
+    <!-- Bootstrap Select CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.14.0-beta2/css/bootstrap-select.min.css">
+    <!-- Bootstrap Select JS -->
+    
+
     @yield('custom_css')
 </head>
 
@@ -57,10 +65,13 @@
         font-weight: bold;
         font-size: 13px
     }
+    .logo_name{
+        margin-left:11px; 
+    }
 </style>
 
 <body>
-    <div class="sidebar">
+    <div class="sidebar {{ request()->is('booking') ? 'active' : '' }}">
         <div class="logo-details">
             <img src="{{ asset('img/pantukan_logo.png') }}" style="width: 50px;" alt="">
             <span class="logo_name">Pantukan</span>
@@ -109,6 +120,9 @@
     </script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script src="{{ asset('js/jquery.js') }}"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.14.0-beta2/js/bootstrap-select.min.js"></script>
     @yield('js')
 
 </body>

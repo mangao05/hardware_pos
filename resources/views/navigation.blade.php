@@ -23,12 +23,12 @@
         <span class="links_name">Rooms</span>
       </a>
     </li>
-    <li>
+    {{-- <li>
       <a href="{{ url('/package') }}" class="{{ request()->is('package') ? 'active' : '' }}">
         <i class='bx bx-pie-chart-alt-2' ></i>
         <span class="links_name">Package</span>
       </a>
-    </li>
+    </li> --}}
     <li>
       <a href="{{ url('/leisures-add-ons') }}" class="{{ request()->is('leisures-add-ons') ? 'active' : '' }}">
         <i class='bx bx-coin-stack' ></i>
@@ -47,6 +47,12 @@
             <span class="links_name">Agents</span>
         </a>
     </li>
+    <li>
+      <a href="#">
+          <i class='bx bx-heart'></i>
+          <span class="links_name">Booking</span>
+      </a>
+  </li>
     {{-- <li>
       <a href="#">
         <i class='bx bx-cog' ></i>

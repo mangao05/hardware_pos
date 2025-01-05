@@ -2,8 +2,8 @@
 
 namespace App\Http\Requests\Rooms;
 
+// use Illuminate\Foundation\Http\FormRequest;
 use App\Http\Requests\BaseFormRequest;
-use Illuminate\Foundation\Http\FormRequest;
 
 class CreateRoomCategoryRequest extends BaseFormRequest
 {

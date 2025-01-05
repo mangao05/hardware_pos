@@ -12,14 +12,15 @@
     
     </div>
     <div class="row pt-2">
-        <div class="col text-end"><button class="btn button-success" data-bs-toggle="modal" data-bs-target="#exampleModal">Create Leisures/Add-Ons</button></div>
+        <div class="col text-end"><button class="btn button-success" data-bs-toggle="modal" data-bs-target="#add_leisures_modal">Create Leisures/Add-Ons</button></div>
     </div>
 
     @include('modal.leisures-add-ons-management.leisures_add_ons_create')
+    @include('modal.leisures-add-ons-management.leisures_add_ons_edit')
 
     <div class="row">
         <div class="col-12"> 
-            <table class="table table-hover">
+            <table class="table table-hover" id="leisures_table_list">
                 <thead>
                     <th>Image</th>
                     <th>Item Name</th>
@@ -31,39 +32,15 @@
                     <th>Action</th>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>test</td>
-                        <td>test</td>
-                        <td>test</td>
-                        <td>test</td>
-                        <td>test</td>
-                        <td>test</td>
-                        <td>
-                            <span class="badge bg-danger">No</span>
-                        </td>
-                        <td>
-                            <span class="badge bg-primary">Edit</span>
-                            <span class="badge bg-danger">Delete</span>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>test</td>
-                        <td>test</td>
-                        <td>test</td>
-                        <td>test</td>
-                        <td>test</td>
-                        <td>test</td>
-                        <td>
-                            <span class="badge bg-success">Yes</span>
-                        </td>
-                        <td>
-                            <span class="badge bg-primary">Edit</span>
-                            <span class="badge bg-danger">Delete</span>
-                        </td>
-                    </tr>
+                   
                 </tbody>
             </table>
         </div>
     </div>
 </div>
+@endsection
+
+@section('js')
+    <script src="{{ asset('js/features/leisures_add-ons_management.js') }}"></script>
+    <script src="{{ asset('js/helper/app_helper.js') }}"></script>
 @endsection

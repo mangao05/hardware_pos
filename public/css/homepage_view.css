@@ -469,3 +469,16 @@ nav .profile-details i{
   position: relative;
   z-index: 2; /* Ensures content appears above the overlay */
 }
+
+input[type="text"] {
+  /* color: gray !important; */
+  font-size: 15px;
+}
+
+.delete-button{
+  cursor: pointer;
+}
+
+.edit-button{
+  cursor: pointer;
+}

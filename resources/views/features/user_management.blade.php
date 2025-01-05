@@ -21,6 +21,7 @@
     </div>
 
     @include('modal.user-management.user_create')
+    @include('modal.user-management.user_edit')
 
     <div class="row">
         <div class="col-12"> 

@@ -66,7 +66,7 @@ class RoomController extends Controller
     {
         try {
             $room->update($request->validated());
-
+            
             return response()->json([
                 'message' => 'Room updated successfully.',
                 'room' => $room->load('category'),
