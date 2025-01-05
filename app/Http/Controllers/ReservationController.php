@@ -14,6 +14,7 @@ use App\Models\Room;
 class ReservationController extends Controller
 {
     use ResponseFormatter;
+
     public function store(ReservationRequest $request)
     {
         try {
@@ -70,7 +71,24 @@ class ReservationController extends Controller
             }
 
             $reservations = $query->orderBy('check_in_date')->get();
-            return $this->success($reservations);
+            $responses = [];  
+
+            foreach ($reservations as $reservation) {
+                foreach ($reservation->room_details as $details) {
+                    $response = [
+                        'room' => $details['name'],
+                        'start_date' => $reservation->check_in_date,
+                        'end_date' => $reservation->check_out_date,
+                        'name' => $reservation->name,
+                        'status' => $reservation->status,
+                        'room_id' => $details['id'],
+                        'reservation_id' => $reservation->id
+                    ];
+                    $responses[] = $response;  
+                }
+            }
+
+            return $this->success($responses);
         } catch (\Exception $e) {
             return $this->error([], $e->getMessage());
         }
@@ -118,7 +136,7 @@ class ReservationController extends Controller
             unset($data['room']);
 
             $reservation->update($data);
-            $reservation->rooms()->sync($roomIds); 
+            $reservation->rooms()->sync($roomIds);
 
             return $this->success($reservation, 'Reservation updated successfully!', 200);
         } catch (\Exception $e) {
