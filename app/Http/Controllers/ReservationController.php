@@ -17,34 +17,42 @@ class ReservationController extends Controller
     public function store(ReservationRequest $request)
     {
         try {
-            $roomId = $request->room_id;
+            $roomIds = $request->room;
             $checkInDate = $request->check_in_date;
             $checkOutDate = $request->check_out_date;
+            $categoryId = $request->category_id;
 
-            $isRoomAvailable = !Reservation::where('room_id', $roomId)
-                ->where(function ($query) use ($checkInDate, $checkOutDate) {
-                    $query->whereBetween('check_in_date', [$checkInDate, date('Y-m-d', strtotime($checkOutDate . '-1 day'))])
-                        ->orWhereBetween('check_out_date', [date('Y-m-d', strtotime($checkInDate . '+1 day')), $checkOutDate])
-                        ->orWhere(function ($query) use ($checkInDate, $checkOutDate) {
-                            $query->where('check_in_date', '<', $checkInDate)
-                                ->where('check_out_date', '>', $checkOutDate);
-                        });
-                })
-                ->exists();
-            
-           
-            if (!$isRoomAvailable) {
-                return $this->error([], 'The selected room is not available for the specified dates.', 422);
+            foreach ($roomIds as $roomId) {
+                $isRoomAvailable = !Reservation::where('room_id', $roomId)
+                    ->where(function ($query) use ($checkInDate, $checkOutDate) {
+                        $query->whereBetween('check_in_date', [$checkInDate, date('Y-m-d', strtotime($checkOutDate . '-1 day'))])
+                            ->orWhereBetween('check_out_date', [date('Y-m-d', strtotime($checkInDate . '+1 day')), $checkOutDate])
+                            ->orWhere(function ($query) use ($checkInDate, $checkOutDate) {
+                                $query->where('check_in_date', '<', $checkInDate)
+                                    ->where('check_out_date', '>', $checkOutDate);
+                            });
+                    })
+                    ->exists();
+
+                if (!$isRoomAvailable) {
+                    return $this->error([], "The room with ID {$roomId} is not available for the specified dates.", 422);
+                }
             }
-            $room = Room::find($roomId);
-            
-            $data = $request->validated();
-            $data['room_details'] = $room;
-            $data['price'] = $room->price;
 
-            $reservation = Reservation::create($data);
+            $reservations = [];
+            foreach ($roomIds as $roomId) {
+                $room = Room::find($roomId);
 
-            return $this->success($reservation, 'Reservation created successfully!', 201);
+                $data = $request->validated();
+                $data['room_id'] = $roomId;  // Assign the current room ID
+                $data['category_id'] = $categoryId;  // Include category ID
+                $data['room_details'] = $room;
+                $data['price'] = $room->price;
+                unset($data['room']);
+                $reservations[] = Reservation::create($data);
+            }
+
+            return $this->success($reservations, 'Reservations created successfully!', 201);
         } catch (\Exception $e) {
             return $this->error([], $e->getMessage());
         }
@@ -87,40 +95,48 @@ class ReservationController extends Controller
     public function update(ReservationRequest $request, Reservation $reservation)
     {
         try {
-            $roomId = $request->room_id;
+            $roomIds = $request->room;
             $checkInDate = $request->check_in_date;
             $checkOutDate = $request->check_out_date;
+            $categoryId = $request->category_id;
 
-            $isRoomAvailable = !Reservation::where('room_id', $roomId)
-                ->where('id', '!=', $reservation->id) // Exclude the current reservation
-                ->where(function ($query) use ($checkInDate, $checkOutDate) {
-                    $query->whereBetween('check_in_date', [$checkInDate, date('Y-m-d', strtotime($checkOutDate . '-1 day'))])
-                        ->orWhereBetween('check_out_date', [date('Y-m-d', strtotime($checkInDate . '+1 day')), $checkOutDate])
-                        ->orWhere(function ($query) use ($checkInDate, $checkOutDate) {
-                            $query->where('check_in_date', '<', $checkInDate)
-                                ->where('check_out_date', '>', $checkOutDate);
-                        });
-                })
-                ->exists();
+            foreach ($roomIds as $roomId) {
+                $isRoomAvailable = !Reservation::where('room_id', $roomId)
+                    ->where('id', '!=', $reservation->id) // Exclude the current reservation
+                    ->where(function ($query) use ($checkInDate, $checkOutDate) {
+                        $query->whereBetween('check_in_date', [$checkInDate, date('Y-m-d', strtotime($checkOutDate . '-1 day'))])
+                            ->orWhereBetween('check_out_date', [date('Y-m-d', strtotime($checkInDate . '+1 day')), $checkOutDate])
+                            ->orWhere(function ($query) use ($checkInDate, $checkOutDate) {
+                                $query->where('check_in_date', '<', $checkInDate)
+                                    ->where('check_out_date', '>', $checkOutDate);
+                            });
+                    })
+                    ->exists();
 
-            if (!$isRoomAvailable) {
-                return $this->error([], 'The selected room is not available for the specified dates.', 422);
+                if (!$isRoomAvailable) {
+                    return $this->error([], "The room with ID {$roomId} is not available for the specified dates.", 422);
+                }
             }
 
-            $room = Room::find($roomId);
-            
-            $data = $request->validated();
-            $data['room_details'] = $room;
-            $data['price'] = $room->price;
+            $reservations = [];
+            foreach ($roomIds as $roomId) {
+                $room = Room::find($roomId);
 
-            $reservation->update($data);
+                $data = $request->validated();
+                $data['room_id'] = $roomId;  // Assign the current room ID
+                $data['category_id'] = $categoryId;  // Include category ID
+                $data['room_details'] = $room;
+                $data['price'] = $room->price;
 
-            return $this->success($reservation, 'Reservation updated successfully!', 200);
+                $reservation->update($data);
+                $reservations[] = $reservation;
+            }
+
+            return $this->success($reservations, 'Reservation updated successfully!', 200);
         } catch (\Exception $e) {
             return $this->error([], $e->getMessage());
         }
     }
-
 
     public function destroy($id)
     {

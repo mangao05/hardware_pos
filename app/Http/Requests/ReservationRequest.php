@@ -30,8 +30,10 @@ class ReservationRequest extends BaseFormRequest
             'type' => 'required',
             'check_in_date' => 'required|date',
             'check_out_date' => 'required|date|after:check_in_date',
-            'room_id' => 'required|exists:rooms,id',
+            'room' => 'required|array|min:1',  
+            'room.*' => 'required|exists:rooms,id',  
             'remarks' => 'nullable|string',
+            'category_id' => 'required|exists:room_categories,id',
         ];
     }
 }
