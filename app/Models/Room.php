@@ -15,4 +15,9 @@ class Room extends Model
     {
         return $this->belongsTo(RoomCategory::class, 'room_category_id');
     }
+
+    public function reservations()
+    {
+        return $this->belongsToMany(Reservation::class, 'room_reservation')->withTimestamps();
+    }
 }
