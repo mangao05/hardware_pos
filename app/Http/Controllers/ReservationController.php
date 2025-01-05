@@ -71,7 +71,7 @@ class ReservationController extends Controller
             }
 
             $reservations = $query->orderBy('check_in_date')->get();
-            $responses = [];  
+            $responses = [];
 
             foreach ($reservations as $reservation) {
                 foreach ($reservation->room_details as $details) {
@@ -82,9 +82,15 @@ class ReservationController extends Controller
                         'name' => $reservation->name,
                         'status' => $reservation->status,
                         'room_id' => $details['id'],
-                        'reservation_id' => $reservation->id
+                        'reservation_id' => $reservation->id,
+                        'remarks' => $reservation->remarks,
                     ];
-                    $responses[] = $response;  
+                    $items = collect($reservation)->only(['email', 'address', 'phone', 'nationality', 'type', 'remarks'])->toArray();
+                    foreach(array_keys($items) as $key) {
+                        $response[$key] = $items[$key];
+                    }
+                    
+                    $responses[] = $response;
                 }
             }
 
