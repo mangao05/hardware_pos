@@ -9,56 +9,21 @@ use App\Models\Reservation;
 use Illuminate\Http\Request;
 use App\Http\Traits\ResponseFormatter;
 use App\Http\Requests\ReservationRequest;
+use App\Http\Requests\UpdateReservationRequest;
+use App\Http\Resources\ReservationDetailsResponse;
+use App\Models\ReservationRoomDetails;
 use App\Models\Room;
+use Illuminate\Support\Facades\DB;
 
 class ReservationController extends Controller
 {
     use ResponseFormatter;
 
-    public function store(ReservationRequest $request)
-    {
-        try {
-            $roomIds = $request->room;
-            $checkInDate = $request->check_in_date;
-            $checkOutDate = $request->check_out_date;
-
-            foreach ($roomIds as $roomId) {
-                $isRoomAvailable = !Reservation::whereHas('rooms', function ($query) use ($roomId, $checkInDate, $checkOutDate) {
-                    $query->where('room_id', $roomId)
-                        ->where(function ($query) use ($checkInDate, $checkOutDate) {
-                            $query->whereBetween('check_in_date', [$checkInDate, date('Y-m-d', strtotime($checkOutDate . '-1 day'))])
-                                ->orWhereBetween('check_out_date', [date('Y-m-d', strtotime($checkInDate . '+1 day')), $checkOutDate])
-                                ->orWhere(function ($query) use ($checkInDate, $checkOutDate) {
-                                    $query->where('check_in_date', '<', $checkInDate)
-                                        ->where('check_out_date', '>', $checkOutDate);
-                                });
-                        });
-                })->exists();
-
-                if (!$isRoomAvailable) {
-                    return $this->error([], "Room with ID {$roomId} is not available for the specified dates.", 422);
-                }
-            }
-
-            $data = $request->validated();
-            $rooms = Room::whereIn('id', $roomIds)->get();
-            $data['room_details'] = $rooms;
-            unset($data['room']);
-            $reservation = Reservation::create($data);
-            $reservation->rooms()->attach($roomIds);
-
-            return $this->success($reservation, 'Reservation created successfully!', 201);
-        } catch (\Exception $e) {
-            return $this->error([], $e->getMessage());
-        }
-    }
-
-
     public function index(Request $request)
     {
         try {
 
-            $query = Reservation::query();
+            $query = ReservationRoomDetails::query();
 
             if ($request->has('month') && $request->has('year')) {
                 $startOfMonth = Carbon::create($request->year, $request->month, 1)->startOfMonth();
@@ -71,38 +36,8 @@ class ReservationController extends Controller
             }
 
             $reservations = $query->orderBy('check_in_date')->get();
-            $responses = [];
 
-            foreach ($reservations as $reservation) {
-                foreach ($reservation->room_details as $details) {
-                    $response = [
-                        'room' => $details['name'],
-                        'start_date' => $reservation->check_in_date,
-                        'end_date' => $reservation->check_out_date,
-                        'name' => $reservation->name,
-                        'status' => $reservation->status,
-                        'room_id' => $details['id'],
-                        'reservation_id' => $reservation->id,
-                        'remarks' => $reservation->remarks,
-                    ];
-                    $items = collect($reservation)->only([
-                            'email', 
-                            'address', 
-                            'phone', 
-                            'nationality', 
-                            'type', 
-                            'remarks',
-                            'category_id'
-                        ])->toArray();
-                    foreach(array_keys($items) as $key) {
-                        $response[$key] = $items[$key];
-                    }
-                    
-                    $responses[] = $response;
-                }
-            }
-
-            return $this->success($responses);
+            return $this->success(ReservationDetailsResponse::collection($reservations));
         } catch (\Exception $e) {
             return $this->error([], $e->getMessage());
         }
@@ -118,42 +53,30 @@ class ReservationController extends Controller
         }
     }
 
-    public function update(ReservationRequest $request, Reservation $reservation)
+    public function store(ReservationRequest $request)
     {
         try {
-            $roomIds = $request->room;
-            $checkInDate = $request->check_in_date;
-            $checkOutDate = $request->check_out_date;
-
-            foreach ($roomIds as $roomId) {
-                $isRoomAvailable = !Reservation::whereHas('rooms', function ($query) use ($roomId, $checkInDate, $checkOutDate, $reservation) {
-                    $query->where('room_id', $roomId)
-                        ->where('reservation_id', '!=', $reservation->id) // Exclude the current reservation
-                        ->where(function ($query) use ($checkInDate, $checkOutDate) {
-                            $query->whereBetween('check_in_date', [$checkInDate, date('Y-m-d', strtotime($checkOutDate . '-1 day'))])
-                                ->orWhereBetween('check_out_date', [date('Y-m-d', strtotime($checkInDate . '+1 day')), $checkOutDate])
-                                ->orWhere(function ($query) use ($checkInDate, $checkOutDate) {
-                                    $query->where('check_in_date', '<', $checkInDate)
-                                        ->where('check_out_date', '>', $checkOutDate);
-                                });
-                        });
-                })->exists();
-
-                if (!$isRoomAvailable) {
-                    return $this->error([], "Room with ID {$roomId} is not available for the specified dates.", 422);
-                }
-            }
-
-            $data = $request->validated();
-            $rooms = Room::whereIn('id', $roomIds)->get();
-            $data['room_details'] = $rooms;
-            unset($data['room']);
-
-            $reservation->update($data);
-            $reservation->rooms()->sync($roomIds);
-
-            return $this->success($reservation, 'Reservation updated successfully!', 200);
+            DB::beginTransaction();
+            $reservation = Reservation::createWithDetails($request->all());
+            DB::commit();
+            return $this->success($reservation->load('reservationDetails'), 'Reservation created successfully!', 201);
         } catch (\Exception $e) {
+            DB::rollBack();
+            return $this->error([], $e->getMessage());
+        }
+    }
+
+    public function update(UpdateReservationRequest $request, Reservation $reservation)
+    {
+        try {
+            DB::beginTransaction();
+
+            $updatedReservation = $reservation->updateWithDetails($reservation, $request->all());
+
+            DB::commit();
+            return $this->success($updatedReservation->load('reservationDetails'), 'Reservation updated successfully!', 200);
+        } catch (\Exception $e) {
+            DB::rollBack();
             return $this->error([], $e->getMessage());
         }
     }
@@ -165,6 +88,45 @@ class ReservationController extends Controller
             $reservation->delete();
             return $this->success($reservation, 'Reservation deleted successfully!');
         } catch (\Exception $e) {
+            return $this->error([], $e->getMessage());
+        }
+    }
+
+    public function updateReservationRoomStatus(Request $request, $reservation, $room)
+    {
+        try {
+            $roomReservation = ReservationRoomDetails::where('reservation_id', $reservation)
+                ->where('room_id', $room)
+                ->first();
+
+            $roomReservation->update([
+                'status' => $request->status
+            ]);
+
+            return $this->success($roomReservation->load(['room', 'reservation']), 'Reservation room status updated successfully!');
+        } catch (\Exception $e) {
+            return $this->error([], $e->getMessage());
+        }
+    }
+
+    public function changeReservationRoom(Request $request, Reservation $reservation)
+    {
+        try {
+            DB::beginTransaction();
+            $unavailableRooms = Reservation::checkRoomAvailability([$request->new_room], $request->check_in_date, $request->check_out_date);
+            
+            if (!empty($unavailableRooms)) {
+                throw new \Exception('The following rooms are not available for the selected dates: ' . implode(', ', $unavailableRooms));
+            }
+
+            ReservationRoomDetails::where('reservation_id', $reservation->id)->where('room_id', $request->old_room)->delete();
+
+            $reservation->addReservationDetails([$request->new_room], $request->check_in_date, $request->check_out_date);
+
+            DB::commit();
+            return $this->success($reservation->load('room'), 'Reservation room changed successfully!');
+        } catch (\Exception $e) {
+            DB::rollBack();
             return $this->error([], $e->getMessage());
         }
     }

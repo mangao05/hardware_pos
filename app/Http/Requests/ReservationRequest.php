@@ -33,7 +33,7 @@ class ReservationRequest extends BaseFormRequest
             'room' => 'required|array|min:1',  
             'room.*' => 'required|exists:rooms,id',  
             'remarks' => 'nullable|string',
-            'category_id' => 'required|exists:room_categories,id'
+            // 'category_id' => 'required|exists:room_categories,id'
         ];
     }
 }

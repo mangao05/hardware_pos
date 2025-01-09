@@ -46,3 +46,7 @@ Route::apiResource('packages', PackageController::class);
 Route::apiResource('agents', AgentController::class);
 Route::apiResource('resto-tables', RestoTableController::class);
 Route::apiResource('reservations', ReservationController::class);
+
+
+Route::put('reservations/{reservation}/update-status/{room}', [ReservationController::class, 'updateReservationRoomStatus']);
+Route::post('reservations/change-room/{reservation}', [ReservationController::class, 'changeReservationRoom']);

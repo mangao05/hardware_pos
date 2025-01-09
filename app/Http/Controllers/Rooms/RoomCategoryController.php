@@ -44,9 +44,15 @@ class RoomCategoryController extends Controller
         }
     }
 
-    public function show(RoomCategory $roomCategory)
+    public function show($id)
     {
         try {
+            if($id < 1) {
+                $roomCategory = RoomCategory::first();
+            } else {
+                $roomCategory = RoomCategory::find($id);
+            }
+
             $roomCategory->load('rooms');
 
             return response()->json([

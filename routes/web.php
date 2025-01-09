@@ -11,6 +11,7 @@ use App\Http\Controllers\Authentication\Login;
 use App\Http\Controllers\RestoTableController;
 use App\Http\Controllers\Rooms\RoomController;
 use App\Http\Controllers\Authentication\Logout;
+use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\Rooms\RoomCategoryController;
 
 /*
@@ -74,30 +75,58 @@ Route::get('/booking', function () {
     return view('features.booking');
 });
 
-
-
-
 Route::resource('room-categories', RoomCategoryController::class)->only([
-    'index', 'store', 'show', 'update', 'destroy'
+    'index',
+    'store',
+    'show',
+    'update',
+    'destroy'
 ]);
 
 Route::resource('rooms-data', RoomController::class)->only([
-    'index', 'store', 'show', 'update', 'destroy'
+    'index',
+    'store',
+    'show',
+    'update',
+    'destroy'
 ]);
 
 Route::resource('leisures', LeisureController::class)->only([
-    'index', 'store', 'show', 'update', 'destroy'
+    'index',
+    'store',
+    'show',
+    'update',
+    'destroy'
 ]);
 
 Route::resource('packages', PackageController::class)->only([
-    'index', 'store', 'show', 'update', 'destroy'
+    'index',
+    'store',
+    'show',
+    'update',
+    'destroy'
 ]);
 
 Route::resource('agents', AgentController::class)->only([
-    'index', 'store', 'show', 'update', 'destroy'
+    'index',
+    'store',
+    'show',
+    'update',
+    'destroy'
 ]);
 
-
 Route::resource('resto-tables', RestoTableController::class)->only([
-    'index', 'store', 'show', 'update', 'destroy'
+    'index',
+    'store',
+    'show',
+    'update',
+    'destroy'
+]);
+
+Route::resource('reservations', ReservationController::class)->only([
+    'index',
+    'store',
+    'show',
+    'update',
+    'destroy'
 ]);
