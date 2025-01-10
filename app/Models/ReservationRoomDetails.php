@@ -16,7 +16,8 @@ class ReservationRoomDetails extends Model
         'room_details' => 'array'
     ];
 
-    public function room(){
+    public function room()
+    {
         return $this->belongsTo(Room::class);
     }
 
@@ -25,4 +26,26 @@ class ReservationRoomDetails extends Model
         return $this->belongsTo(Reservation::class);
     }
 
+    public function otherRooms()
+    {
+        $otherRooms = self::select('*')
+            ->where('reservation_id', $this->reservation_id)
+            ->where('room_id', '!=', $this->room_id)
+            ->with('room')
+            ->get();
+
+        $rooms = [];
+
+        if ($otherRooms->count() > 0) {
+            foreach ($otherRooms as $room) {
+                $rooms[] = [
+                    "reservation_room_details_id" => $room->id,
+                    "room_id" => $room->room_id,
+                    "category_id" => $room->room->room_category_id,
+                    "room_name" => $room->room->name
+                ];
+            }
+        }
+        return $rooms;
+    }
 }

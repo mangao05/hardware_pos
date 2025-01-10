@@ -10,6 +10,7 @@ use App\Http\Controllers\PackageController;
 use App\Http\Controllers\RestoTableController;
 use App\Http\Controllers\Rooms\RoomController;
 use App\Http\Controllers\ReservationController;
+use App\Http\Controllers\ReservationDetailsController;
 use App\Http\Controllers\Rooms\RoomCategoryController;
 
 /*
@@ -50,3 +51,5 @@ Route::apiResource('reservations', ReservationController::class);
 
 Route::put('reservations/{reservation}/update-status/{room}', [ReservationController::class, 'updateReservationRoomStatus']);
 Route::post('reservations/change-room/{reservation}', [ReservationController::class, 'changeReservationRoom']);
+
+Route::delete('reservation-rooms/{id}', [ReservationDetailsController::class, 'deleteReservationRoomDetails']);

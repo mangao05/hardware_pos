@@ -16,6 +16,7 @@ class ReservationDetailsResponse extends JsonResource
     public function toArray(Request $request): array
     {
         return [
+            "reservation_room_details_id" => $this->id,
             "name" => $this->reservation->name,
             "room" => $this->room->name,
             "room_id" => $this->room_id,
@@ -29,6 +30,7 @@ class ReservationDetailsResponse extends JsonResource
             "end_date" => $this->check_out_date,
             "remarks" => $this->reservation->remarks,
             "status" => $this->status,
+            "other_rooms" => $this->otherRooms()
         ];
     }
 }
