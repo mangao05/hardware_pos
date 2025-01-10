@@ -28,7 +28,7 @@ class ReservationDetailsResponse extends JsonResource
             "start_date" => $this->check_in_date,
             "end_date" => $this->check_out_date,
             "remarks" => $this->reservation->remarks,
-            "status" => $this->reservation->status,
+            "status" => $this->status,
         ];
     }
 }
