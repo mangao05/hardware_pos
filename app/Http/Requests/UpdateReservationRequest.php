@@ -33,7 +33,7 @@ class UpdateReservationRequest extends BaseFormRequest
             'room.room_id' => 'required|integer|exists:rooms,id',
             'room.check_in_date' => 'required|date|before:room.check_out_date',
             'room.check_out_date' => 'required|date|after:room.check_in_date',
-            'room.status' => 'required|in:checkin,checkout,reserved',
+            'room.status' => 'required',
         ];
     }
 }
