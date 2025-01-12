@@ -113,7 +113,7 @@ class ReservationController extends Controller
     {
         try {
             DB::beginTransaction();
-            $unavailableRooms = Reservation::checkRoomAvailability([$request->new_room], $request->check_in_date, $request->check_out_date);
+            $unavailableRooms = Reservation::checkRoomAvailability($request->new_room, $request->check_in_date, $request->check_out_date);
           
             if (!empty($unavailableRooms)) {
                 throw new \Exception('The following rooms are not available for the selected dates: ' . implode(', ', $unavailableRooms));
@@ -125,7 +125,7 @@ class ReservationController extends Controller
                     ->delete();
             }
 
-            $reservation->addReservationDetails([$request->new_room], $request->check_in_date, $request->check_out_date);
+            $reservation->addReservationDetails($request->new_room, $request->check_in_date, $request->check_out_date);
 
             DB::commit();
             return $this->success($reservation->load('reservationDetails'), 'Reservation room changed successfully!');
