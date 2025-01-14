@@ -20,7 +20,7 @@ class ReservationDetailsController extends Controller
             }
 
             $roomDetails->delete();
-            return $this->success([], 'Room reservation details deleted successfully.');
+            return $this->success($roomDetails, 'Room reservation details deleted successfully.');
         } catch (\Exception $e) {
             return $this->error([], $e->getMessage());
         }

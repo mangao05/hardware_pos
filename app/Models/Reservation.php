@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Support\Arr;
 use Illuminate\Database\Eloquent\Model;
+use App\Exceptions\RoomUnavailableException;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -32,7 +33,7 @@ class Reservation extends Model
         $unavailableRooms = self::checkRoomAvailability($roomIds, $checkInDate, $checkOutDate);
 
         if (!empty($unavailableRooms)) {
-            throw new \Exception('The following rooms are not available for the selected dates: ' . implode(', ', $unavailableRooms));
+            throw new RoomUnavailableException($unavailableRooms, 'The following rooms are unavailable.');
         }
 
         $reservationData = Arr::except($data, ['check_in_date', 'check_out_date', 'room_id', 'room']);
@@ -59,7 +60,7 @@ class Reservation extends Model
         $unavailableRooms = self::checkRoomAvailability($roomIds, $checkInDate, $checkOutDate, $reservation->id ?? null);
 
         if (!empty($unavailableRooms)) {
-            throw new \Exception('The following rooms are not available for the selected dates: ' . implode(', ', $unavailableRooms));
+            throw new RoomUnavailableException($unavailableRooms, 'The following rooms are unavailable.');
         }
 
         // Update reservation fields
@@ -98,7 +99,8 @@ class Reservation extends Model
             }
 
             if ($query->exists()) {
-                $unavailableRooms[] = $roomId;
+                $room_details = $query->first();
+                $unavailableRooms[] = $room_details->room_details;
             }
         }
         return $unavailableRooms;
@@ -121,7 +123,7 @@ class Reservation extends Model
                 'check_out_date' => $checkOutDate,
                 'room_id' => $room->id,
                 'room_details' => $room,
-                'status' => 'booked'
+                'status' => 'booked',
             ]);
         }
     }
@@ -142,10 +144,10 @@ class Reservation extends Model
 
         if ($existingRoom) {
             $existingRoom->update([
-                'check_in_date' => $room['check_in_date'],  
-                'check_out_date' => $room['check_out_date'], 
-                'room_id' => $room['room_id'],               
-                'status' => $room['status']                  
+                'check_in_date' => $room['check_in_date'],
+                'check_out_date' => $room['check_out_date'],
+                'room_id' => $room['room_id'],
+                'status' => $room['status']
             ]);
         }
     }

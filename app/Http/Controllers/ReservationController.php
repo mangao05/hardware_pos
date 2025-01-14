@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\RoomUnavailableException;
 use Carbon\Carbon;
 use App\Models\Reservation;
 use Illuminate\Http\Request;
@@ -60,6 +61,11 @@ class ReservationController extends Controller
             $reservation = Reservation::createWithDetails($request->all());
             DB::commit();
             return $this->success($reservation->load('reservationDetails'), 'Reservation created successfully!', 201);
+        } catch (RoomUnavailableException $e) {
+            return response()->json([
+                'error' => $e->getMessage(),
+                'unavailable_rooms' => $e->getUnavailableRooms()
+            ], 422);
         } catch (\Exception $e) {
             DB::rollBack();
             return $this->error([], $e->getMessage());
@@ -75,6 +81,11 @@ class ReservationController extends Controller
 
             DB::commit();
             return $this->success($updatedReservation->load('reservationDetails'), 'Reservation updated successfully!', 200);
+        } catch (RoomUnavailableException $e) {
+            return response()->json([
+                'error' => $e->getMessage(),
+                'unavailable_rooms' => $e->getUnavailableRooms()
+            ], 422);
         } catch (\Exception $e) {
             DB::rollBack();
             return $this->error([], $e->getMessage());
@@ -114,9 +125,9 @@ class ReservationController extends Controller
         try {
             DB::beginTransaction();
             $unavailableRooms = Reservation::checkRoomAvailability($request->new_room, $request->check_in_date, $request->check_out_date);
-          
+
             if (!empty($unavailableRooms)) {
-                throw new \Exception('The following rooms are not available for the selected dates: ' . implode(', ', $unavailableRooms));
+                throw new RoomUnavailableException($unavailableRooms, 'The following rooms are unavailable.');
             }
 
             if ($request->has('old_room')) {
@@ -129,6 +140,11 @@ class ReservationController extends Controller
 
             DB::commit();
             return $this->success($reservation->load('reservationDetails'), 'Reservation room changed successfully!');
+        } catch (RoomUnavailableException $e) {
+            return response()->json([
+                'error' => $e->getMessage(),
+                'unavailable_rooms' => $e->getUnavailableRooms()
+            ], 422);
         } catch (\Exception $e) {
             DB::rollBack();
             return $this->error([], $e->getMessage());
