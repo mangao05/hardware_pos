@@ -56,3 +56,7 @@ Route::post('reservations/change-room/{reservation}', [ReservationController::cl
 Route::delete('reservation-rooms/{id}', [ReservationDetailsController::class, 'deleteReservationRoomDetails']);
 
 Route::get('history-logs', [HistoryLogController::class, 'list']);
+Route::post('/reservation-rooms/{id}/addon', [ReservationDetailsController::class, 'addAddon']);
+Route::put('/reservation-rooms/addon/{id}', [ReservationDetailsController::class, 'updateAddon']);
+Route::delete('/reservation-rooms/addon/{id}', [ReservationDetailsController::class, 'deleteAddon']);
+Route::get('/reservation-rooms/{id}/addons', [ReservationDetailsController::class, 'listAddons']);

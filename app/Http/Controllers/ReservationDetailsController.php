@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Leisure;
 use Illuminate\Http\Request;
+use App\Models\RoomReservationAddon;
 use App\Http\Traits\ResponseFormatter;
 use App\Models\ReservationRoomDetails;
 
@@ -29,6 +31,124 @@ class ReservationDetailsController extends Controller
             $roomDetails->logAction($logs);
             $roomDetails->delete();
             return $this->success($roomDetails, 'Room reservation details deleted successfully.');
+        } catch (\Exception $e) {
+            return $this->error([], $e->getMessage());
+        }
+    }
+
+    public function addAddon(Request $request, $id)
+    {
+        try {
+            $request->validate([
+                'addon_id' => 'required',
+                'addon_price' => 'required'
+            ]);
+            $leisure = Leisure::find($request->addon_id);
+
+            $roomDetails = ReservationRoomDetails::find($id);
+
+            $addon = RoomReservationAddon::create([
+                'addon_id' => $request->addon_id,
+                'addon_price' => $request->addon_price ?? 0,
+                'addon_details' => $leisure,
+                'room_reservation_details_id' => $id
+            ]);
+
+            $logs = [
+                'action' => 'add_addon',
+                'message' => 'Addon successfully added.',
+                'reservation_id' => $roomDetails->reservation_id,
+                'room_id' => $roomDetails->room_id,
+                'new_data' => $addon
+            ];
+
+            $roomDetails->logAction($logs);
+
+            return $this->success($roomDetails, 'Addons added.');
+        } catch (\Exception $e) {
+            return $this->error([], $e->getMessage());
+        }
+    }
+
+    public function updateAddon(Request $request, $id)
+    {
+        try {
+            $request->validate([
+                'addon_id' => 'required',
+                'addon_price' => 'required'
+            ]);
+
+            $addon = RoomReservationAddon::find($id);
+            $oldData = $addon->getOriginal();
+            if (!$addon) {
+                return $this->error([], 'Addon not found.');
+            }
+            $leisure = Leisure::find($request->addon_id);
+            $addon->update([
+                'addon_id' => $request->addon_id,
+                'addon_price' => $request->addon_price ?? 0,
+                'addon_details' => $leisure,
+                'addon_name' => $leisure->item_name
+            ]);
+
+            $roomDetails = ReservationRoomDetails::find($addon->room_reservation_details_id);
+
+            $logs = [
+                'action' => 'update_addon',
+                'message' => 'Addon successfully updated.',
+                'reservation_id' => $roomDetails->reservation_id,
+                'room_id' => $roomDetails->room_id,
+                'old_data' => $oldData,
+                'new_data' => $addon->fresh()->toArray()
+            ];
+
+            $roomDetails->logAction($logs);
+
+            return $this->success($addon, 'Addon updated.');
+        } catch (\Exception $e) {
+            return $this->error([], $e->getMessage());
+        }
+    }
+
+    public function deleteAddon($id)
+    {
+        try {
+            $addon = RoomReservationAddon::find($id);
+
+            if (!$addon) {
+                return $this->error([], 'Addon not found.');
+            }
+
+            $roomDetails = ReservationRoomDetails::find($addon->room_reservation_details_id);
+
+            $logs = [
+                'action' => 'delete_addon',
+                'message' => 'Addon successfully deleted.',
+                'reservation_id' => $roomDetails->reservation_id,
+                'room_id' => $roomDetails->room_id,
+                'old_data' => $addon
+            ];
+
+            $addon->delete();
+
+            $roomDetails->logAction($logs);
+
+            return $this->success($addon, 'Addon deleted.');
+        } catch (\Exception $e) {
+            return $this->error([], $e->getMessage());
+        }
+    }
+
+    public function listAddons($reservationRoomDetailsId)
+    {
+        try {
+            $addons = RoomReservationAddon::where('room_reservation_details_id', $reservationRoomDetailsId)->get();
+
+            if ($addons->isEmpty()) {
+                return $this->error([], 'No addons found for this reservation room details ID.');
+            }
+
+            return $this->success($addons, 'Addons retrieved successfully.');
         } catch (\Exception $e) {
             return $this->error([], $e->getMessage());
         }

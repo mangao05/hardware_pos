@@ -27,6 +27,11 @@ class ReservationRoomDetails extends Model
         return $this->belongsTo(Reservation::class);
     }
 
+    public function addons()
+    {
+        return $this->hasMany(RoomReservationAddon::class, 'room_reservation_details_id');
+    }
+
     public function otherRooms()
     {
         $otherRooms = self::select('*')
