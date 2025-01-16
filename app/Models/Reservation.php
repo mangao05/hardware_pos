@@ -5,12 +5,13 @@ namespace App\Models;
 use Illuminate\Support\Arr;
 use Illuminate\Database\Eloquent\Model;
 use App\Exceptions\RoomUnavailableException;
+use App\Http\Traits\LogsActions;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Reservation extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, LogsActions;
 
     protected $guarded = [];
 
@@ -26,9 +27,10 @@ class Reservation extends Model
      */
     public static function createWithDetails(array $data): Reservation
     {
-        $roomIds = $data['room'];
+        $rooms = $data['guests'];
         $checkInDate = $data['check_in_date'];
         $checkOutDate = $data['check_out_date'];
+        $roomIds = Arr::pluck($rooms, 'room_id');
 
         $unavailableRooms = self::checkRoomAvailability($roomIds, $checkInDate, $checkOutDate);
 
@@ -36,11 +38,20 @@ class Reservation extends Model
             throw new RoomUnavailableException($unavailableRooms, 'The following rooms are unavailable.');
         }
 
-        $reservationData = Arr::except($data, ['check_in_date', 'check_out_date', 'room_id', 'room']);
+        $reservationData = Arr::except($data, ['check_in_date', 'check_out_date', 'room_id', 'room', 'guests']);
 
         $reservation = self::create($reservationData);
 
-        $reservation->addReservationDetails($roomIds, $checkInDate, $checkOutDate);
+        $reservation->addReservationDetails($rooms, $checkInDate, $checkOutDate, 'Created Reservation');
+
+        $logs = [
+            'action' => 'create',
+            'message' => 'Created Room Reservation',
+            'reservation_id' => $reservation->id,
+            'new_data' => $reservation->load('reservationDetails'),
+        ];
+        
+        $reservation->logAction($logs);
 
         return $reservation;
     }
@@ -56,19 +67,25 @@ class Reservation extends Model
         $checkInDate = $data['room']['check_in_date'];
         $checkOutDate = $data['room']['check_out_date'];
 
-        // Reuse the checkRoomAvailability method, passing the current reservation ID for exclusion
         $unavailableRooms = self::checkRoomAvailability($roomIds, $checkInDate, $checkOutDate, $reservation->id ?? null);
 
         if (!empty($unavailableRooms)) {
             throw new RoomUnavailableException($unavailableRooms, 'The following rooms are unavailable.');
         }
-
-        // Update reservation fields
+        $oldData = $reservation->load('reservationDetails');
         $reservation->update($data['reservation']);
 
-        // Reuse the addReservationDetails function to update the room details
         $reservation->updateReservationDetails($data['room']);
 
+        $logs = [
+            'action' => 'update',
+            'message' => 'Updated Room Reservation',
+            'reservation_id' => $reservation->id,
+            'new_data' => $reservation->load('reservationDetails'),
+            'old_data' => $oldData
+        ];
+
+        $reservation->logAction($logs);
         return $reservation;
     }
     /**
@@ -112,17 +129,22 @@ class Reservation extends Model
      * @param array $roomIds
      * @param string $checkInDate
      * @param string $checkOutDate
+     * @param ?string $action
      * @return void
      */
-    public function addReservationDetails(array $roomIds, string $checkInDate, string $checkOutDate): void
-    {
-        foreach ($roomIds as $roomId) {
-            $room = Room::findOrFail($roomId); // Ensures the room exists
+    public function addReservationDetails(
+        array $rooms,
+        string $checkInDate,
+        string $checkOutDate
+    ): void {
+        foreach ($rooms as $room) {
+            $roomDetails = Room::findOrFail($room['room_id']);
             $this->reservationDetails()->create([
                 'check_in_date' => $checkInDate,
                 'check_out_date' => $checkOutDate,
-                'room_id' => $room->id,
-                'room_details' => $room,
+                'room_id' => $roomDetails->id,
+                'room_details' => $roomDetails,
+                'guest' => $room['guest'],
                 'status' => 'booked',
             ]);
         }
@@ -147,7 +169,8 @@ class Reservation extends Model
                 'check_in_date' => $room['check_in_date'],
                 'check_out_date' => $room['check_out_date'],
                 'room_id' => $room['room_id'],
-                'status' => $room['status']
+                'status' => $room['status'],
+                'guest' => $room['guest']
             ]);
         }
     }

@@ -434,7 +434,7 @@ function add_booking(){
         type: bookingType,
         check_in_date: start_book,
         check_out_date: end_book,
-        category_id:selectedCategory,
+        // category_id:selectedCategory,
         room: selectedRooms,
         remarks: remarks
     };
@@ -443,21 +443,21 @@ function add_booking(){
     
 
 
-    // store_data(myUrl, myData).then(async (response) => {
+    store_data(myUrl, myData).then(async (response) => {
         
-    //     if (response && response.data.length == 0) {
-    //         $('#error_checkin').text(response.message)
-    //         toaster("Room not available!", "error");
-    //     }else{
-    //         // Reload bookings and refresh the calendar
-    //         cachedBookings = await get_all_booking(); // Refresh the cached bookings
-    //         const today = new Date();
-    //         const initialMonth = today.toISOString().slice(0, 7); // Format as YYYY-MM
-    //         await loadCalendar(initialMonth + "-01", selectedCategory); // Refresh the calendar
-    //         $('#add_booking').modal('hide')
-    //         toaster("Room successfully reserved!", "success");
-    //     }
-    // })
+        if (response && response.data.length == 0) {
+            $('#error_checkin').text(response.message)
+            toaster("Room not available!", "error");
+        }else{
+            // Reload bookings and refresh the calendar
+            cachedBookings = await get_all_booking(); // Refresh the cached bookings
+            const today = new Date();
+            const initialMonth = today.toISOString().slice(0, 7); // Format as YYYY-MM
+            await loadCalendar(initialMonth + "-01", selectedCategory); // Refresh the calendar
+            $('#add_booking').modal('hide')
+            toaster("Room successfully reserved!", "success");
+        }
+    })
     
 }
 

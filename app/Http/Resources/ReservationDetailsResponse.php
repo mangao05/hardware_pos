@@ -17,18 +17,18 @@ class ReservationDetailsResponse extends JsonResource
     {
         return [
             "reservation_room_details_id" => $this->id,
-            "name" => $this->reservation->name,
+            "name" => optional($this->reservation)->name,
             "room" => $this->room->name,
             "room_id" => $this->room_id,
             "reservation_id" => $this->reservation_id,
-            "email" => $this->reservation->email,
-            "address" => $this->reservation->address,
-            "phone" => $this->reservation->phone,
-            "nationality" => $this->reservation->nationality,
-            "type" => $this->reservation->type,
+            "email" => optional($this->reservation)->email,
+            "address" => optional($this->reservation)->address,
+            "phone" => optional($this->reservation)->phone,
+            "nationality" => optional($this->reservation)->nationality,
+            "type" => optional($this->reservation)->type,
             "start_date" => $this->check_in_date,
             "end_date" => $this->check_out_date,
-            "remarks" => $this->reservation->remarks,
+            "remarks" => optional($this->reservation)->remarks,
             "status" => $this->status,
             "other_rooms" => $this->otherRooms()
         ];

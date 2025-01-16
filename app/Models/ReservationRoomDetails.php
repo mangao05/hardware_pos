@@ -2,13 +2,14 @@
 
 namespace App\Models;
 
+use App\Http\Traits\LogsActions;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class ReservationRoomDetails extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, LogsActions;
 
     protected $guarded = [];
 

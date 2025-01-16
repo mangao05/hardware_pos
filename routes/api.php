@@ -5,6 +5,7 @@ use App\Http\Controllers\GetRoles;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AgentController;
+use App\Http\Controllers\HistoryLogController;
 use App\Http\Controllers\LeisureController;
 use App\Http\Controllers\PackageController;
 use App\Http\Controllers\RestoTableController;
@@ -53,3 +54,5 @@ Route::put('reservations/{reservation}/update-status/{room}', [ReservationContro
 Route::post('reservations/change-room/{reservation}', [ReservationController::class, 'changeReservationRoom']);
 
 Route::delete('reservation-rooms/{id}', [ReservationDetailsController::class, 'deleteReservationRoomDetails']);
+
+Route::get('history-logs', [HistoryLogController::class, 'list']);
