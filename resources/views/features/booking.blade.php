@@ -5,7 +5,7 @@
 @endsection
 
 @section('content')
-<style>
+<style scoped>
     .border {
     border: 1px solid #ddd;
 }
@@ -167,13 +167,35 @@ textarea.form-control {
     border-color: #6c757d;
 }
 
+.card{
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Soft shadow */
+}
+
+#view_summary_modal{
+    padding-left: 0px !important
+}
+
+.summary_label{
+    text-align: left;
+    width:20%;
+    font-size: 14px
+}
+
+.table-custome-align{
+    text-align: left;
+    font-size: 14px
+}
+
 
 
 
 </style>
 <div class="container-fluid">
     <div class="row mb-2 justify-content-end">
-        <div class="col-3 text-end">
+        <div class="col-2 text-end">
+            <select name="" class="form-control category_list"></select>
+        </div>
+        <div class="col-2 text-end">
             <input class="form-control" type="month" id="datePicker" />
         </div>
         <div class="col-1 text-end">
@@ -182,6 +204,7 @@ textarea.form-control {
 
         @include('modal.booking.add_booking')
         @include('modal.booking.edit_booking')
+        @include('modal.booking.view_summary')
     </div>
     <div class="row">
         <div class="col-12" style="overflow: auto"> 
@@ -202,5 +225,6 @@ textarea.form-control {
 
 @section('js')
     <script src="{{ asset('js/features/booking.js') }}"></script>
+    <script src="{{ asset('js/features/booking-js/booking_action.js') }}"></script>
     <script src="{{ asset('js/helper/app_helper.js') }}"></script>
 @endsection

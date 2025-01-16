@@ -27,8 +27,21 @@ async function loadRoomCategory(){
     }
 }
 
+var no_of_page = 10
+var page = 1
+
+function next_page(){
+    page++
+    loadRoom()
+}
+
+function prev_page(){
+    page--
+    loadRoom()
+}
+
 async function loadRoom(){
-    myUrl = "rooms-data?per_page=10&page=1"
+    myUrl = "rooms-data?per_page="+no_of_page+"&page="+page
     try {
         const response = await axios.get(myUrl);
         $("#data-table-rooms tbody").empty();

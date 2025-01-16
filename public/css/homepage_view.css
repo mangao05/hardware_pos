@@ -482,3 +482,9 @@ input[type="text"] {
 .edit-button{
   cursor: pointer;
 }
+
+.icon-style{
+  width: 12px;
+  margin-right: 3px;
+  filter: invert(1);
+}

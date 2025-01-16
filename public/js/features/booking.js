@@ -1,6 +1,7 @@
 // Cache for room data and bookings
 let cachedRooms = null;
 let cachedBookings = null;
+let selected_category = null;
 
 
 // Debounce function to optimize frequent calls
@@ -46,8 +47,7 @@ function loadDate(startDate, extendDays = 2) {
 }
 
 function handleReservationClick(reservation) {
-    selectedRooms = []; // Clear selectedRooms when editing a new reservation
-
+    selectedRooms = [];
     const startDate = reservation.start_date ? new Date(reservation.start_date) : new Date();
     const endDate = reservation.end_date ? new Date(reservation.end_date) : new Date();
 
@@ -75,19 +75,42 @@ function handleReservationClick(reservation) {
     $('#edit_bookingType').val(reservation.type);
     $('#edit_remarks').val(reservation.remarks);
     $('#edit_reservation_id').val(reservation.reservation_id);
+    $('#edit_room_id').val(reservation.room_id)
+    $('#edit_current_room').text(reservation.room)
+    $('#booking_status').text(reservation.status)
+    $('#reservation_room_details_id').val(reservation.reservation_room_details_id)
 
+    $('#edit_room_list_display').empty();
+
+    hide_button(reservation.status)
+
+    reservation.other_rooms.forEach(element => {
+        const row = `
+            <li>${element.room_name}</li>
+        `
+        $('#edit_room_list_display').append(row);
+    });
+    
     // Load category and pre-select rooms
-    loadCategory(reservation.category_id, reservation.room_id.toString());
-
+    
     $('#edit_booking').modal('show');
+}
+
+function hide_button(status){
+    if(status == "checkout"){
+        $('.btn_edit').hide()
+    }else{
+        $('.btn_edit').show()
+    }
+    
 }
 
 
 
-async function loadCalendar(startDate) {
-    const rooms = cachedRooms || await loadRoom();
+async function loadCalendar(startDate,category_id) {
+    const rooms = await loadRoom(category_id);
     const date_value = loadDate(startDate);
-
+    
     $("#calendar_book thead, #calendar_book tbody").empty();
 
     const dateFormatter = new Intl.DateTimeFormat("en-US", {
@@ -126,10 +149,16 @@ async function loadCalendar(startDate) {
                 }
                 date_value.forEach(date => {
                     const reservation = reservations.find(res => res.date_list.includes(date));
+                    
                     if (reservation) {
                         const startIndex = reservation.date_list.indexOf(date);
                         if (startIndex === 0) {
                             const daysSpanning = reservation.date_list.filter(d => date_value.includes(d)).length;
+                            var transaction_type = "GT";
+                            if (reservation.other_rooms.length == 0){
+                                transaction_type = "ST"
+                            }
+
                             if (daysSpanning > 0 && daysSpanning <= date_value.length) {
                                 const bgColor = getReservationColor(reservation.status);
                                 row += `<td class="border clickable-reservation text-capitalize" 
@@ -137,7 +166,7 @@ async function loadCalendar(startDate) {
                                              style="background-color:${bgColor}; text-align:center; vertical-align:middle; 
                                              padding:2px; border-radius:15px; color:white;font-size:12px; cursor:pointer;"
                                              data-reservation='${JSON.stringify(reservation)}'>
-                                            ${reservation.name}
+                                            ${reservation.name} (${transaction_type})
                                         </td>`;
                             }
                         }
@@ -155,6 +184,8 @@ async function loadCalendar(startDate) {
     // Event delegation for click handler
     $("#calendar_book").off("click").on("click", ".clickable-reservation", function () {
         const reservationData = $(this).data("reservation");
+      
+        
         handleReservationClick(reservationData);
     });
 }
@@ -173,14 +204,13 @@ async function get_all_booking() {
         return res
 
     } catch (error) {
-        console.error('Error fetching bookings:', error);
         return []; // Return an empty array on error
     }
 }
 
 function getReservationColor(status) {
     switch (status) {
-        case "checkin": return "#012866";
+        case "booked": return "#012866";
         case "checkout": return "#F6911B";
         case "cancel": return "red";
         default: return "#012866";
@@ -223,17 +253,15 @@ async function getReservationsForRoom(room, date_value) {
 
 
 
-async function loadRoom() {
-    if (cachedRooms) return cachedRooms;
-
-    const myUrl = "rooms-data";
+async function loadRoom(category_id) {
+    // if (cachedRooms) return cachedRooms;
+    const myUrl = "api/room-categories/"+category_id;
     try {
         const response = await axios.get(myUrl);
-        cachedRooms = response.data.rooms.data.map(item => item.name);
-
+        cachedRooms = response.data.category.rooms.map(item => item.name);
         return cachedRooms;
     } catch (error) {
-        console.error(error);
+        
         return [];
     }
 }
@@ -243,6 +271,7 @@ var start_book = "";
 var end_book = ""
 var selectedCategory = "";
 var selectedRooms = [];
+var trans_type = null;
 
 async function loadCategory(category_id = null, checkedRoomId = null) {
     const myUrl = "api/room-categories";
@@ -250,7 +279,7 @@ async function loadCategory(category_id = null, checkedRoomId = null) {
     const data = response.data.categories.data;
 
     $(".category_list").empty();
-    $(".category_list").append('<option value="" selected hidden>-- Select Room --</option>');
+    $(".category_list").append('<option value="" selected hidden>-- Select Category --</option>');
 
     data.forEach(element => {
         const isSelected = category_id == element.id ? 'selected' : ''; // Check if this is the default category
@@ -281,7 +310,7 @@ async function loadCategory(category_id = null, checkedRoomId = null) {
                 const row = `
                     <div class='col-md-6'>
                         <label>
-                            <input type='checkbox' value='${room.id}' class='room-checkbox' ${isChecked}> ${room.name}
+                            <input type='checkbox' onclick='onSelectCategory()' value='${room.id}' class='room-checkbox' ${isChecked}> ${room.name}
                         </label>
                     </div>
                 `;
@@ -299,21 +328,64 @@ async function loadCategory(category_id = null, checkedRoomId = null) {
         const selectedData = JSON.parse(selectedOption.attr("data_list"));
 
         $('.room_list_data').empty();
-        selectedRooms = []; // Clear `selectedRooms` when category changes
-
+        
+        $(".room_list_data").append('<option value="" selected hidden>-- Select Room --</option>');
         selectedData.rooms.forEach(room => {
             const row = `
-                <div class='col-md-6'>
-                    <label>
-                        <input type='checkbox' value='${room.id}' class='room-checkbox'> ${room.name}
-                    </label>
-                </div>
+                <option value='${room.id}' data='${JSON.stringify(room)}'> ${room.name} </option>
             `;
             $('.room_list_data').append(row);
         });
 
+        $('.select_room_div').show()
         attachRoomCheckboxEvent(); // Attach event listener to room checkboxes
+        liveReload(selectedCategory)
+        selected_category = selectedCategory
     });
+
+    $('.room_list_selection').on("change",function(){
+        const selectedOption = $(this).find("option:selected");
+        const roomData = JSON.parse(selectedOption.attr("data"));
+        console.log(roomData);
+        
+        selectedRooms.push(roomData.id)
+        const row = `
+            <tr>
+                <td class="table-custome-align">${roomData.name}(room category)</td>
+                <td class="table-custome-align"><input class="form-control" type="text"></td>
+                <td class="table-custome-align"><badge class="badge bg-danger">X</badge></td>
+            </tr>
+        `
+        $('.room_list_display tbody').append(row)
+
+        // edit part 
+        if(trans_type == "add_room_update"){
+            const editrow = `
+                <div><small><span class="badge bg-danger">X</span>${roomData.name}(room category)</small></div>
+            `
+            $('#edit_room_list_display').append(editrow)
+        }
+
+        if(trans_type == "transfer_room_update"){
+            $('#edit_current_room').empty()
+            $('#edit_current_room').text(roomData.name)
+        }
+        
+    })
+}
+
+function add_room(){
+    const textbox = document.getElementById("edit_category");
+    textbox.disabled = false;
+    textbox.focus();   
+    trans_type = "add_room_update" 
+}
+
+function transfer_room(){
+    const textbox = document.getElementById("edit_category");
+    textbox.disabled = false;
+    textbox.focus();   
+    trans_type = "transfer_room_update" 
 }
 
 
@@ -329,7 +401,6 @@ function attachRoomCheckboxEvent() {
             selectedRooms = selectedRooms.filter(id => id !== roomId);
         }
 
-        console.log("Updated selectedRooms:", selectedRooms); // Debugging log
     });
 
     // Populate selectedRooms initially based on checked checkboxes
@@ -340,12 +411,7 @@ function attachRoomCheckboxEvent() {
             selectedRooms.push(roomId);
         }
     });
-
-    console.log("Initial selectedRooms:", selectedRooms); // Debugging log
 }
-
-
-
 
 
 function add_booking(){
@@ -375,36 +441,33 @@ function add_booking(){
 
     console.log(myData);
     
-    
 
-    store_data(myUrl, myData).then(async (response) => {
+
+    // store_data(myUrl, myData).then(async (response) => {
         
-        if (response && response.data.length == 0) {
-            $('#error_checkin').text(response.message)
-            toaster("Room not available!", "error");
-        }else{
-            // Reload bookings and refresh the calendar
-            cachedBookings = await get_all_booking(); // Refresh the cached bookings
-            const today = new Date();
-            const initialMonth = today.toISOString().slice(0, 7); // Format as YYYY-MM
-            await loadCalendar(initialMonth + "-01"); // Refresh the calendar
-            $('#add_booking').modal('hide')
-            toaster("Room successfully reserved!", "success");
-        }
-    })
+    //     if (response && response.data.length == 0) {
+    //         $('#error_checkin').text(response.message)
+    //         toaster("Room not available!", "error");
+    //     }else{
+    //         // Reload bookings and refresh the calendar
+    //         cachedBookings = await get_all_booking(); // Refresh the cached bookings
+    //         const today = new Date();
+    //         const initialMonth = today.toISOString().slice(0, 7); // Format as YYYY-MM
+    //         await loadCalendar(initialMonth + "-01", selectedCategory); // Refresh the calendar
+    //         $('#add_booking').modal('hide')
+    //         toaster("Room successfully reserved!", "success");
+    //     }
+    // })
     
 }
 
 function add_booking_modal(){
     $('.room_list_data').empty();
-    loadCategory()
     $('#add_booking').modal('show')
 }
 
-
-
 function cancelReservation(){
-    const reservation_id = $('#edit_reservation_id').val()
+    const reservation_room_details_id = $('#reservation_room_details_id').val()
     Swal.fire({
         title: "Are you sure?",
         text: "You won't be able to revert this!",
@@ -415,18 +478,14 @@ function cancelReservation(){
         confirmButtonText: "Yes, delete it!"
     }).then(async (result) => {
         if (result.isConfirmed) {
-            myUrl = "/api/reservations/"+reservation_id
+            myUrl = "/api/reservation-rooms/"+reservation_room_details_id
             delete_record(myUrl)
             Swal.fire({
             title: "Deleted!",
             text: "Your file has been deleted.",
             icon: "success"
             });
-            // Reload bookings and refresh the calendar
-            cachedBookings = await get_all_booking(); // Refresh the cached bookings
-            const today = new Date();
-            const initialMonth = today.toISOString().slice(0, 7); // Format as YYYY-MM
-            await loadCalendar(initialMonth + "-01"); // Refresh the calendar
+            liveReload(0);
             $('#edit_booking').modal('hide')
         }
     });
@@ -434,51 +493,114 @@ function cancelReservation(){
 }
 
 function update_booking() {
-    const reservation_id = $('#edit_reservation_id').val();
+    var reservation_id = $('#edit_reservation_id').val()
+    var date = $('#edit_daterange').val()
+    var date_convert = date.split(' - ')
+    if(trans_type == "add_room_update"){
+        const myUrl = `/api/reservations/change-room/`+reservation_id;
 
-    let name = $('#edit_name').val();
-    let address = $('#edit_address').val();
-    let nationality = $('#edit_nationality').val();
-    let email = $('#edit_email').val();
-    let phone = $('#edit_phone').val();
-    let bookingType = $('#edit_bookingType').val();
-    let remarks = $('#edit_remarks').val();
+        const myData = {
+            "new_room" : selectedRooms,
+            "check_in_date": date_convert[0],
+            "check_out_date": date_convert[1]
+        }
+        
+        store_data(myUrl, myData).then(async response => {
+            var room_category = response.data.data.reservation_details;
+            var get_last_room = room_category[room_category.length - 1]
+            var category_id = get_last_room.room_details.room_category_id;
+            
+            if (response && response.data.length == 0) {
+                toaster("Room not available!", "error");
+            }else{
+                toaster("Add room succefully update!", "success");
+                liveReload(category_id);
+                $('#edit_booking').modal('hide')
+            }
+        })
 
-    const myUrl = `/api/reservations/${reservation_id}`;
+    }else if(trans_type == "transfer_room_update"){
+        var room_id = $('#edit_room_id').val()
+        const myUrl = `/api/reservations/change-room/`+reservation_id;
 
-    const myData = {
-        name: name,
-        email: email,
-        address: address,
-        phone: phone,
-        nationality: nationality,
-        type: bookingType,
-        check_in_date: start_book,
-        check_out_date: end_book,
-        category_id: selectedCategory,
-        room: selectedRooms,
-        remarks: remarks
-    };
+        const myData = {
+            "old_room":room_id,
+            "new_room" : selectedRooms,
+            "check_in_date": date_convert[0],
+            "check_out_date": date_convert[1]
+        }
+        
+        store_data(myUrl, myData).then(async response => {
+            var room_category = response.data.data.reservation_details;
+            var get_last_room = room_category[room_category.length - 1]
+            var category_id = get_last_room.room_details.room_category_id;
+            
+            if (response && response.data.length == 0) {
+                toaster("Room not available!", "error");
+            }else{
+                
+                toaster("Transfer room succefully update!", "success");
+                liveReload(category_id);
+                $('#edit_booking').modal('hide')
+            }
+        })
+    }else{
+        let name = $('#edit_name').val();
+        let address = $('#edit_address').val();
+        let nationality = $('#edit_nationality').val();
+        let email = $('#edit_email').val();
+        let phone = $('#edit_phone').val();
+        let bookingType = $('#edit_bookingType').val();
+        let remarks = $('#edit_remarks').val();
+        let room_id = $('#edit_room_id').val();
+        let status = $("#booking_status").text();
+        
+        
+        const myUrl = `/api/reservations/${reservation_id}`;
 
-    console.log("Updating Reservation:", myData);
-
-    update_data(myUrl, myData).then(response => {
-        toaster("Reservation successfully updated!", "success");
-        liveReload();
-    }).catch(error => {
-        console.error("Failed to update reservation:", error);
-        toaster("Failed to update reservation!", "error");
-    });
+        const myData = {
+            "reservation" : {
+            "name": name,
+            "email": email,
+            "address": address,
+            "phone": phone,
+            "nationality": nationality,
+            "type": bookingType,
+            "remarks": remarks
+            },
+            "room" : {
+                "room_id" : room_id,
+                "check_in_date": start_book,
+                "check_out_date": end_book,
+                "status" : status == "booked"?"reserved":status
+            }
+        };
+        
+        update_data(myUrl, myData).then(async response => {
+            const textbox = document.getElementById("edit_daterange");
+            textbox.disabled = true;
+            var category_id = response.data.category_id;
+            
+            if (response && response.data.length == 0) {
+                $('#error_checkin').text(response.message)
+                toaster("Room not available!", "error");
+            }else{
+                toaster("Reservation successfully updated!", "success");
+                liveReload(category_id);
+                $('#edit_booking').modal('hide')
+            }
+        })
+    }
+    
 }
 
 
 
-async function liveReload(){
+async function liveReload(category_id){
     cachedBookings = await get_all_booking(); // Refresh the cached bookings
     const today = new Date();
     const initialMonth = today.toISOString().slice(0, 7); // Format as YYYY-MM
-    await loadCalendar(initialMonth + "-01"); // Refresh the calendar
-    $('#edit_booking').modal('hide')
+    await loadCalendar(initialMonth + "-01",category_id); // Refresh the calendar
 }
 
 function loadNationalities(){
@@ -680,22 +802,25 @@ function loadNationalities(){
     });
 }
 
+
 $(document).ready(() => {
     const today = new Date();
     const initialMonth = today.toISOString().slice(0, 7); // Format as YYYY-MM
     $("#datePicker").val(initialMonth);
+    selected_category = 0
 
     const debouncedLoadCalendar = debounce(date => loadCalendar(date + "-01"), 300);
 
     // Initialize calendar
-    loadCalendar(initialMonth + "-01");
+    loadCalendar(initialMonth + "-01",selected_category);
 
     // Reload calendar on date picker change
     $("#datePicker").on("change", function () {
         debouncedLoadCalendar($(this).val());
     });
-    loadRoom();
+    
     loadNationalities();
+    loadCategory();
 });
 
 $(function() {
@@ -704,6 +829,6 @@ $(function() {
     }, function(start, end, label) {
         start_book = start.format('YYYY-MM-DD')
         end_book = end.format('YYYY-MM-DD')
-        console.log("A new date selection was made: " + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD'));
+        // console.log("A new date selection was made: " + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD'));
     });
 });

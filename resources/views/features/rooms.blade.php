@@ -30,9 +30,16 @@
                     <th>Action</th>
                 </thead>
                 <tbody>
-                   
                 </tbody>
             </table>
+        </div>
+    </div>
+
+    <!-- Pagination Buttons -->
+    <div class="row mt-3">
+        <div class="col text-center">
+            <button class="btn btn-secondary me-2" onclick="prev_page()">Prev</button>
+            <button class="btn btn-secondary" onclick="next_page()">Next</button>
         </div>
     </div>
 </div>

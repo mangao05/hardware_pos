@@ -19,6 +19,7 @@ function get_all_record(myUrl){
 async function store_data(myUrl, myData){
     try {
         const response = await axios.post(myUrl, myData);
+        return response
     } catch (error) {
         if (error.response) {
             return error.response.data

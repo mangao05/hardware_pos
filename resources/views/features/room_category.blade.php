@@ -10,7 +10,7 @@
 @endsection
 
 @section('content')
-<div class="container">
+<div class="container-fluid">
     <div class="row border position-relative header-content" style="background-image: url('../img/header/header2.jpeg');">
     
     </div>
