@@ -8,6 +8,7 @@ use App\Http\Controllers\AgentController;
 use App\Http\Controllers\HistoryLogController;
 use App\Http\Controllers\LeisureController;
 use App\Http\Controllers\PackageController;
+use App\Http\Controllers\ReportsController;
 use App\Http\Controllers\RestoTableController;
 use App\Http\Controllers\Rooms\RoomController;
 use App\Http\Controllers\ReservationController;
@@ -60,3 +61,5 @@ Route::post('/reservation-rooms/{id}/addon', [ReservationDetailsController::clas
 Route::put('/reservation-rooms/addon/{id}', [ReservationDetailsController::class, 'updateAddon']);
 Route::delete('/reservation-rooms/addon/{id}', [ReservationDetailsController::class, 'deleteAddon']);
 Route::get('/reservation-rooms/{id}/addons', [ReservationDetailsController::class, 'listAddons']);
+
+Route::get('reports/rooms-status', [ReportsController::class, 'room_statuses']);
