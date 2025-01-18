@@ -44,10 +44,17 @@
                             <div class="col-md-6">
                                 <label for="daterange" class="form-label">Room List:</label>
 
-                                <div >
-                                    <span id="edit_current_room">
+                                <div class="row">
+                                    <div class="col">
+                                        <span id="edit_current_room">
 
-                                    </span>
+                                        </span>
+                                    </div>
+                                    <div class="col-md-6">
+                                        Guest:<input type="number" class="form-control">
+                                    </div>
+                                    
+                                    
                                 </div>
                                 <hr>
                                 <div>
@@ -134,7 +141,7 @@
                         <div class="row">
                             <div class="col">
                                
-                                <table class="table" style="font-size: 12px">
+                                <table class="table" id="history_logs" style="font-size: 12px">
                                     <thead>
                                         <th>Type</th>
                                         <th>User</th>
@@ -142,7 +149,7 @@
                                         <th>Date</th>
                                     </thead>
                                     <tbody>
-                                        <tr>
+                                        {{-- <tr>
                                             <td>Book</td>
                                             <td>Juan Dela Cruz</td>
                                             <td>Check-In</td>
@@ -153,7 +160,7 @@
                                             <td>Juan Dela Cruz</td>
                                             <td>Added Cottage Guest</td>
                                             <td>Jan 20, 2025 5:30PM</td>
-                                        </tr>
+                                        </tr> --}}
                                     </tbody>
                                 </table>
                                 
@@ -168,12 +175,22 @@
             <div class="modal-footer modal-color modal-padding">
                 <button 
                     type="button" 
-                    class="btn btn-success" 
-                    onclick="view_summary()">
+                    class="btn btn-success btn_view_summary" 
+                    data-reservation_details=""
+                    onclick="view_summary()"
+                >
                     <img src="{{ asset('img/icon/log-out.png') }}" class="icon-style" alt="">View Summary
                 </button>
-                <button type="button" class="btn btn-danger btn_edit" onclick=""><img src="{{ asset('img/icon/log-out.png') }}" class="icon-style" alt="">Early Check-out</button>
-                <button type="button" class="btn button-success btn_edit" onclick="checkOut()"><img src="{{ asset('img/icon/left.png') }}" class="icon-style" alt="">Check-out</button>
+                <button 
+                    type="button" 
+                    style="display: none"
+                    class="btn btn-success btn_checkin" 
+                    onclick="change_status('checkin')">
+                    <img src="{{ asset('img/icon/log-out.png') }}" class="icon-style" alt="">Check-In
+                </button>
+
+                <button type="button" class="btn btn-danger btn_edit btn_early_check_out" style="display: none" onclick=""><img src="{{ asset('img/icon/log-out.png') }}" class="icon-style" alt="">Early Check-out</button>
+                <button type="button" class="btn button-success btn_edit btn_check_out" style="display: none" onclick="change_status('checkout')"><img src="{{ asset('img/icon/left.png') }}" class="icon-style" alt="">Check-out</button>
                 {{-- <button type="button" class="btn btn-info" onclick="">Check-In</button> --}}
                 <button type="button" class="btn button-success btn_edit" onclick="extend_book()"><img src="{{ asset('img/icon/add.png') }}" class="icon-style" alt="">Extend</button>
                 <button type="button" class="btn button-success btn_edit" onclick="add_room()"><img src="{{ asset('img/icon/plus.png') }}" class="icon-style" alt="">Add New Room</button>

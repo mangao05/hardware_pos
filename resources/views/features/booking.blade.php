@@ -177,7 +177,7 @@ textarea.form-control {
 
 .summary_label{
     text-align: left;
-    width:20%;
+    width:40%;
     font-size: 14px
 }
 
@@ -224,7 +224,8 @@ textarea.form-control {
 @endsection
 
 @section('js')
-    <script src="{{ asset('js/features/booking.js') }}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.11.8/dayjs.min.js"></script>
     <script src="{{ asset('js/features/booking-js/booking_action.js') }}"></script>
+    <script src="{{ asset('js/features/booking.js') }}"></script>
     <script src="{{ asset('js/helper/app_helper.js') }}"></script>
 @endsection

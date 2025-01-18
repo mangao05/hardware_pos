@@ -13,6 +13,8 @@ use App\Http\Controllers\Rooms\RoomController;
 use App\Http\Controllers\Authentication\Logout;
 use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\Rooms\RoomCategoryController;
+use App\Http\Controllers\ReportsController;
+use App\Http\Controllers\HistoryLogController;
 
 /*
 |--------------------------------------------------------------------------
@@ -130,3 +132,6 @@ Route::resource('reservations', ReservationController::class)->only([
     'update',
     'destroy'
 ]);
+
+Route::get('history-logs', [HistoryLogController::class, 'list']);
+Route::get('reports/rooms-status', [ReportsController::class, 'room_statuses']);

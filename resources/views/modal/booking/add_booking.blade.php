@@ -23,13 +23,14 @@
                                 <div>
                                     <label for="daterange" class="form-label">Check-in Date:</label>
                                     <input type="text" name="daterange" id="daterange" class="form-control" placeholder="Select date range" />
+                                    <small id="date_error" class="text-danger"></small>
                                 </div>
                                 <div>
                                     <label for="room" class="form-label">Category:</label>
                                     <select class="form-control room_list category_list" id="category" data-live-search="true">
                                         
                                     </select>
-                                    <small id="room_error" class="text-danger"></small>
+                                    <small id="room_category_error" class="text-danger"></small>
                                 </div>
                                 <div class="select_room_div" style="display: none">
                                     <label for="room" class="form-label">Room:</label>
@@ -123,7 +124,7 @@
 
             <!-- Modal Footer -->
             <div class="modal-footer modal-color modal-padding">
-                <button type="button" class="btn btn-secondary" onclick="close_add_bookig()" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-secondary" onclick="" data-bs-dismiss="modal">Close</button>
                 <button type="button" class="btn btn-primary" onclick="add_booking()">Create</button>
                 {{-- <button type="button" class="btn btn-primary" id="getCheckedRooms">Create</button> --}}
             </div>

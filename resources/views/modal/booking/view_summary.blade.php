@@ -1,13 +1,13 @@
 <div class="modal fade" id="view_summary_modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-fullscreen">
   <div class="modal-content">
-    <div class="modal-header">
+    <div class="modal-header text-white modal-color">
       <h5 class="modal-title" id="exampleModalLabel">Payment</h5>
       <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
     </div>
     <div class="modal-body summary-div">
       <div class="row">
-        <div class="col-md-3 border">
+        <div class="col border">
           <div class="p-3">
             <strong>
               Room List
@@ -35,7 +35,7 @@
         </div>
         <div class="col-md-6 border p-4">
           <div class="row border card">
-            <div class="col" id="printableArea">
+            <div class="col p-4" id="printableArea">
               <img src="{{ asset('img/pantukan_logo.png') }}" class="mt-3" style="width: 70px" alt="">
               <hr>
               <div class="row">
@@ -48,16 +48,16 @@
                   <table>
                     <tbody>
                       <tr>
-                        <td class="summary_label">Name:</td><td style="text-align: left">Khenneth S Alaiza</td>
+                        <td class="summary_label">Name:</td><td style="text-align: left;font-size:14px"><span id="transaction_name"></span></td>
                       </tr>
                       <tr>
-                        <td class="summary_label">Email:</td><td style="text-align: left">khenneth.alaiza@gmail.com</td>
+                        <td class="summary_label">Email:</td><td style="text-align: left;font-size:14px"><span id="trans_email"></span></td>
                       </tr>
                       <tr>
-                        <td class="summary_label">Contact No:</td><td style="text-align: left">09171232958</td>
+                        <td class="summary_label">Contact No:</td><td style="text-align: left;font-size:14px"><span id="trans_phone"></span></td>
                       </tr>
                       <tr>
-                        <td class="summary_label">Address:</td><td style="text-align: left">Tanza Cavite</td>
+                        <td class="summary_label">Address:</td><td style="text-align: left;font-size:14px"><span id="trans_address"></span></td>
                       </tr>
                     </tbody>
                   </table>
@@ -74,9 +74,6 @@
                         </tr>
                         <tr>
                           <td class="summary_label">Checkout Date:</td><td style="text-align: left">Jan 27, 2025</td>
-                        </tr>
-                        <tr>
-                          <td class="summary_label">Total Pax:</td><td style="text-align: left">2</td>
                         </tr>
                         <tr>
                           <td class="summary_label">Total Guests(s):</td><td style="text-align: left">0</td>
@@ -112,19 +109,88 @@
                   </small>
                 </div>
               </div>
+              <hr>
+              <div class="row rules_regulation" style="display: none">
+                <div class="col" style="font-size: 12px">
+                  <p><strong>TO OUR VALUED GUESTS</strong></p>
+                  <p>
+                    Thank you for choosing Water World Pantukan Beach Resort! It is our main priority to meet your expectations. We would like to remind you of our minimal Rules and Regulations to ensure a satisfying stay:
+                  </p>
+                  
+                  <ol style="margin-left: 15px;">
+                    <li><strong>Liability for Personal Injury or Death:</strong> The resort is not liable for any personal injury or death arising due to the sickness or negligence of a guest.</li>
+                    <li><strong>Security for Valuables:</strong> A safety deposit box is available at the Cashier Area. The resort is not liable for the loss of valuables left in the room or anywhere on the resort premises.
+                    </li>
+                    <li><strong>Cancellation and Change Policy:</strong></li>
+                      <ul style="margin-left: 55px;">
+                        <li><strong>Cancellation Fee:</strong> Guests may cancel or change their reservation up to 48 hours before the scheduled arrival time. A cancellation fee equivalent to 20% of the total booking amount will be deducted from any deposit already paid.</li>
+                        <li>
+                          <strong>Non-Refundable Within 48 Hours:</strong>
+                           Any cancellations made within 48 hours of the arrival date are non-refundable. Changes to the reservation may be possible, subject to room availability and potential additional charges.
+
+                        </li>
+                      </ul>
+                    <li><strong>Room Occupancy:</strong> Each room is intended for 2 persons with a maximum allowance of 4 persons. An additional charge of PHP 450 will be applied for each excess person.
+                    </li>
+                    <li><strong>Check-In and Check-Out Times:</strong> Check-in time is at 2:00 PM, and check-out time is at 11:00 AM. An additional fee of PHP 350 per hour is charged for late check-outs. Stays extending beyond 4:00 PM will incur a full night’s charge.
+                    </li>
+                    <li><strong>Outside Food and Drink:</strong> Outside food and drinks are allowed; however, a corkage fee of PHP 1000 may apply for bringing outside food into the rooms.</li>
+                    <li>
+                      <strong>External Food Delivery:</strong>
+                       A corkage fee of PHP 500 is applied per order for any food delivered from outside the resort.
+                    </li>
+                    <li>
+                      <strong>Lost Key Fee:</strong>
+                       A fee of PHP 1,000 will be charged for lost keys.
+                    </li>
+                    <li>
+                      <strong>Damage to Property:</strong>
+                       Guests will be charged accordingly for any damage caused to linens or other property, including stains from henna, ink, dye, oil, or similar substances.
+                    </li>
+                    <li>
+                      <strong>Non-refundable Package Inclusions:</strong>
+                       Unavailed package inclusions are non-refundable.
+                    </li>
+                    <li>
+                      <strong>Meal Times:</strong>
+                       Breakfast is served from 6:00 AM to 9:00 AM.
+                    </li>
+                    <li>
+                      <strong>Pet Policy:</strong>
+                       Guests are allowed to bring pets, subject to a fee of PHP 300 per pet. Service animals are exempt from this fee and must be accompanied by valid identification.
+                    </li>
+                  </ol>
+                  
+                  <p>
+                    By signing below, I/we agree to abide by the safety rules and regulations imposed by the management. Should any accident or incident occur while on the premises, I/we voluntarily release and discharge Water World Pantukan Beach Resort from any and all liabilities, whether resulting in bodily injury or loss of life. I/we also undertake to refrain from initiating any legal actions against the resort, its owners, officers, and employees, in connection with such incidents.
+                  </p>
+                  <p>
+                    I have reviewed and accept the terms and conditions of my stay.
+                  </p>
+                  <p>
+                    <strong>
+                      Check-In Staff Signature: _____________________
+                      <br>
+                      Customer Signature: _____________________
+                    </strong>
+                    
+                  </p>
+                  <p>
+                    <strong>Disclaimer: This Form is Not an Official Receipt</strong>
+                  </p>
+                  <p>
+                    <strong>Please note:</strong>
+                     This document is not an official receipt. It is provided for reference and informational purposes only and does not represent a formal acknowledgment of payment. For official transactions or receipts, please obtain the appropriate documentation from the authorized source.
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
         </div>
-        <div class="col-md-3">
-          <div class="row">
-            <div class="col">
-              test
-            </div>
-          </div>
-        </div>
+       
       </div>
     </div>
-    <div class="modal-footer">
+    <div class="modal-footer modal-color">
       <button type="button" class="btn btn-secondary" onclick="{$('#view_summary_modal').modal('hide')}" data-bs-dismiss="modal">Close</button>
       <button type="button" onclick="printDiv('printableArea')" class="btn btn-primary">Save changes</button>
     </div>
