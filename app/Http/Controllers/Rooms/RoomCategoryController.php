@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Rooms;
 
+use Carbon\Carbon;
 use App\Models\RoomCategory;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -47,7 +48,7 @@ class RoomCategoryController extends Controller
     public function show($id)
     {
         try {
-            if($id < 1) {
+            if ($id < 1) {
                 $roomCategory = RoomCategory::first();
             } else {
                 $roomCategory = RoomCategory::find($id);
@@ -98,5 +99,23 @@ class RoomCategoryController extends Controller
                 'error' => $e->getMessage(),
             ], 500);
         }
+    }
+
+    public function getAvailableRooms(Request $request, $categoryId)
+    {
+        $checkIn = $request->has('start') ? Carbon::parse($request->start) : Carbon::now();
+        $checkOut = $request->has('end') ? Carbon::parse($request->end) : Carbon::now()->addDays(5);
+
+        $category = RoomCategory::with('rooms')->findOrFail($categoryId);
+
+        $availableRooms = $category->rooms()->whereDoesntHave('reservationRoomDetails', function ($query) use ($checkIn, $checkOut) {
+            $query->where(function ($query) use ($checkIn, $checkOut) {
+                $query->where('check_in_date', '<', $checkOut)
+                    ->where('check_out_date', '>', $checkIn)
+                    ->where('status', 'checkin'); // Adjust 'checkin' to match your status logic
+            });
+        })->where('availability', true)->get();
+
+        return response()->json($availableRooms);
     }
 }

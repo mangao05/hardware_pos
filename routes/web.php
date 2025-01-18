@@ -7,14 +7,15 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\AgentController;
 use App\Http\Controllers\LeisureController;
 use App\Http\Controllers\PackageController;
+use App\Http\Controllers\ReportsController;
 use App\Http\Controllers\Authentication\Login;
+use App\Http\Controllers\HistoryLogController;
 use App\Http\Controllers\RestoTableController;
 use App\Http\Controllers\Rooms\RoomController;
 use App\Http\Controllers\Authentication\Logout;
 use App\Http\Controllers\ReservationController;
+use App\Http\Controllers\ReservationDetailsController;
 use App\Http\Controllers\Rooms\RoomCategoryController;
-use App\Http\Controllers\ReportsController;
-use App\Http\Controllers\HistoryLogController;
 
 /*
 |--------------------------------------------------------------------------
@@ -133,5 +134,19 @@ Route::resource('reservations', ReservationController::class)->only([
     'destroy'
 ]);
 
+Route::put('reservations/{reservation}/update-status/{room}', [ReservationController::class, 'updateReservationRoomStatus']);
+Route::post('reservations/change-room/{reservation}', [ReservationController::class, 'changeReservationRoom']);
+
+Route::delete('reservation-rooms/{id}', [ReservationDetailsController::class, 'deleteReservationRoomDetails']);
+
 Route::get('history-logs', [HistoryLogController::class, 'list']);
+Route::post('/reservation-rooms/{id}/addon', [ReservationDetailsController::class, 'addAddon']);
+Route::put('/reservation-rooms/addon/{id}', [ReservationDetailsController::class, 'updateAddon']);
+Route::delete('/reservation-rooms/addon/{id}', [ReservationDetailsController::class, 'deleteAddon']);
+Route::get('/reservation-rooms/{id}/addons', [ReservationDetailsController::class, 'listAddons']);
+
 Route::get('reports/rooms-status', [ReportsController::class, 'room_statuses']);
+
+
+Route::get('/categories/{category}/available-rooms', [RoomCategoryController::class, 'getAvailableRooms'])
+    ->name('categories.available-rooms');

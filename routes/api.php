@@ -63,3 +63,7 @@ Route::delete('/reservation-rooms/addon/{id}', [ReservationDetailsController::cl
 Route::get('/reservation-rooms/{id}/addons', [ReservationDetailsController::class, 'listAddons']);
 
 Route::get('reports/rooms-status', [ReportsController::class, 'room_statuses']);
+Route::post('reservations/{reservation}/checkout', [ReservationController::class, 'checkout']);
+
+Route::get('/categories/{category}/available-rooms', [RoomCategoryController::class, 'getAvailableRooms'])
+    ->name('categories.available-rooms');
