@@ -15,17 +15,18 @@ class HistoryLogController extends Controller
             $historyLogs = $historyLogs->where('reservation_id', request()->get('reservation_id'));
         }
 
-        $historyLogs = $historyLogs->get()
-            ->map(function ($log) {
-                return collect([
-                    'action' => $log->action,
-                    'user' => $log->user_name,
-                    'reservation_id' => $log->reservation_id,
-                    'room_id' => $log->room_id,
-                    'message' => $log->message,
-                    'log_id' => $log->log_id
-                ]);
-            });
+        $historyLogs = $historyLogs->get();
+            // ->map(function ($log) {
+            //     return collect([
+            //         'action' => $log->action,
+            //         'user' => $log->user_name,
+            //         'reservation_id' => $log->reservation_id,
+            //         'room_id' => $log->room_id,
+            //         'message' => $log->message,
+            //         'log_id' => $log->id,
+
+            //     ]);
+            // });
         return $historyLogs;
     }
 }
