@@ -22,7 +22,7 @@ class LogHelper
     ) {
         $data = [
             'user_id' => Auth::id(),
-            'user_name' => Auth::user()->name ?? 'Guest',
+            'user_name' => Auth::user()->username ?? 'Guest',
             'reservation_id' => $reservation['reservation_id'],
             'room_id' => self::getData($reservation, 'room_id'),
             'action' => $reservation['action'],
