@@ -3,10 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\Leisure;
+use App\Models\Reservation;
 use Illuminate\Http\Request;
 use App\Models\RoomReservationAddon;
 use App\Http\Traits\ResponseFormatter;
 use App\Models\ReservationRoomDetails;
+use App\Exceptions\RoomUnavailableException;
 
 class ReservationDetailsController extends Controller
 {
@@ -149,6 +151,43 @@ class ReservationDetailsController extends Controller
             }
 
             return $this->success($addons, 'Addons retrieved successfully.');
+        } catch (\Exception $e) {
+            return $this->error([], $e->getMessage());
+        }
+    }
+
+    public function extendRoom(Request $request, ReservationRoomDetails $reservationRoomDetails)
+    {
+        try {
+            $unavailableRooms = Reservation::checkRoomAvailability([$reservationRoomDetails->room_id], $request->check_out_date, $request->check_out_date);
+
+            $oldData = $reservationRoomDetails->getOriginal();
+            if (!empty($unavailableRooms)) {
+                throw new RoomUnavailableException($unavailableRooms, 'The following rooms are unavailable.');
+            }
+
+            $reservationRoomDetails->update([
+                'check_out_date' => $request->check_out_date
+            ]);
+
+            $logs = [
+                'action' => 'extend_room',
+                'message' => 'Room successfully extended.',
+                'reservation_id' => $reservationRoomDetails->reservation_id,
+                'room_id' => $reservationRoomDetails->room_id,
+                'old_data' => $oldData,
+                'new_data' => $reservationRoomDetails
+
+            ];
+            
+            $reservationRoomDetails->logAction($logs);
+
+            return $this->success($reservationRoomDetails->load('reservation.addons'), 'Room extended successfully.');
+        } catch (RoomUnavailableException $e) {
+            return response()->json([
+                'error' => $e->getMessage(),
+                'unavailable_rooms' => $e->getUnavailableRooms()
+            ], 422);
         } catch (\Exception $e) {
             return $this->error([], $e->getMessage());
         }
