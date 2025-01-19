@@ -93,6 +93,11 @@ class Reservation extends Model
         if (!empty($unavailableRooms)) {
             throw new RoomUnavailableException($unavailableRooms, 'The following rooms are unavailable.');
         }
+
+        if(! empty($data['addons'])) {
+            $reservation->addons()->delete();
+            $reservation->attachAddon($reservation->id, $data['addons']);
+        }
         $oldData = $reservation->load('reservationDetails');
         $reservation->update($data['reservation']);
 

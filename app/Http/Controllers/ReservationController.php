@@ -47,7 +47,7 @@ class ReservationController extends Controller
     {
         try {
             $reservation = Reservation::findOrFail($id);
-            return $this->success($reservation->load('reservationDetails'));
+            return $this->success($reservation->load('reservationDetails','addons'));
         } catch (\Exception $e) {
             return $this->error([], $e->getMessage());
         }
@@ -79,7 +79,7 @@ class ReservationController extends Controller
             $updatedReservation = $reservation->updateWithDetails($reservation, $request->all());
 
             DB::commit();
-            return $this->success($updatedReservation->load('reservationDetails'), 'Reservation updated successfully!', 200);
+            return $this->success($updatedReservation->load('reservationDetails','addons'), 'Reservation updated successfully!', 200);
         } catch (RoomUnavailableException $e) {
             return response()->json([
                 'error' => $e->getMessage(),
@@ -105,7 +105,7 @@ class ReservationController extends Controller
             $reservation->logAction($logs);
             $reservation->delete();
             DB::commit();
-            return $this->success($reservation->load('reservationDetails'), 'Reservation deleted successfully!');
+            return $this->success($reservation->load('reservationDetails','addons'), 'Reservation deleted successfully!');
         } catch (\Exception $e) {
             DB::rollBack();
             return $this->error([], $e->getMessage());
