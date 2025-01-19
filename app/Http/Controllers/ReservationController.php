@@ -156,8 +156,8 @@ class ReservationController extends Controller
             if ($request->has('old_room')) {
                 ReservationRoomDetails::where('reservation_id', $reservation->id)
                     ->where('room_id', $request->old_room)
-                    ->first();
-                $reservation->delete();
+                    ->first()
+                    ->delete();
             }
 
             $reservation->addReservationDetails($request->new_room, $request->check_in_date, $request->check_out_date);
