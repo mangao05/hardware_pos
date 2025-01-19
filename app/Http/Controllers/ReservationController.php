@@ -59,7 +59,7 @@ class ReservationController extends Controller
             DB::beginTransaction();
             $reservation = Reservation::createWithDetails($request->all());
             DB::commit();
-            return $this->success($reservation->load('reservationDetails'), 'Reservation created successfully!', 201);
+            return $this->success($reservation->load('reservationDetails', 'addons'), 'Reservation created successfully!', 201);
         } catch (RoomUnavailableException $e) {
             return response()->json([
                 'error' => $e->getMessage(),
@@ -186,5 +186,10 @@ class ReservationController extends Controller
             DB::rollBack();
             return $this->error([], $e->getMessage());
         }
+    }
+
+    public function checkout(Request $request, Reservation $reservation)
+    {
+        dd($reservation);
     }
 }

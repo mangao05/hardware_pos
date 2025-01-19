@@ -19,6 +19,12 @@ class Reservation extends Model
     {
         return $this->hasMany(ReservationRoomDetails::class);
     }
+
+    public function addons()
+    {
+        return $this->hasMany(RoomReservationAddon::class, 'reservation_id');
+    }
+
     /**
      * Create reservation with Room Details
      *
@@ -38,12 +44,10 @@ class Reservation extends Model
             throw new RoomUnavailableException($unavailableRooms, 'The following rooms are unavailable.');
         }
 
-        $reservationData = Arr::except($data, ['check_in_date', 'check_out_date', 'room_id', 'room', 'guests']);
-
+        $reservationData = Arr::except($data, ['check_in_date', 'check_out_date', 'room_id', 'room', 'guests', 'addons']);
         $reservation = self::create($reservationData);
-
         $reservation->addReservationDetails($rooms, $checkInDate, $checkOutDate, 'Created Reservation');
-
+        $reservation->attachAddon($reservation->id, $data['addons']);
         $logs = [
             'action' => 'create',
             'message' => 'Created Room Reservation',
@@ -55,6 +59,23 @@ class Reservation extends Model
 
         return $reservation;
     }
+
+    public function attachAddon($reservation_id, $addons)
+    {
+        foreach($addons as $addon) {
+            $leisure = Leisure::find($addon['addon_id']);
+            $addonData = [
+                'addon_id' => $addon['addon_id'],
+                'addon_price' => $addon['addon_price'],
+                'addon_name' => $leisure->item_name,
+                'addon_details' => $leisure,
+                'reservation_id' => $reservation_id
+            ];
+            
+            RoomReservationAddon::create($addonData);
+        }
+    }
+
     /**
      * Update reservation with Room Details
      *
