@@ -8,7 +8,7 @@
 
 @section('content')
 <div class="overview-boxes">
-  <div class="box">
+  {{-- <div class="box">
     <div class="right-side">
       <div class="box-topic">Total Order</div>
       <div class="number">40,876</div>
@@ -168,7 +168,55 @@
       <span class="price">$1245</span>
     </li>
     </ul>
+  </div> --}}
+
+<style scoped>
+
+</style>
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="col">
+      {{-- <canvas id="myChart" style="width:100%;max-width:700px"></canvas> --}}
+    </div>
+  </div>
+  <div class="row">
+    <div class="col">
+      <div>
+        <strong>
+          Room Categories
+        </strong>
+      </div>
+      <div class="row">
+        <div class="col-2 border">
+          <div class="">
+              DLX
+          </div>
+        </div>
+        <div class="col-2 border">
+          test
+        </div>
+        <div class="col-2 border">
+          test
+        </div>
+        <div class="col-2 border">
+          test
+        </div>
+        <div class="col-2 border">
+          test
+        </div>
+        <div class="col-2 border">
+          test
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 
+
+@endsection
+
+@section('js')
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+  <script src="{{ asset('js/dashboard/chart.js') }}"></script>
 @endsection

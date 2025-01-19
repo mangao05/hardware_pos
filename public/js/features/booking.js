@@ -2,6 +2,14 @@
 let cachedRooms = null;
 let cachedBookings = null;
 let selected_category = null;
+let all_add_ons = null;
+
+
+async function loadallAddOns(){
+    myUrl = "/api/leisures"
+    res = await get_data(myUrl);
+    all_add_ons = res.data.leisures;
+}
 
 
 // Debounce function to optimize frequent calls
@@ -47,6 +55,21 @@ function loadDate(startDate, extendDays = 2) {
 }
 
 async function handleReservationClick(reservation) {
+    
+    
+    if(reservation.add_ons){
+        reservation.add_ons.forEach(element => {
+            console.log(element);
+            selectedAddOns.push({
+                "addon_id": element.addon_id, 
+                "qty": element.qty, 
+                "addon_price": element.addon_price * element.qty
+            })
+        });
+    }
+    
+    
+    
     selectedRooms = [];
     const startDate = reservation.start_date ? new Date(reservation.start_date) : new Date();
     const endDate = reservation.end_date ? new Date(reservation.end_date) : new Date();
@@ -79,8 +102,6 @@ async function handleReservationClick(reservation) {
     $('#edit_current_room').text(reservation.room)
     $('#booking_status').text(reservation.status)
     $('#reservation_room_details_id').val(reservation.reservation_room_details_id)
-
-    $(".btn_view_summary").data("reservation_details", reservation);
 
     $('#edit_room_list_display').empty();
 
@@ -185,6 +206,8 @@ async function loadCalendar(startDate,category_id) {
             tbodyRows.push(emptyRow);
         } else {
             roomReservations.forEach((reservations, index) => {
+                console.log(reservations);
+                
                 let row = "<tr>";
                 if (index === 0) {
                     row += `<td class="border sticky-left" rowspan="${roomReservations.length}">${room}</td>`;
@@ -365,7 +388,7 @@ async function loadCategory(category_id = null, checkedRoomId = null) {
     }
 
     // Handle category change
-    $(".category_list").on("change", function () {
+    $(".category_list").on("change",async function () {
         const selectedOption = $(this).find("option:selected");
         selectedCategory = selectedOption.attr("id");
         const selectedData = JSON.parse(selectedOption.attr("data_list"));
@@ -380,67 +403,57 @@ async function loadCategory(category_id = null, checkedRoomId = null) {
             $('.room_list_data').append(row);
         });
 
-        $('.select_room_div').show()
+
         attachRoomCheckboxEvent(); // Attach event listener to room checkboxes
         liveReload(selectedCategory)
         selected_category = selectedCategory
+        console.log(end_book);
+        
+        await load_available_room_per_category(selected_category,start_book, end_book)
     });
 
-    $('.room_list_selection').on("change",function(){
-        const selectedOption = $(this).find("option:selected");
-        const roomData = JSON.parse(selectedOption.attr("data"));
-        const category_name = category_list_data.find(category => category.id === roomData.room_category_id)
+    // $('.room_list_selection').on("change",function(){
+    //     const selectedOption = $(this).find("option:selected");
+    //     const roomData = JSON.parse(selectedOption.attr("data"));
+    //     const category_name = category_list_data.find(category => category.id === roomData.room_category_id)
 
-        const isRoomAlreadySelected = selectedRooms.some(room => room.room_id === roomData.id);
+    //     const isRoomAlreadySelected = selectedRooms.some(room => room.room_id === roomData.id);
         
-        if (isRoomAlreadySelected) {
-            toaster("This room is already selected.!","error")
-            return; 
-        }
+    //     if (isRoomAlreadySelected) {
+    //         toaster("This room is already selected.!","error")
+    //         return; 
+    //     }
 
-        selectedRooms.push({
-            "room_id":roomData.id,
-            "guest":0
-        })
+    //     selectedRooms.push({
+    //         "room_id":roomData.id,
+    //         "guest":0
+    //     })
         
-        const row = `
-            <tr data-room-id="${roomData.id}">
-                <td class="table-custome-align">${roomData.name}(${category_name.display_name})<small class="text-danger" id="room_${roomData.id}"></small></td>
-                <td class="table-custome-align"><input class="form-control" name="guests[]" type="text"></td>
-                <td class="table-custome-align"><badge class="badge bg-danger remove-room" type="button" name="guests[]">X</badge></td>
-            </tr>
-        `
-        $('.room_list_display tbody').append(row)
+    //     const row = `
+    //         <tr data-room-id="${roomData.id}">
+    //             <td class="table-custome-align">${roomData.name}(${category_name.display_name})<small class="text-danger" id="room_${roomData.id}"></small></td>
+    //             <td class="table-custome-align"><input class="form-control" name="guests[]" type="text"></td>
+    //             <td class="table-custome-align"><badge class="badge bg-danger remove-room" type="button" name="guests[]">X</badge></td>
+    //         </tr>
+    //     `
+    //     $('.room_list_display tbody').append(row)
 
-        // edit part 
-        if(trans_type == "add_room_update"){
-            const editrow = `
-                <div><small><span class="badge bg-danger">X</span>${roomData.name}(room category)</small></div>
-            `
-            $('#edit_room_list_display').append(editrow)
-        }
+    //     // edit part 
+    //     if(trans_type == "add_room_update"){
+    //         const editrow = `
+    //             <div><small><span class="badge bg-danger">X</span>${roomData.name}(room category)</small></div>
+    //         `
+    //         $('#edit_room_list_display').append(editrow)
+    //     }
 
-        if(trans_type == "transfer_room_update"){
-            $('#edit_current_room').empty()
-            $('#edit_current_room').text(roomData.name)
-        }
+    //     if(trans_type == "transfer_room_update"){
+    //         $('#edit_current_room').empty()
+    //         $('#edit_current_room').text(roomData.name)
+    //     }
         
-    })
+    // })
 }
 
-$(document).on('click', '.remove-room', function () {
-    const row = $(this).closest('tr');
-    const roomId = row.data('room-id');
-
-    // Remove the room from selectedRooms array
-    selectedRooms = selectedRooms.filter(room => room.room_id !== roomId);
-
-    // Remove the row from the table
-    row.remove();
-
-    // Optionally, remove from the edit part as well
-    $(`#edit_room_list_display div[data-room-id="${roomId}"]`).remove();
-});
 
 function add_room(){
     const textbox = document.getElementById("edit_category");
@@ -524,20 +537,22 @@ function add_booking(){
         type: bookingType,
         check_in_date: start_book,
         check_out_date: end_book,
-        guests: rooms,
-        remarks: remarks
-    };    
+        guests: rooms_selected,
+        remarks: remarks,
+        addons:selectedAddOns
+    };   
+    
     
     if (date_book_validation(start_book)) {
         $('#date_error').text("Please select a valid start date.")
         return;
     } 
 
-    if (rooms.length == 0){
-        $('#room_list_selection').val(null)
-        $('#room_error').text("Please select at least one room.")
-        return;
-    }
+    // if (rooms.length == 0){
+    //     $('#room_list_selection').val(null)
+    //     $('#room_error').text("Please select at least one room.")
+    //     return;
+    // }
     
 
     store_data(myUrl, myData).then(async (response) => {
@@ -623,15 +638,20 @@ function update_booking() {
     var reservation_id = $('#edit_reservation_id').val()
     var date = $('#edit_daterange').val()
     var date_convert = date.split(' - ')
+    const reservation_details_id = $('#reservation_room_details_id').val()
+
+    
+    
+
     if(trans_type == "add_room_update"){
         const myUrl = `/api/reservations/change-room/`+reservation_id;
 
         const myData = {
-            "new_room" : selectedRooms,
+            "new_room" : rooms_selected,
             "check_in_date": date_convert[0],
             "check_out_date": date_convert[1]
         }
-        
+
         store_data(myUrl, myData).then(async response => {
             var room_category = response.data.data.reservation_details;
             var get_last_room = room_category[room_category.length - 1]
@@ -645,17 +665,19 @@ function update_booking() {
                 $('#edit_booking').modal('hide')
             }
         })
+        return;
 
     }else if(trans_type == "transfer_room_update"){
-        var room_id = $('#edit_room_id').val()
+        var room_id = $('#edit_room_id').val() 
         const myUrl = `/api/reservations/change-room/`+reservation_id;
 
         const myData = {
             "old_room":room_id,
-            "new_room" : selectedRooms,
+            "new_room" : rooms_selected,
             "check_in_date": date_convert[0],
             "check_out_date": date_convert[1]
         }
+        console.log(myData);
         
         store_data(myUrl, myData).then(async response => {
             var room_category = response.data.data.reservation_details;
@@ -671,6 +693,8 @@ function update_booking() {
                 $('#edit_booking').modal('hide')
             }
         })
+
+        return;
     }else{
         let name = $('#edit_name').val();
         let address = $('#edit_address').val();
@@ -687,26 +711,33 @@ function update_booking() {
 
         const myData = {
             "reservation" : {
-            "name": name,
-            "email": email,
-            "address": address,
-            "phone": phone,
-            "nationality": nationality,
-            "type": bookingType,
-            "remarks": remarks
+                "name": name,
+                "email": email,
+                "address": address,
+                "phone": phone,
+                "nationality": nationality,
+                "type": bookingType,
+                "remarks": remarks
             },
             "room" : {
                 "room_id" : room_id,
                 "check_in_date": start_book,
                 "check_out_date": end_book,
-                "status" : status == "booked"?"reserved":status
-            }
+                "status" : status == "booked"?"reserved":status,
+                "guest" : 2
+            },
+            addons:selectedAddOns
+            
         };
         
         update_data(myUrl, myData).then(async response => {
             const textbox = document.getElementById("edit_daterange");
             textbox.disabled = true;
-            var category_id = response.data.category_id;
+            var category_id = null;
+           
+            response.data.reservation_details.forEach(element => {
+                category_id = element.room_details.room_category_id
+            });
             
             if (response && response.data.length == 0) {
                 $('#error_checkin').text(response.message)
@@ -948,6 +979,7 @@ $(document).ready(() => {
     
     loadNationalities();
     loadCategory();
+    loadallAddOns()
 });
 
 $(function() {
@@ -982,3 +1014,4 @@ function clear_form(){
     $('#bookingType').val("")
     $('#remarks').val("")
 }
+

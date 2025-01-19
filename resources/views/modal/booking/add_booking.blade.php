@@ -32,13 +32,13 @@
                                     </select>
                                     <small id="room_category_error" class="text-danger"></small>
                                 </div>
-                                <div class="select_room_div" style="display: none">
+                                {{-- <div class="select_room_div" style="display: none">
                                     <label for="room" class="form-label">Room:</label>
                                     <select class="form-control room_list room_list_data room_list_selection" id="room_list_selection" data-live-search="true">
                                         
                                     </select>
                                     <small id="room_error" class="text-danger"></small>
-                                </div>
+                                </div> --}}
                             </div>
         
                         </div>
@@ -104,18 +104,48 @@
                     </div>
                     <div class="col-5 border">
                         <div class="">
-                            <label for="daterange" class="form-label">Room List:</label>
-                            <table class="table room_list_display">
-                                <thead>
-                                    <th class="table-custome-align">Room name</th>
-                                    <th class="table-custome-align" style="width:20px">Guests</th>
-                                    <th class="table-custome-align">Action</th>
-                                </thead>
+                            <div class="" style="min-height: 270px">
+                                <label for="daterange" class="form-label">Room List:</label>
+                                <table class="table room_list_display">
+                                    <thead>
+                                        <th class="table-custome-align">Room name</th>
+                                        <th class="table-custome-align" style="width:20px">Guests</th>
+                                        <th class="table-custome-align">Action</th>
+                                    </thead>
 
-                                <tbody>
-                                    
-                                </tbody>
-                            </table>
+                                    <tbody>
+                                        
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="">
+                                <div>
+                                    <label for="daterange" class="form-label">Add-ons:</label>
+                                    <select name="" class="form-control selected_add_ons">
+                                        <option value="" disabled selected>-- Select --</option>
+                                        <option value="Entrance">Entrance</option>
+                                        <option value="Transportation">Transportation</option>
+                                        <option value="Sports">Sports</option>
+                                        <option value="Leisures">Leisures</option>
+                                        <option value="Items">Items</option>
+                                        <option value="Corkage">Corkage</option>
+                                        <option value="Misc">Misc</option>
+                                      </select>
+                                </div>
+                                <div>
+                                    <table class="table add_ons_table">
+                                        <thead>
+                                            <th class="table-custome-align"></th>
+                                            <th class="table-custome-align" >Add-ons</th>
+                                            <th class="table-custome-align" style="width: 15%">Qty</th>
+                                            <th class="table-custome-align">Price</th>
+                                        </thead>
+                                        <tbody>
+
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

@@ -58,7 +58,7 @@
       </div>
     </div>
 
-    <div class="row mt-2">
+    <!-- <div class="row mt-2">
       <div class="col">
         <label for="">Package:</label>
         <select name="" class="form-control" id="leisures_package">
@@ -67,7 +67,7 @@
           <option value="">No</option>
         </select>
       </div>
-    </div>
+    </div> -->
 
     <div class="row mt-2">
       <div class="col">

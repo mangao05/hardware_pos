@@ -8,29 +8,60 @@
     <div class="modal-body summary-div">
       <div class="row">
         <div class="col border">
-          <div class="p-3">
-            <strong>
-              Room List
-            </strong>
-            <ul>
-              <li>Room 1</li>
-              <li>Room 2</li>
-              <li>Room 3</li>
-              <li>Room 4</li>
-            </ul>
-          </div>
+            <div class="row">
+              <div class="col">
+                <label for="">Customer:</label>
+                <input type="text" id="intial_payment" class="form-control">
+              </div>
+              <div class="col">
+                <label for="">Payment:</label>
+                <input type="number" id="intial_payment" class="form-control">
+              </div>
+            </div>
+            <div class="row">
+              <div class="col">
 
-          <div class="p-3">
-            <strong>
-              Add-Ons List
-            </strong>
-            <ul>
-              <li>Add-ons1</li>
-              <li>Add-ons2</li>
-              <li>Add-ons3</li>
-              <li>Add-ons4</li>
-            </ul>
-          </div>
+              </div>
+            </div>
+
+            <hr>
+
+            <div class="row">
+              <div class="col">
+                  <table class="table">
+                    <thead>
+                      <th class="summary_label">Customer </th>
+                      <th class="summary_label">Staff</th>
+                      <th class="summary_label">Initial Payment</th>
+                      <th class="summary_label">Total</th>
+                      <th class="summary_label">Balance</th>
+                      <th class="summary_label">Date</th>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td class="summary_label">
+                          person who pay
+                        </td>
+                        <td class="summary_label">
+                          Pantukan Staff
+                        </td>
+                        <td class="summary_label">
+                          ₱1000
+                        </td>
+                        <td class="summary_label">
+                          ₱3500
+                        </td>
+                        <td class="summary_label">
+                          ₱2500
+                        </td>
+                        <td class="summary_label">
+                          Jan 19, 2025 11:36 AM
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+              </div>
+            </div>
             
         </div>
         <div class="col-md-6 border p-4">
@@ -70,10 +101,7 @@
                     <table>
                       <tbody>
                         <tr>
-                          <td class="summary_label">Checkin Date:</td><td style="text-align: left">Jan 23, 2025</td>
-                        </tr>
-                        <tr>
-                          <td class="summary_label">Checkout Date:</td><td style="text-align: left">Jan 27, 2025</td>
+                          <td class="summary_label">Date:</td><td style="text-align: left"><span id="date_transaction">Jan 23, 2025</span></td>
                         </tr>
                         <tr>
                           <td class="summary_label">Total Guests(s):</td><td style="text-align: left">0</td>
@@ -90,7 +118,7 @@
                     <strong>
                       Order Details
                     </strong>
-                    <table class="table">
+                    <table class="table order_details_summary">
                       <thead>
                         <th class="table-custome-align">Item Name</th>
                         <th class="table-custome-align">Category</th>
@@ -98,12 +126,7 @@
                         <th class="table-custome-align">Price</th>
                       </thead>
                       <tbody>
-                        <tr>
-                          <td class="table-custome-align">Room1</td>
-                          <td class="table-custome-align">Category1</td>
-                          <td class="table-custome-align">2</td>
-                          <td class="table-custome-align">P2000</td>
-                        </tr>
+                          
                       </tbody>
                     </table>
                   </small>

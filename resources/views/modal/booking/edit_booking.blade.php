@@ -31,14 +31,6 @@
                                     </select>
                                     <small id="room_error" class="text-danger"></small>
                                 </div>
-                                <div class="select_room_div" style="display: none">
-                                    <label for="room" class="form-label">Room:</label>
-                                    <select class="form-control room_list room_list_data room_list_selection room_list_data" id="edit_room_list_selection" data-live-search="true">
-                                        
-                                    </select>
-                                    <small id="room_error" class="text-danger"></small>
-                                </div>
-                                
                             </div>
         
                             <div class="col-md-6">
@@ -46,15 +38,15 @@
 
                                 <div class="row">
                                     <div class="col">
-                                        <span id="edit_current_room">
+                                        <ul style="margin-left: 17px;">
+                                            <li >
+                                                <span id="edit_current_room">
 
-                                        </span>
+                                                </span>
+                                            </li>
+                                        </ul>
+                                        
                                     </div>
-                                    <div class="col-md-6">
-                                        Guest:<input type="number" class="form-control">
-                                    </div>
-                                    
-                                    
                                 </div>
                                 <hr>
                                 <div>
@@ -70,6 +62,23 @@
                         </div>
         
                         <hr class="my-1">
+
+                        <div class="row">
+                            <div class="col" style="min-height: 270px">
+                                <label for="daterange" class="form-label">Room List:</label>
+                                <table class="table room_list_display">
+                                    <thead>
+                                        <th class="table-custome-align">Room name</th>
+                                        <th class="table-custome-align" style="width:20px">Guests</th>
+                                        <th class="table-custome-align">Action</th>
+                                    </thead>
+
+                                    <tbody>
+                                        
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
         
                         <div class="row g-3">
                             <!-- Left Column -->
@@ -138,7 +147,7 @@
                                 <h6 class="fw-bold">History Logs</h6>
                             </div>
                         </div>
-                        <div class="row">
+                        <div class="row" style="min-height: 270px">
                             <div class="col">
                                
                                 <table class="table" id="history_logs" style="font-size: 12px">
@@ -149,21 +158,38 @@
                                         <th>Date</th>
                                     </thead>
                                     <tbody>
-                                        {{-- <tr>
-                                            <td>Book</td>
-                                            <td>Juan Dela Cruz</td>
-                                            <td>Check-In</td>
-                                            <td>Jan 20, 2025 2:45PM</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Add Item</td>
-                                            <td>Juan Dela Cruz</td>
-                                            <td>Added Cottage Guest</td>
-                                            <td>Jan 20, 2025 5:30PM</td>
-                                        </tr> --}}
+                                    
                                     </tbody>
                                 </table>
                                 
+                            </div>
+                        </div>
+                        <div class="">
+                            <div>
+                                <label for="daterange" class="form-label">Add-ons:</label>
+                                <select name="" class="form-control selected_add_ons">
+                                    <option value="" disabled selected>-- Select --</option>
+                                    <option value="Entrance">Entrance</option>
+                                    <option value="Transportation">Transportation</option>
+                                    <option value="Sports">Sports</option>
+                                    <option value="Leisures">Leisures</option>
+                                    <option value="Items">Items</option>
+                                    <option value="Corkage">Corkage</option>
+                                    <option value="Misc">Misc</option>
+                                  </select>
+                            </div>
+                            <div>
+                                <table class="table add_ons_table">
+                                    <thead>
+                                        <th class="table-custome-align"></th>
+                                        <th class="table-custome-align" >Add-ons</th>
+                                        <th class="table-custome-align" style="width: 15%">Qty</th>
+                                        <th class="table-custome-align">Price</th>
+                                    </thead>
+                                    <tbody>
+
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
                     </div>
