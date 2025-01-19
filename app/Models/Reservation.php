@@ -69,7 +69,8 @@ class Reservation extends Model
                 'addon_price' => $addon['addon_price'],
                 'addon_name' => $leisure->item_name,
                 'addon_details' => $leisure,
-                'reservation_id' => $reservation_id
+                'reservation_id' => $reservation_id,
+                'qty' => $addon['qty']
             ];
             
             RoomReservationAddon::create($addonData);
