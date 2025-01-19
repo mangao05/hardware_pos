@@ -207,30 +207,41 @@ class ReservationController extends Controller
 
     public function checkout(Request $request)
     {
+        DB::beginTransaction();
+
         try {
-            DB::beginTransaction();
             $total_amount = (float) $request->total;
             $payment = (float) $request->initial_payment;
             $reservation = Reservation::find($request->reservation_id);
-            $payments = $reservation->payments()->orderBy('created_at', 'desc')->first();
+
+            // Retrieve the most recent payment entry
+            $lastPayment = $reservation->payments()->orderBy('created_at', 'desc')->first();
+
+            // Initialize balance calculation
+            $initial_balance = $total_amount - $payment;
+            $current_balance = $initial_balance;
+
+            if (!empty($lastPayment)) {
+                $previous_total_amount = (float) $reservation->total_amount; // Assuming `total_amount` is stored on the reservation
+                $balance_change = $total_amount - $previous_total_amount;
+
+                // Adjust the new balance based on total amount changes and last payment balance
+                $current_balance = $lastPayment->balance + $balance_change - $payment;
+            }
 
             $data = [
                 'customer' => $request->customer_name,
                 'user_id' => auth()->check() ? auth()->user()->id : null,
-                'user_name' => auth()->check() ? auth()->user()->firstname . ' ' . auth()->user()->lastname :  'Guest',
-                'initial_payment' => $request->initial_payment,
-                'balance' => $total_amount - $payment
+                'user_name' => auth()->check() ? auth()->user()->firstname . ' ' . auth()->user()->lastname : 'Guest',
+                'initial_payment' => $payment,
+                'balance' => $current_balance
             ];
-
-            if (! empty($payments)) {
-                $data['balance'] = (float)$payments->balance - $payment;
-            }
 
             $reservation->payments()->create($data);
             $reservation->update([
                 'discount' => $request->discount,
                 'total_amount' => $total_amount,
-                'payment_status' => $data['balance'] > 0 ? 'unpaid' : 'paid'
+                'payment_status' => $current_balance > 0 ? 'unpaid' : 'paid'
             ]);
             DB::commit();
 
