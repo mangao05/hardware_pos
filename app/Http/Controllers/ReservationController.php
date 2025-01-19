@@ -48,11 +48,11 @@ class ReservationController extends Controller
     {
         try {
             $reservation = Reservation::with('reservationDetails', 'addons')->findOrFail($id);
-            
+
             $categoryMap = RoomCategory::all()->pluck('display_name', 'id');
 
             foreach ($reservation->reservationDetails as $detail) {
-                $roomDetails = $detail->room_details; 
+                $roomDetails = $detail->room_details;
 
                 if (isset($roomDetails['room_category_id'])) {
                     $roomCategoryId = $roomDetails['room_category_id'];
@@ -62,7 +62,7 @@ class ReservationController extends Controller
                     $roomDetails['room_category_name'] = '';
                 }
 
-                $detail->room_details = $roomDetails; 
+                $detail->room_details = $roomDetails;
             }
 
             return $this->success($reservation);
@@ -205,8 +205,39 @@ class ReservationController extends Controller
         }
     }
 
-    public function checkout(Request $request, Reservation $reservation)
+    public function checkout(Request $request)
     {
-        dd($reservation);
+        try {
+            DB::beginTransaction();
+            $total_amount = (float) $request->total;
+            $payment = (float) $request->initial_payment;
+            $reservation = Reservation::find($request->reservation_id);
+            $payments = $reservation->payments()->orderBy('created_at', 'desc')->first();
+
+            $data = [
+                'customer' => $request->customer_name,
+                'user_id' => auth()->check() ? auth()->user()->id : null,
+                'user_name' => auth()->check() ? auth()->user()->firstname . ' ' . auth()->user()->lastname :  'Guest',
+                'initial_payment' => $request->initial_payment,
+                'balance' => $total_amount - $payment
+            ];
+
+            if (! empty($payments)) {
+                $data['balance'] = (float)$payments->balance - $payment;
+            }
+
+            $reservation->payments()->create($data);
+            $reservation->update([
+                'discount' => $request->discount,
+                'total_amount' => $total_amount,
+                'payment_status' => $data['balance'] > 0 ? 'unpaid' : 'paid'
+            ]);
+            DB::commit();
+
+            return $this->success($reservation->load('payments'), "Payment for Reservation success");
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return $this->error([], $e->getMessage());
+        }
     }
 }

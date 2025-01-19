@@ -25,6 +25,11 @@ class Reservation extends Model
         return $this->hasMany(RoomReservationAddon::class, 'reservation_id');
     }
 
+    public function payments()
+    {
+        return $this->hasMany(ReservationPayments::class, 'reservation_id');
+    }
+
     /**
      * Create reservation with Room Details
      *
