@@ -16,7 +16,9 @@ class AgentController extends Controller
     public function index()
     {
         try {
-            $agents = Agent::paginate(request()->get('per_page') ?? 10);
+            $agents = Agent::when(request()->has('is_available'), function ($query) {
+                        return $query->where('availability', (bool)request()->get('is_available'));
+                    })->paginate(request()->get('per_page') ?? 10);
             return $this->success($agents, 'Successfully fetch agent list.');
         } catch (\Exception $e) {
             return $this->error([], $e->getMessage());
@@ -53,7 +55,7 @@ class AgentController extends Controller
      */
     public function update(StoreAgentRequest $request, Agent $agent)
     {
-         try {
+        try {
             $agent->update($request->validated());
             return $this->success($agent, 'Successfully updated agent information.');
         } catch (\Exception $e) {

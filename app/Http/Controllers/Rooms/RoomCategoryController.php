@@ -14,7 +14,10 @@ class RoomCategoryController extends Controller
     public function index()
     {
         try {
-            $categories = RoomCategory::with('rooms')->paginate(request()->get('per_page') ?? 10);
+            $categories = RoomCategory::when(request()->has('is_available'), function ($query) {
+                            return $query->where('availability', (bool)request()->get('is_available'));
+                        })->with('rooms')
+                        ->paginate(request()->get('per_page') ?? 10);
 
             return response()->json([
                 'message' => 'Room categories fetched successfully.',
@@ -112,7 +115,7 @@ class RoomCategoryController extends Controller
             $query->where(function ($query) use ($checkIn, $checkOut) {
                 $query->where('check_in_date', '<', $checkOut)
                     ->where('check_out_date', '>', $checkIn)
-                    ->whereIn('status', ['checkin', 'booked']); 
+                    ->whereIn('status', ['checkin', 'booked']);
             });
         })->where('availability', true)->get();
 

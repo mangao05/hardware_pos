@@ -13,7 +13,10 @@ class RoomController extends Controller
     public function index()
     {
         try {
-            $rooms = Room::with('category')->paginate(request()->get('per_page') ?? 10);
+            $rooms = Room::when(request()->has('is_available'), function ($query) {
+                            return $query->where('availability', (bool)request()->get('is_available'));
+                        })->with('category')
+                        ->paginate(request()->get('per_page') ?? 10);
 
             return response()->json([
                 'message' => 'Rooms fetched successfully.',
@@ -66,7 +69,7 @@ class RoomController extends Controller
     {
         try {
             $room->update($request->validated());
-            
+
             return response()->json([
                 'message' => 'Room updated successfully.',
                 'room' => $room->load('category'),

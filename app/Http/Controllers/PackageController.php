@@ -17,7 +17,9 @@ class PackageController extends Controller
     public function index()
     {
         try {
-            $packages = Package::paginate(request()->get('per_page') ?? 10);
+            $packages = Package::when(request()->has('is_available'), function ($query) {
+                            return $query->where('availability', (bool)request()->get('is_available'));
+                        })->paginate(request()->get('per_page') ?? 10);
             return $this->success($packages, "Successfully fetch packages.");
         } catch (\Exception $e) {
             return $this->error([], $e->getMessage());
@@ -29,7 +31,7 @@ class PackageController extends Controller
      */
     public function store(StorePackageRequest $request)
     {
-         try {
+        try {
             $package = Package::create($request->validated());
             return $this->success($package, "Successfully store package.", 201);
         } catch (\Exception $e) {
