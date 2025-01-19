@@ -14,6 +14,7 @@ use App\Http\Requests\UpdateReservationRequest;
 use App\Http\Resources\ReservationDetailsResponse;
 use App\Models\ReservationRoomDetails;
 use App\Models\Room;
+use App\Models\RoomCategory;
 use Illuminate\Support\Facades\DB;
 
 class ReservationController extends Controller
@@ -46,8 +47,25 @@ class ReservationController extends Controller
     public function show($id)
     {
         try {
-            $reservation = Reservation::findOrFail($id);
-            return $this->success($reservation->load('reservationDetails','addons'));
+            $reservation = Reservation::with('reservationDetails', 'addons')->findOrFail($id);
+            
+            $categoryMap = RoomCategory::all()->pluck('display_name', 'id');
+
+            foreach ($reservation->reservationDetails as $detail) {
+                $roomDetails = $detail->room_details; 
+
+                if (isset($roomDetails['room_category_id'])) {
+                    $roomCategoryId = $roomDetails['room_category_id'];
+                    $roomCategoryName = $categoryMap[$roomCategoryId] ?? '';
+                    $roomDetails['room_category_name'] = $roomCategoryName;
+                } else {
+                    $roomDetails['room_category_name'] = '';
+                }
+
+                $detail->room_details = $roomDetails; 
+            }
+
+            return $this->success($reservation);
         } catch (\Exception $e) {
             return $this->error([], $e->getMessage());
         }
@@ -79,7 +97,7 @@ class ReservationController extends Controller
             $updatedReservation = $reservation->updateWithDetails($reservation, $request->all());
 
             DB::commit();
-            return $this->success($updatedReservation->load('reservationDetails','addons'), 'Reservation updated successfully!', 200);
+            return $this->success($updatedReservation->load('reservationDetails', 'addons'), 'Reservation updated successfully!', 200);
         } catch (RoomUnavailableException $e) {
             return response()->json([
                 'error' => $e->getMessage(),
@@ -105,7 +123,7 @@ class ReservationController extends Controller
             $reservation->logAction($logs);
             $reservation->delete();
             DB::commit();
-            return $this->success($reservation->load('reservationDetails','addons'), 'Reservation deleted successfully!');
+            return $this->success($reservation->load('reservationDetails', 'addons'), 'Reservation deleted successfully!');
         } catch (\Exception $e) {
             DB::rollBack();
             return $this->error([], $e->getMessage());
