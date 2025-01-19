@@ -153,7 +153,6 @@ class ReservationController extends Controller
             if (!empty($unavailableRooms)) {
                 throw new RoomUnavailableException($unavailableRooms, 'The following rooms are unavailable.');
             }
-            $action = "Add Room";
             if ($request->has('old_room')) {
                 ReservationRoomDetails::where('reservation_id', $reservation->id)
                     ->where('room_id', $request->old_room)
@@ -161,7 +160,7 @@ class ReservationController extends Controller
                 $reservation->delete();
             }
 
-            $reservation->addReservationDetails($request->new_room, $request->check_in_date, $request->check_out_date, $action);
+            $reservation->addReservationDetails($request->new_room, $request->check_in_date, $request->check_out_date);
 
             $logs = [
                 'action' => $request->has('old_room') ? 'transfer_room' : 'add_room',
