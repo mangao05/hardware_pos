@@ -29,8 +29,8 @@ class ReportsController extends Controller
             ->pluck('room_id')
             ->toArray();
 
-        $statusCounts = [];
-
+        $statusCounts = []; 
+            
         foreach ($roomsByCategory as $categoryName => $roomData) {
             $allRooms = $roomData['all_rooms'];
             $outOfServiceRooms = $roomData['out_of_service'];
@@ -38,7 +38,8 @@ class ReportsController extends Controller
             $availableRooms = array_diff($allRooms, $occupiedRoomIds, $outOfServiceRooms);
             $occupiedRooms = array_intersect($allRooms, $occupiedRoomIds);
 
-            $statusCounts[$categoryName] = [
+            $statusCounts[] = [
+                'category_name' => $categoryName,
                 'total' => count($allRooms),
                 'available' => count($availableRooms),
                 'occupied' => count($occupiedRooms),
