@@ -47,7 +47,7 @@ class ReservationController extends Controller
     public function show($id)
     {
         try {
-            $reservation = Reservation::with('reservationDetails', 'addons')->findOrFail($id);
+            $reservation = Reservation::with(['reservationDetails', 'addons', 'payments'])->findOrFail($id);
 
             $categoryMap = RoomCategory::all()->pluck('display_name', 'id');
 
