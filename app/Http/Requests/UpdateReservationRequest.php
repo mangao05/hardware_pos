@@ -23,11 +23,11 @@ class UpdateReservationRequest extends BaseFormRequest
     {
         return [
             'reservation.name' => 'required|string|max:255',
-            'reservation.email' => 'required|email|max:255',
-            'reservation.address' => 'required|string|max:500',
-            'reservation.phone' => 'required|string|regex:/^[0-9]{9,15}$/',
+            'reservation.email' => 'nullable|email|max:255',
+            'reservation.address' => 'nullable|string|max:500',
+            'reservation.phone' => 'nullable|string|max:20',
             'reservation.nationality' => 'required|string|max:100',
-            'reservation.type' => 'required|in:walk-in,online',
+            'reservation.type' => 'required',
             'reservation.remarks' => 'nullable|string|max:1000',
 
             'room.room_id' => 'required|integer|exists:rooms,id',
