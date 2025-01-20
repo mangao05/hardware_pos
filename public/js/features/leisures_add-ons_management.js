@@ -54,7 +54,7 @@ function add_leisures(){
     let leisures_package = $('#leisures_package').val()
     let isChecked = $('#leisures_avaiability').prop('checked');
 
-    var myUrl = '/api/leisures/';
+    var myUrl = '/api/leisures';
 
     var myData = {
         item_name:leisures_name,

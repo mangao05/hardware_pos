@@ -4,7 +4,7 @@ $(document).ready(function() {
 });
 
 function loadPackageList(){
-    myUrl = "/api/packages/"
+    myUrl = "/api/packages"
     axios.get(myUrl, null, {
         headers: {
         'Content-Type': 'application/json'
@@ -44,7 +44,7 @@ function add_package(){
     let package_description = $('#package_description').val()
     let isChecked = $('#package_is_available').prop('checked');
 
-    var myUrl = '/api/packages/';
+    var myUrl = '/api/packages';
 
     var myData = {
         display_name:package_name,

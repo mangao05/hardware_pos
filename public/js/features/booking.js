@@ -58,15 +58,15 @@ async function handleReservationClick(reservation) {
     $('.room_list_display tbody').empty();
     $('.add_ons_table tbody').empty();
     
-    // if(reservation.add_ons){
-    //     reservation.add_ons.forEach(element => {
-    //         selectedAddOns.push({
-    //             "addon_id": element.addon_id, 
-    //             "qty": element.qty, 
-    //             "addon_price": element.addon_price * element.qty
-    //         })
-    //     });
-    // }
+    if(reservation.add_ons){
+        reservation.add_ons.forEach(element => {
+            selectedAddOns.push({
+                "addon_id": element.addon_id, 
+                "qty": element.qty, 
+                "addon_price": element.addon_price * element.qty
+            })
+        });
+    }
     
     
     
@@ -254,7 +254,7 @@ async function loadCalendar(startDate,category_id = 0) {
 
 
 async function get_all_booking() {
-    const myUrl = "/api/reservations/";
+    const myUrl = "/api/reservations";
     try {
         const response = await axios.get(myUrl, {
             headers: {
@@ -524,7 +524,7 @@ function add_booking(){
     let remarks = $('#remarks').val()
     let category = $('#category').val()
 
-    var myUrl = '/reservations/';
+    var myUrl = '/reservations';
 
     var myData = {
         name: name,
@@ -743,6 +743,9 @@ function update_booking() {
             addons:selectedAddOns
             
         };
+
+        
+        
         
         update_data(myUrl, myData).then(async response => {
             const textbox = document.getElementById("edit_daterange");

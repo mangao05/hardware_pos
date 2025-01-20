@@ -4,7 +4,7 @@ $(document).ready(function() {
 });
 
 function loadUser(){
-    myUrl = "users/"
+    myUrl = "users"
     axios.get(myUrl, null, {
         headers: {
         'Content-Type': 'application/json'
@@ -47,7 +47,7 @@ function add_user(){
     let user_role = $('#user_role').val()
     let password_confirmation = $('#confirm-password').val()
     let isChecked = $('#is_active').prop('checked');
-    var myUrl = 'users/';
+    var myUrl = 'users';
 
     var myData = {
         username:username,
