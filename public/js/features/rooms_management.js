@@ -4,7 +4,7 @@ $(document).ready(function() {
 });
 
 async function loadRoomCategory(){
-    myUrl = "/room-categories"
+    myUrl = "api/room-categories"
     
     try {
         const response = await axios.get(myUrl);
@@ -81,7 +81,7 @@ function add_rooms(){
     let room_type = $('#room_type').val()
     let is_available = $('#is_available').prop('checked');
 
-    var myUrl = '/rooms-data';
+    var myUrl = 'rooms-data';
 
     var myData = {
         name:room_name,
@@ -142,7 +142,7 @@ function update_data_set(){
         availability:is_available,
     };
     
-    url = "/rooms/"+data_id
+    url = "api/rooms/"+data_id
     update_data(url,myData).then(response => {
         toaster("Rooms successfully updated!","success")
         $('#room_modal_edit').modal('hide')
@@ -162,7 +162,7 @@ function delete_rooms(rooms_id){
         confirmButtonText: "Yes, delete it!"
     }).then((result) => {
         if (result.isConfirmed) {
-            myUrl = "/rooms/"+rooms_id
+            myUrl = "/api/rooms/"+rooms_id
             delete_record(myUrl)
             Swal.fire({
             title: "Deleted!",
