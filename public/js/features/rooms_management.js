@@ -81,7 +81,7 @@ function add_rooms(){
     let room_type = $('#room_type').val()
     let is_available = $('#is_available').prop('checked');
 
-    var myUrl = 'rooms-data/';
+    var myUrl = '/rooms-data/';
 
     var myData = {
         name:room_name,
