@@ -175,11 +175,11 @@
 </style>
 
 <div class="container-fluid">
-  <div class="row">
+  {{-- <div class="row">
     <div class="col">
       <canvas id="myChart" style="width:100%;max-width:700px"></canvas>
     </div>
-  </div>
+  </div> --}}
   <div class="row">
     <div class="col">
       <div>

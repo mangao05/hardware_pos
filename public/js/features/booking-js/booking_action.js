@@ -150,11 +150,11 @@ async function view_summary() {
             initial_pyment_list.push(parseInt(element.initial_payment))
         });
 
-        total_balance = initial_pyment_list.reduce((acc, val) => acc + val, 0) - sum;
+        total_balance = sum - initial_pyment_list.reduce((acc, val) => acc + val, 0);
         // const a = payment_list[payment_list.length - 1];
         
         // total_balance = sum - parseInt(a.initial_payment)
-        console.log(total_balance);
+        console.log(sum);
         
         
         $('#total_balance').html(total_balance <= 0 
