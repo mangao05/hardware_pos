@@ -61,6 +61,7 @@ let payment = 0; // Default initial payment value
 const total_price = []; // Array to store room prices
 let sum = 0; // Total price
 let total_balance = 0;
+let initial_pyment_list = []
 
 async function view_summary() {
     const reservation_id = $('#edit_reservation_id').val();
@@ -142,9 +143,17 @@ async function view_summary() {
         $('#total_balance').text(sum <=0?"<span class='text-success'><strong>Paid<strong><span>":"₱"+sum)
     }else{
         const payment_list = res.data.payments
-        const a = payment_list[payment_list.length - 1];
+        console.log(payment_list);
         
-        total_balance = sum - parseInt(a.initial_payment)
+
+        payment_list.forEach(element => {
+            initial_pyment_list.push(parseInt(element.initial_payment))
+        });
+
+        total_balance = sum - initial_pyment_list.reduce((acc, val) => acc + val, 0);
+        // const a = payment_list[payment_list.length - 1];
+        
+        // total_balance = sum - parseInt(a.initial_payment)
         
         $('#total_balance').html(total_balance <= 0 
             ? "<span class='text-success'><strong>Paid</strong></span>" 

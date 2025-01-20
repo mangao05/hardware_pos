@@ -4,7 +4,7 @@ $(document).ready(function() {
 });
 
 async function loadRoomCategory(){
-    myUrl = "/room-categories/"
+    myUrl = "/room-categories"
     
     try {
         const response = await axios.get(myUrl);
@@ -81,7 +81,7 @@ function add_rooms(){
     let room_type = $('#room_type').val()
     let is_available = $('#is_available').prop('checked');
 
-    var myUrl = '/rooms-data/';
+    var myUrl = '/rooms-data';
 
     var myData = {
         name:room_name,
