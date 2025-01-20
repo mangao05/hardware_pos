@@ -205,7 +205,7 @@
                     data-reservation_details=""
                     onclick="view_summary()"
                 >
-                    <img src="{{ asset('img/icon/log-out.png') }}" class="icon-style" alt="">View Summary
+                    <img src="{{ asset('img/icon/log-out.png') }}" class="icon-style" alt="">Payment
                 </button>
                 <button 
                     type="button" 

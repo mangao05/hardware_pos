@@ -4,7 +4,7 @@ $(document).ready(function() {
 });
 
 async function loadRoomCategory(){
-    myUrl = "api/room-categories/"
+    myUrl = "/room-categories/"
     
     try {
         const response = await axios.get(myUrl);
@@ -142,7 +142,7 @@ function update_data_set(){
         availability:is_available,
     };
     
-    url = "api/rooms/"+data_id
+    url = "/rooms/"+data_id
     update_data(url,myData).then(response => {
         toaster("Rooms successfully updated!","success")
         $('#room_modal_edit').modal('hide')
@@ -162,7 +162,7 @@ function delete_rooms(rooms_id){
         confirmButtonText: "Yes, delete it!"
     }).then((result) => {
         if (result.isConfirmed) {
-            myUrl = "/api/rooms/"+rooms_id
+            myUrl = "/rooms/"+rooms_id
             delete_record(myUrl)
             Swal.fire({
             title: "Deleted!",

@@ -4,7 +4,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title> Responsive Admin Dashboard | CodingLab </title>
+    <title> Pantukan </title>
     <link rel="stylesheet" href="{{ asset('css/homepage_view.css') }}">
     <!-- Boxicons CDN Link -->
     <link href='https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css' rel='stylesheet'>

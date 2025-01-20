@@ -104,7 +104,7 @@
                     <table>
                       <tbody>
                         <tr>
-                          <td class="summary_label">Date:</td><td style="text-align: left"><span id="date_transaction">Jan 23, 2025</span></td>
+                          <td class="summary_label">Date:</td><td style="text-align: left"><span id="date_transaction_current">Jan 23, 2025</span></td>
                         </tr>
                         <tr>
                           <td class="summary_label">Balance:</td><td style="text-align: left"><span id="total_balance"></span></td>

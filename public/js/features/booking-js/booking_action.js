@@ -139,15 +139,16 @@ async function view_summary() {
 
     if(res.data.payments.length == 0){
         total_balance = sum
-        $('#total_balance').text("₱"+sum)
+        $('#total_balance').text(sum <=0?"<span class='text-success'><strong>Paid<strong><span>":"₱"+sum)
     }else{
         const payment_list = res.data.payments
         const a = payment_list[payment_list.length - 1];
         
-        total_balance = a.balance
-        console.log(a.balance);
+        total_balance = sum - parseInt(a.initial_payment)
         
-        $('#total_balance').text("₱"+a.balance)
+        $('#total_balance').html(total_balance <= 0 
+            ? "<span class='text-success'><strong>Paid</strong></span>" 
+            : "₱" + total_balance);
     }
 
     fetchTransaction(res.data.payments)

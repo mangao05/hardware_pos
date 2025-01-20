@@ -56,16 +56,17 @@ function loadDate(startDate, extendDays = 2) {
 
 async function handleReservationClick(reservation) {
     $('.room_list_display tbody').empty();
+    $('.add_ons_table tbody').empty();
     
-    if(reservation.add_ons){
-        reservation.add_ons.forEach(element => {
-            selectedAddOns.push({
-                "addon_id": element.addon_id, 
-                "qty": element.qty, 
-                "addon_price": element.addon_price * element.qty
-            })
-        });
-    }
+    // if(reservation.add_ons){
+    //     reservation.add_ons.forEach(element => {
+    //         selectedAddOns.push({
+    //             "addon_id": element.addon_id, 
+    //             "qty": element.qty, 
+    //             "addon_price": element.addon_price * element.qty
+    //         })
+    //     });
+    // }
     
     
     
