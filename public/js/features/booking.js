@@ -55,11 +55,10 @@ function loadDate(startDate, extendDays = 2) {
 }
 
 async function handleReservationClick(reservation) {
-    
+    $('.room_list_display tbody').empty();
     
     if(reservation.add_ons){
         reservation.add_ons.forEach(element => {
-            console.log(element);
             selectedAddOns.push({
                 "addon_id": element.addon_id, 
                 "qty": element.qty, 
@@ -170,7 +169,7 @@ function transaction_button_control(input_date){
 
 
 
-async function loadCalendar(startDate,category_id) {
+async function loadCalendar(startDate,category_id = 0) {
     const rooms = await loadRoom(category_id);
     const date_value = loadDate(startDate);
     
@@ -206,7 +205,6 @@ async function loadCalendar(startDate,category_id) {
             tbodyRows.push(emptyRow);
         } else {
             roomReservations.forEach((reservations, index) => {
-                console.log(reservations);
                 
                 let row = "<tr>";
                 if (index === 0) {
@@ -407,7 +405,6 @@ async function loadCategory(category_id = null, checkedRoomId = null) {
         attachRoomCheckboxEvent(); // Attach event listener to room checkboxes
         liveReload(selectedCategory)
         selected_category = selectedCategory
-        console.log(end_book);
         
         await load_available_room_per_category(selected_category,start_book, end_book)
     });
@@ -640,7 +637,24 @@ function update_booking() {
     var date_convert = date.split(' - ')
     const reservation_details_id = $('#reservation_room_details_id').val()
 
-    
+    if(trans_type == "extend_date"){
+        const myUrl = "/reservation-rooms/room/"+reservation_details_id+"/extend"
+        const myData = {
+            "check_out_date":end_book
+        }
+
+        update_data(myUrl,myData).then(async response => {
+            if (response && response.data.length == 0) {
+                toaster("something wrong!", "error");
+            }else{
+                const category_id = response.data.room_details.room_category_id;
+                toaster("Transfer room succefully update!", "success");
+                liveReload(category_id);
+                $('#edit_booking').modal('hide')
+            }
+        })
+        return;
+    }
     
 
     if(trans_type == "add_room_update"){
@@ -672,12 +686,11 @@ function update_booking() {
         const myUrl = `/api/reservations/change-room/`+reservation_id;
 
         const myData = {
-            "old_room":room_id,
+            "old_room":parseInt(room_id),
             "new_room" : rooms_selected,
             "check_in_date": date_convert[0],
             "check_out_date": date_convert[1]
         }
-        console.log(myData);
         
         store_data(myUrl, myData).then(async response => {
             var room_category = response.data.data.reservation_details;

@@ -7,7 +7,7 @@
 @section('content')
 
 
-<div class="container">
+<div class="container-fluid">
     <div class="row border position-relative header-content" style="background-image: url('../img/header/header1.jpg');">
     
     </div>
@@ -34,14 +34,13 @@
             </table>
         </div>
     </div>
-
-    <!-- Pagination Buttons -->
-    <div class="row mt-3">
-        <div class="col text-center">
+    <div class="row justify-content-end">
+        <div class="col-3 text-end">
             <button class="btn btn-secondary me-2" onclick="prev_page()">Prev</button>
             <button class="btn btn-secondary" onclick="next_page()">Next</button>
         </div>
     </div>
+
 </div>
 @endsection
 

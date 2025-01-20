@@ -49,7 +49,7 @@
             </a>
         </li>
         <li>
-            <a href="#">
+            <a href="{{ url('/booking') }}" class="{{ request()->is('booking') ? 'active' : '' }}">
                 <i class='bx bx-heart'></i>
                 <span class="links_name">Booking</span>
             </a>

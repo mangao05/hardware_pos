@@ -1,0 +1,165 @@
+
+let type_rate = null
+let customer = null
+let initial = null
+let bal = null
+
+function savePayment(){
+    type_rate = $('#type_rate').val()
+    $('.transaction_history tbody').empty()
+
+    view_summary()
+}
+
+function preview(){
+    const intial_customer = $('#intial_customer').val()
+    const intial_payment = $('#intial_payment').val()
+
+    if(intial_customer == ""){
+        $('#intial_customer_error').text("Customer field is required!")
+        $('#intial_payment_error').text("Customer field is required!")
+    }else{
+        const currentDate = new Date();
+        const formattedDate = dayjs(currentDate).format("MMM D, YYYY h:mm A");
+
+        customer = intial_customer;
+        initial = intial_payment
+    
+        const row = `
+            <tr>
+                <td>${intial_customer}</td>
+                <td>₱${intial_payment}</td>
+                <td>₱${total_balance - initial}</td>
+                <td>${formattedDate}</td>
+            </tr>
+        `
+        $('.transaction_history tbody').append(row)
+
+        $('#btn_save_transaction_receipt').show()
+
+        $('#btn_preview_transaction').hide()
+        $('#intial_customer_error').text("")
+        $('#intial_payment_error').text("")
+        toaster("Transaction history successfully updated!","success")
+    }
+    
+}
+
+function store_transaction(){
+    const reservation_id = $('#edit_reservation_id').val()
+    const myUrl = "/checkout"
+    const myData = {
+        "customer_name":customer,
+        "initial_payment":initial,
+        "reservation_id":reservation_id,
+        "discount":type_rate,
+        "total":sum
+    }
+
+    Swal.fire({
+        title: "Are you sure?",
+        text: "You won't be able to revert this!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, save transaction!"
+    }).then((result) => {
+        if (result.isConfirmed) {
+            Swal.fire({
+            title: "Create!",
+            text: "Your transaction has been created!.",
+            icon: "success"
+            });
+            store_data(myUrl, myData)
+            savePayment()
+        }
+    });
+    
+    
+
+    $('#btn_save_transaction_receipt').hide()
+}
+
+
+async function fetchTransaction(payments){
+
+    
+    $('.transaction_history tbody').empty()
+    $('.transaction_receipt_logs tbody').empty()
+
+    payments.forEach(payment => {
+        const formattedDate = dayjs(payment.created_at).format("MMM D, YYYY h:mm A");
+
+        const row = `
+            <tr>
+                <td>${payment.customer}</td>
+                <td>₱${payment.initial_payment}</td>
+                <td>₱${payment.balance}</td>
+                <td>${formattedDate}</td>
+            </tr>
+        `
+        $('.transaction_history tbody').append(row)
+
+        const row_internal = `
+            <tr>
+                <td class="summary_label">
+                    ${payment.customer}
+                </td>
+                <td class="summary_label">
+                    Pantukan Staff
+                </td>
+                <td class="summary_label">
+                    ₱${payment.initial_payment}
+                </td>
+                <td class="summary_label">
+                    ₱${payment.balance}
+                </td>
+                <td class="summary_label">
+                    ${formattedDate}
+                </td>
+            </tr>
+        `
+        $('.transaction_receipt_logs tbody').append(row_internal)
+    });
+
+    
+   
+    
+}
+
+
+function printDiv(divId) {
+    const printContents = document.getElementById(divId).innerHTML;
+    const originalContents = document.body.innerHTML;
+
+    // Temporarily change the page content to only the div's content
+    document.body.innerHTML = printContents;
+
+    // Show elements with class 'rules_regulation' (if any)
+    $('.rules_regulation').show();
+
+    // Log before printing
+    console.log("Attempting to print...");
+
+    // Add event listeners for beforeprint and afterprint
+    window.addEventListener("beforeprint", function() {
+        console.log("Print dialog is opening...");
+    });
+
+    window.addEventListener("afterprint", function() {
+        console.log("Print dialog has closed.");
+        // You can infer the action here (e.g., print was completed or canceled)
+        document.body.innerHTML = originalContents;
+        window.location.reload();
+    });
+
+    // Trigger the print dialog
+    window.print();
+}
+
+
+
+$(document).ready(() => {
+    
+});

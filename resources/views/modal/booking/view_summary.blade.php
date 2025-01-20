@@ -8,19 +8,42 @@
     <div class="modal-body summary-div">
       <div class="row">
         <div class="col border">
+          <div class="row mt-2">
+            <div class="col-6">
+                  <label for="">Type of Rate</label>
+                  <select name="" class="form-control" id="type_rate" onclick="savePayment()">
+                    <option value="" disabled selected>--Select Type of Rate--</option>
+                    <option value="10%">EMPLOYEE RATE</option>
+                    {{-- <option value="0">FREE OF CHARGE</option> --}}
+                    <option value="200">AGENT RATE</option>
+                    <option value="150">SEASON RATE</option>
+                    <option value="">None</option>
+                  </select>
+              </div>
+            </div>
+            
             <div class="row">
               <div class="col">
                 <label for="">Customer:</label>
-                <input type="text" id="intial_payment" class="form-control">
+                <input type="text" placeholder="Enter Customer Name" id="intial_customer" class="form-control">
+                <div>
+                  <small><span id="intial_customer_error" class="text-danger"></span></small>
+                </div>
               </div>
               <div class="col">
                 <label for="">Payment:</label>
-                <input type="number" id="intial_payment" class="form-control">
+                <input type="number" id="intial_payment" placeholder="Enter Payment" class="form-control">
+                <div>
+                  <small><span id="intial_payment_error" class="text-danger"></span></small>
+                </div>
               </div>
             </div>
-            <div class="row">
-              <div class="col">
+            
 
+            <div class="row mt-2 mt-2">
+              <div class="col text-end">
+                <button class="btn btn-info" id="btn_preview_transaction" onclick="preview()">Add Transaction</button>
+                <button class="btn btn-success" id="btn_save_transaction_receipt" style="display: none" onclick="store_transaction()">Submit</button>
               </div>
             </div>
 
@@ -28,36 +51,16 @@
 
             <div class="row">
               <div class="col">
-                  <table class="table">
+                  <table class="table transaction_receipt_logs">
                     <thead>
                       <th class="summary_label">Customer </th>
                       <th class="summary_label">Staff</th>
                       <th class="summary_label">Initial Payment</th>
-                      <th class="summary_label">Total</th>
                       <th class="summary_label">Balance</th>
                       <th class="summary_label">Date</th>
                     </thead>
                     <tbody>
-                      <tr>
-                        <td class="summary_label">
-                          person who pay
-                        </td>
-                        <td class="summary_label">
-                          Pantukan Staff
-                        </td>
-                        <td class="summary_label">
-                          ₱1000
-                        </td>
-                        <td class="summary_label">
-                          ₱3500
-                        </td>
-                        <td class="summary_label">
-                          ₱2500
-                        </td>
-                        <td class="summary_label">
-                          Jan 19, 2025 11:36 AM
-                        </td>
-                      </tr>
+                      
                     </tbody>
                   </table>
               </div>
@@ -104,7 +107,7 @@
                           <td class="summary_label">Date:</td><td style="text-align: left"><span id="date_transaction">Jan 23, 2025</span></td>
                         </tr>
                         <tr>
-                          <td class="summary_label">Total Guests(s):</td><td style="text-align: left">0</td>
+                          <td class="summary_label">Balance:</td><td style="text-align: left"><span id="total_balance"></span></td>
                         </tr>
                       </tbody>
                     </table>
@@ -132,6 +135,30 @@
                   </small>
                 </div>
               </div>
+              <hr>
+              {{-- Transaction reciept logs --}}
+              <div class="row">
+                <div class="col">
+                  <small>
+                    <strong>
+                      Transaction history
+                    </strong>
+                    <table class="table transaction_history">
+                      <thead>
+                        <th>Customer</th>
+                        <th>Payment</th>
+                        <th>Balance</th>
+                        <th>Date</th>
+                      </thead>
+                      <tbody>
+                         
+                      </tbody>
+                    </table>
+                  </small>
+                </div>
+              </div>
+              {{-- end Transaction reciept logs --}}
+
               <hr>
               <div class="row rules_regulation" style="display: none">
                 <div class="col" style="font-size: 12px">
@@ -215,7 +242,7 @@
     </div>
     <div class="modal-footer modal-color">
       <button type="button" class="btn btn-secondary" onclick="{$('#view_summary_modal').modal('hide')}" data-bs-dismiss="modal">Close</button>
-      <button type="button" onclick="printDiv('printableArea')" class="btn btn-primary">Save changes</button>
+      <button type="button" onclick="printDiv('printableArea')" class="btn btn-primary">Print</button>
     </div>
   </div>
   </div>

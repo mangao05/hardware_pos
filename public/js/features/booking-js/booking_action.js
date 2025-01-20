@@ -51,7 +51,8 @@ function change_status(status){
 function extend_book(){
     const textbox = document.getElementById("edit_daterange");
     textbox.disabled = false;
-    textbox.focus();
+    textbox.focus();   
+    trans_type = "extend_date"
 }
 
 
@@ -59,14 +60,17 @@ function extend_book(){
 let payment = 0; // Default initial payment value
 const total_price = []; // Array to store room prices
 let sum = 0; // Total price
+let total_balance = 0;
 
 async function view_summary() {
     const reservation_id = $('#edit_reservation_id').val();
     const myUrl = "/reservations/" + reservation_id;
     const res = await get_data(myUrl);
-
-    console.log(res.data);
-    
+    let new_price = null
+    let percent = null
+    let result = ""
+    let total_res = 0
+    let total_guest = [];
 
     $('#transaction_name').text(res.data.name);
     $('#trans_email').text(res.data.email);
@@ -76,26 +80,91 @@ async function view_summary() {
     $('.order_details_summary tbody').empty();
     total_price.length = 0; // Clear previous values
     res.data.reservation_details.forEach(details => {
-        total_price.push(details.room_details.price);
+        total_guest.push(parseInt(details.guest))
+        console.log(type_rate);
+        
+        if(type_rate){
+            if (/^\d+%$/.test(type_rate)) {
+                    new_price = parseInt(details.room_details.price)
+                    type_rate_value = type_rate.replace("%","")
+                    const per = parseInt(type_rate_value) / 100;
+                    const res = parseInt(details.room_details.price) * per.toFixed(2);
+                    total_res = parseInt(details.room_details.price) - res
+                    total_price.push(total_res);
+
+                }else{
+                    total_res = parseInt(details.room_details.price) - parseInt(type_rate);
+                    total_price.push(total_res);
+                }
+        }else{
+            total_price.push(details.room_details.price);
+        }
+
+        
 
         const row = `
             <tr>
-                <td class="table-custome-align">${details.room_details.name}</td>
-                <td class="table-custome-align">Pending</td>
+                <td class="table-custome-align">${details.room_details.name}(<sup>guest:${details.guest}</sup>)</td>
+                <td class="table-custome-align">${details.room_details.room_category_name}</td>
                 <td class="table-custome-align">N/A</td>
-                <td class="table-custome-align">₱${details.room_details.price}</td>
+                <td class="table-custome-align">
+                    
+                    <span>
+                    ${type_rate?"<span class='text-danger'><s>₱"+details.room_details.price+"</s><sup>-"+type_rate+"<sup></span>":"₱"+details.room_details.price}
+                    </span>
+                    <br>
+                    ${type_rate?"₱"+total_res:''}
+                </td>
             </tr>
         `;
         $('.order_details_summary tbody').append(row);
     });
 
+    res.data.addons.forEach(addon => {
+        total_price.push(parseInt(addon.addon_price) * parseInt(addon.qty));
+        $('.order_details_summary tbody').append(`
+            <tr>
+                <td class="table-custome-align">${addon.addon_name}<sup>₱${addon.addon_price}</sup></td>
+                <td class="table-custome-align"></td>
+                <td class="table-custome-align">${addon.qty}</td>
+                <td class="table-custome-align">₱${parseInt(addon.addon_price) * parseInt(addon.qty)}</td>
+            </tr>    
+        `);
+    });
+
+    const guests = total_guest.reduce((acc, value) => acc + value, 0);
+    total_price.push(guests * 450);
+    
     sum = total_price.reduce((acc, val) => acc + val, 0);
 
-    update_summary();
+    if(res.data.payments.length == 0){
+        total_balance = sum
+        $('#total_balance').text("₱"+sum)
+    }else{
+        const payment_list = res.data.payments
+        const a = payment_list[payment_list.length - 1];
+        
+        total_balance = a.balance
+        console.log(a.balance);
+        
+        $('#total_balance').text("₱"+a.balance)
+    }
+
+    fetchTransaction(res.data.payments)
+    update_summary(guests);
     $('#view_summary_modal').modal('show');
 }
 
-function update_summary() {
+function update_summary(guests) {
+    $('.order_details_summary tbody').append(`
+        <tr>
+            <td class="table-custome-align">Guest<sup><i>₱450/guest</i></sup></td>
+            <td class="table-custome-align"></td>
+            <td class="table-custome-align">${guests}</td>
+            <td class="table-custome-align">₱${guests * 450}</td>
+        </tr>    
+    `);
+
     $('.order_details_summary tbody').append(`
         <tr style="background-color:linen">
             <td class="table-custome-align"><strong>Total Payment:</strong></td>
@@ -105,44 +174,16 @@ function update_summary() {
         </tr>    
     `);
 
-    $('.order_details_summary tbody').append(`
-        <tr style="background-color:linen">
-            <td class="table-custome-align"><strong>Initial Payment:</strong></td>
-            <td class="table-custome-align"></td>
-            <td class="table-custome-align"></td>
-            <td class="table-custome-align">₱${payment}</td>
-        </tr>    
-    `);
-
-    $('.order_details_summary tbody').append(`
-        <tr style="background-color:linen">
-            <td class="table-custome-align"><strong>Balance:</strong></td>
-            <td class="table-custome-align"></td>
-            <td class="table-custome-align"></td>
-            <td class="table-custome-align">₱${sum - payment}</td>
-        </tr>    
-    `);
+    // $('.order_details_summary tbody').append(`
+    //     <tr style="background-color:linen">
+    //         <td class="table-custome-align"><strong>Balance:</strong></td>
+    //         <td class="table-custome-align"></td>
+    //         <td class="table-custome-align"></td>
+    //         <td class="table-custome-align">₱${sum - payment}</td>
+    //     </tr>    
+    // `);
 }
 
-
-
-function printDiv(divId) {
-    const printContents = document.getElementById(divId).innerHTML;
-    const originalContents = document.body.innerHTML;
-
-    // Replace the body content with the print content
-    document.body.innerHTML = printContents;
-
-    // Trigger the print
-    $('.rules_regulation').show()
-    window.print();
-
-    // Restore the original content
-    document.body.innerHTML = originalContents;
-    
-    // Reload scripts and styles if necessary
-    window.location.reload();
-}
 
 
 function check_in(){
@@ -289,7 +330,7 @@ async function load_available_room_per_category(category_id, start_book, end_boo
     $('.room-checkbox').on('change', function () {
         const roomId = $(this).data('room-id');
         const guestInput = $(this).closest('tr').find('.guest-input'); 
-        const guestCount = parseInt(guestInput.val()) || 1; 
+        const guestCount = parseInt(guestInput.val()) || 0; 
 
         if ($(this).is(':checked')) {
             

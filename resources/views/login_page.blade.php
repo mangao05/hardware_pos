@@ -33,19 +33,21 @@
             <div class="input-field">
                 <input type="text" name="username" value="{{ old('username') }}" required>
                 <label>Enter your username</label>
-                @error('username')
-                    <div class="error-message">{{ $message }}</div>
-                @enderror
+                
             </div>
 
             <!-- Password Field -->
             <div class="input-field">
                 <input type="password" name="password" required>
                 <label>Enter your password</label>
-                @error('password')
-                    <div class="error-message">{{ $message }}</div>
-                @enderror
             </div>
+
+            @error('username')
+                    <div class="error-message">{{ $message }}</div>
+            @enderror
+            @error('password')
+                <div class="error-message">{{ $message }}</div>
+            @enderror
 
             <!-- Remember Me and Forgot Password Section -->
             <div class="forget">

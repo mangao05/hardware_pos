@@ -99,7 +99,8 @@
         </nav>
 
         <div class="home-content">
-            <div class="main-content">
+            {{-- <div class="main-content"> --}}
+            <div class="">
                 @yield('content')
             </div>
 

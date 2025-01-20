@@ -148,3 +148,6 @@ Route::get('reports/rooms-status', [ReportsController::class, 'room_statuses']);
 
 Route::get('/categories/{category}/available-rooms', [RoomCategoryController::class, 'getAvailableRooms'])
     ->name('categories.available-rooms');
+
+
+Route::post('checkout', [ReservationController::class, 'checkout']);
