@@ -49,7 +49,7 @@ async function loadReport() {
             
             <div class="row">
               <div class="col">Percentage</div>
-              <div class="col-4 text-end" style="font-size:14px">${percent}</div>
+              <div class="col-4 text-end" style="font-size:14px">${percent}%</div>
             </div>
           </div>
         </div>
