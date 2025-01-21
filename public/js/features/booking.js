@@ -57,17 +57,16 @@ function loadDate(startDate, extendDays = 2) {
 async function handleReservationClick(reservation) {
     $('.room_list_display tbody').empty();
     $('.add_ons_table tbody').empty();
-    
+    selectedAddOns = []
     if(reservation.add_ons){
         reservation.add_ons.forEach(element => {
             selectedAddOns.push({
                 "addon_id": element.addon_id, 
                 "qty": element.qty, 
-                "addon_price": element.addon_price * element.qty
+                "addon_price": element.addon_price
             })
         });
     }
-    
     
     
     selectedRooms = [];
@@ -744,8 +743,6 @@ function update_booking() {
             
         };
 
-        
-        
         
         update_data(myUrl, myData).then(async response => {
             const textbox = document.getElementById("edit_daterange");

@@ -8,7 +8,7 @@ function savePayment(){
     type_rate = $('#type_rate').val()
     $('.transaction_history tbody').empty()
 
-    view_summary()
+    // view_summary()
 }
 
 function preview(){
@@ -40,6 +40,8 @@ function preview(){
         $('#btn_preview_transaction').hide()
         $('#intial_customer_error').text("")
         $('#intial_payment_error').text("")
+
+        
         toaster("Transaction history successfully updated!","success")
     }
     
@@ -71,8 +73,17 @@ function store_transaction(){
             text: "Your transaction has been created!.",
             icon: "success"
             });
-            store_data(myUrl, myData)
-            savePayment()
+            store_data(myUrl, myData).then(response => {
+                const payment = response.data;
+                const payment_list = payment.data.payments
+                fetchTransaction(payment_list);
+                const a = payment_list[payment_list.length - 1];
+                
+                $('#total_balance').html(a.balance <= 0 
+                ? "<span class='text-success'><strong>Paid</strong></span>" 
+                : "₱" + a.balance);
+                initial_pyment_list = []
+            })
         }
     });
     
@@ -84,7 +95,6 @@ function store_transaction(){
 
 async function fetchTransaction(payments){
 
-    
     $('.transaction_history tbody').empty()
     $('.transaction_receipt_logs tbody').empty()
 
@@ -128,7 +138,6 @@ async function fetchTransaction(payments){
     
 }
 
-
 function printDiv(divId) {
     const printContents = document.getElementById(divId).innerHTML;
     const originalContents = document.body.innerHTML;
@@ -158,6 +167,11 @@ function printDiv(divId) {
     window.print();
 }
 
+
+function close_summary_modal(){
+    $('#view_summary_modal').modal('hide')
+    $('#btn_preview_transaction').show()
+}
 
 
 $(document).ready(() => {

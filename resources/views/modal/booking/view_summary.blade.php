@@ -241,7 +241,7 @@
       </div>
     </div>
     <div class="modal-footer modal-color">
-      <button type="button" class="btn btn-secondary" onclick="{$('#view_summary_modal').modal('hide')}" data-bs-dismiss="modal">Close</button>
+      <button type="button" class="btn btn-secondary" onclick="close_summary_modal()" data-bs-dismiss="modal">Close</button>
       <button type="button" onclick="printDiv('printableArea')" class="btn btn-primary">Print</button>
     </div>
   </div>

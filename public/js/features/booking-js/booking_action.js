@@ -123,6 +123,8 @@ async function view_summary() {
 
     res.data.addons.forEach(addon => {
         total_price.push(parseInt(addon.addon_price) * parseInt(addon.qty));
+        console.log(addon);
+        
         $('.order_details_summary tbody').append(`
             <tr>
                 <td class="table-custome-align">${addon.addon_name}<sup>₱${addon.addon_price}</sup></td>
@@ -140,21 +142,20 @@ async function view_summary() {
 
     if(res.data.payments.length == 0){
         total_balance = sum
-        $('#total_balance').text(sum <=0?"<span class='text-success'><strong>Paid<strong><span>":"₱"+sum)
+        $('#total_balance').text("₱"+sum)
     }else{
         const payment_list = res.data.payments
-        console.log(payment_list);
+       
         
-
         payment_list.forEach(element => {
             initial_pyment_list.push(parseInt(element.initial_payment))
         });
 
         total_balance = sum - initial_pyment_list.reduce((acc, val) => acc + val, 0);
-        // const a = payment_list[payment_list.length - 1];
-        
-        // total_balance = sum - parseInt(a.initial_payment)
-        console.log(sum);
+        const a = res.data.payments
+
+        // console.log(sum);
+        console.log(initial_pyment_list.reduce((acc, val) => acc + val, 0));
         
         
         $('#total_balance').html(total_balance <= 0 
@@ -164,6 +165,10 @@ async function view_summary() {
 
     fetchTransaction(res.data.payments)
     update_summary(guests);
+
+    $('#intial_customer').val("")
+    $('#intial_payment').val("")
+
     $('#view_summary_modal').modal('show');
 }
 
@@ -286,7 +291,7 @@ $(".add_ons_table").on("change", ".add-on-checkbox", function () {
             selectedAddOns.push({ 
                 addon_id: addOnId, 
                 qty: qty, 
-                addon_price: priceRate * qty 
+                addon_price: priceRate
             });
         }
     } else {
@@ -303,7 +308,7 @@ $(".add_ons_table").on("input", ".add-on-qty", function () {
     const selectedAddOn = selectedAddOns.find(addOn => addOn.addon_id === addOnId);
     if (selectedAddOn) {
         selectedAddOn.qty = newQty;
-        selectedAddOn.price = priceRate * newQty; 
+        selectedAddOn.price = priceRate; 
     }
 });
 //end add-ons add reservation modal
