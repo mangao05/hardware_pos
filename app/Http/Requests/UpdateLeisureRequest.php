@@ -27,7 +27,7 @@ class UpdateLeisureRequest extends BaseFormRequest
             'type' => ['sometimes', Rule::in(config('pww.leisure.types'))],
             'price_rate' => 'sometimes|numeric|min:0',
             'counter' => ['sometimes', Rule::in(config('pww.leisure.counter'))],
-            'package_id' => 'sometimes|integer|exists:packages,id',
+            // 'package_id' => 'sometimes|integer|exists:packages,id',
             'availability' => ['sometimes'],
             'image' => 'nullable|image'
         ];

@@ -27,7 +27,7 @@ class CreateLeisureRequest extends BaseFormRequest
             'type' => ['required', Rule::in(config('pww.leisure.types'))],
             'price_rate' => 'required|numeric|min:0',
             'counter' => ['required', Rule::in(config('pww.leisure.counter'))],
-            'package_id' => 'required|integer|exists:packages,id',
+            // 'package_id' => 'required|integer|exists:packages,id',
             'availability' => ['required'],
             'image' => 'nullable|image'
         ];
