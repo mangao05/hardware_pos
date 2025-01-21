@@ -30,6 +30,7 @@ class ReservationDetailsResponse extends JsonResource
             "end_date" => $this->check_out_date,
             "remarks" => optional($this->reservation)->remarks,
             "status" => $this->status,
+            "guest" => $this->guest,
             "other_rooms" => $this->otherRooms(),
             "add_ons" => optional($this->reservation)->addons
         ];
