@@ -2,7 +2,7 @@
     @php
         $userRoles = auth()->user()->roles()->pluck('role_id')->toArray();
     @endphp
-    @if (in_array(12, $userRoles) || in_array(2, $userRoles))
+    @if (in_array(12, $userRoles) || in_array(11, $userRoles) || in_array(2, $userRoles))
         <li>
             <a href="{{ route('cms.dashboard') }}" class="{{ request()->routeIs('cms.dashboard') ? 'active' : '' }}">
                 <i class='bx bx-grid-alt'></i>
@@ -11,7 +11,7 @@
         </li>
     @endif
 
-    @if (in_array(12, $userRoles))
+    @if (in_array(12, $userRoles) || in_array(11, $userRoles))
         <li>
             <a href="{{ url('/user-management') }}" class="{{ request()->is('user-management') ? 'active' : '' }}">
                 <i class='bx bx-user'></i>
@@ -44,7 +44,7 @@
         </li>
     @endif
 
-    @if (in_array(12, $userRoles) || in_array(2, $userRoles))
+    @if (in_array(12, $userRoles) || in_array(2, $userRoles) || in_array(11, $userRoles))
         <li>
             <a href="{{ url('/booking') }}" class="{{ request()->is('booking') ? 'active' : '' }}">
                 <i class='bx bx-heart'></i>
@@ -56,7 +56,7 @@
         <!-- Logout Form -->
         <form action="{{ route('auth.logout') }}" method="POST" id="logoutForm">
             @csrf
-            @method('POST') <!-- CSRF and POST method for logout -->
+            @method('POST') 
             <button type="submit" style="background: none; border: none; padding: 0;">
                 <a href="#">
                     <i class='bx bx-log-out'></i>
