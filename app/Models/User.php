@@ -44,4 +44,16 @@ class User extends Authenticatable
     {
         return $this->hasMany(UserRole::class, 'user_id');
     }
+
+    /**
+     * Check if user has any of the specified roles.
+     *
+     * @param  \App\Models\User  $user
+     * @param  array  $roles
+     * @return bool
+     */
+    protected function userHasAnyRole($user, $roles)
+    {
+        return $user->roles()->whereIn('name', $roles)->exists();
+    }
 }

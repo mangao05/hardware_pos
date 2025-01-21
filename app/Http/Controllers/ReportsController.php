@@ -54,16 +54,18 @@ class ReportsController extends Controller
             ];
         }
 
-        return $this->success($statusCounts);
+        return $this->success([
+            "sales_summary" => $this->sales_summary($today),
+            "room_statuses" =>  $statusCounts
+        ]);
     }
 
 
-    public function sales_summary()
+    private function sales_summary($date)
     {
-        $date = request()->get('date', now());
         $payments = ReservationPayments::select('initial_payment', 'user_name')
             ->whereHas('reservation', function ($query) {
-                $query->whereNull('deleted_at');  
+                $query->whereNull('deleted_at');
             })
             ->whereDate('created_at', $date)
             ->get();
@@ -85,7 +87,6 @@ class ReportsController extends Controller
                 'sales' => $totalPayment,
             ];
         }
-
-        return response()->json($finalReports);
+        return $finalReports;
     }
 }

@@ -69,4 +69,4 @@ Route::post('checkout', [ReservationController::class, 'checkout']);
 Route::get('/categories/{category}/available-rooms', [RoomCategoryController::class, 'getAvailableRooms'])
     ->name('categories.available-rooms');
 
-Route::get('reports/sales-summary',[ReportsController::class, 'sales_summary']);
+// Route::get('reports/sales-summary',[ReportsController::class, 'sales_summary']);
