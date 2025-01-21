@@ -155,4 +155,4 @@ Route::middleware(['auth'])->group(function () {
         ->name('categories.available-rooms');
 });
 
-// Route::post('checkout', [ReservationController::class, 'checkout']);
+Route::post('checkout', [ReservationController::class, 'checkout']);

@@ -317,7 +317,7 @@ $(".add_ons_table").on("input", ".add-on-qty", function () {
 
 // add rooms on create reservation
 
-const rooms_selected = []; 
+let rooms_selected = []; 
 
 async function load_available_room_per_category(category_id, start_book, end_book) {
     const myUrl = "/api/categories/" + category_id + "/available-rooms?start=" + start_book + "&end=" + end_book;

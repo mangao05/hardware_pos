@@ -55,6 +55,9 @@ function loadDate(startDate, extendDays = 2) {
 }
 
 async function handleReservationClick(reservation) {
+
+    console.log(reservation);
+    
     $('.room_list_display tbody').empty();
     $('.add_ons_table tbody').empty();
     selectedAddOns = []
@@ -158,7 +161,7 @@ function transaction_button_control(input_date){
         return false
     } else if (inputDate < currentDate) {
         console.log("The input date is in the past.");
-        return false
+        return true
     } else {
         console.log("The input date is today.");
         return true
@@ -736,12 +739,12 @@ function update_booking() {
                 "room_id" : room_id,
                 "check_in_date": start_book,
                 "check_out_date": end_book,
-                "status" : status == "booked"?"reserved":status,
-                "guest" : 2
+                "status" : status,
+                "guest" : 0
             },
             addons:selectedAddOns
             
-        };
+        };        
 
         
         update_data(myUrl, myData).then(async response => {
