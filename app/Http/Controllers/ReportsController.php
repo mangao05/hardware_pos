@@ -30,6 +30,10 @@ class ReportsController extends Controller
             ->pluck('room_id')
             ->toArray();
 
+        $bookedRoomIds = ReservationRoomDetails::where('status', 'booked')
+            ->pluck('room_id')
+            ->toArray();
+
         $statusCounts = [];
 
         foreach ($roomsByCategory as $categoryName => $roomData) {
@@ -38,6 +42,7 @@ class ReportsController extends Controller
 
             $availableRooms = array_diff($allRooms, $occupiedRoomIds, $outOfServiceRooms);
             $occupiedRooms = array_intersect($allRooms, $occupiedRoomIds);
+            $bookedRooms = array_intersect($allRooms, $bookedRoomIds);
 
             $statusCounts[] = [
                 'category_name' => $categoryName,
@@ -45,6 +50,7 @@ class ReportsController extends Controller
                 'available' => count($availableRooms),
                 'occupied' => count($occupiedRooms),
                 'out_of_service' => count($outOfServiceRooms),
+                'reserved' => count($bookedRooms)
             ];
         }
 
@@ -55,7 +61,12 @@ class ReportsController extends Controller
     public function sales_summary()
     {
         $date = request()->get('date', now());
-        $payments = ReservationPayments::select('initial_payment', 'user_name')->whereDate('created_at', $date)->get();
+        $payments = ReservationPayments::select('initial_payment', 'user_name')
+            ->whereHas('reservation', function ($query) {
+                $query->whereNull('deleted_at');  
+            })
+            ->whereDate('created_at', $date)
+            ->get();
 
         $reports = [];
 
