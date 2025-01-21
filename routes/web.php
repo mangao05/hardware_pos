@@ -144,6 +144,7 @@ Route::delete('/reservation-rooms/addon/{id}', [ReservationDetailsController::cl
 Route::get('/reservation-rooms/{id}/addons', [ReservationDetailsController::class, 'listAddons']);
 
 Route::get('reports/rooms-status', [ReportsController::class, 'room_statuses']);
+Route::get('reports/sales-summary', [ReportsController::class, 'sales_summary']);
 
 
 Route::get('/categories/{category}/available-rooms', [RoomCategoryController::class, 'getAvailableRooms'])

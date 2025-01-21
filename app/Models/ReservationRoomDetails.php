@@ -47,8 +47,8 @@ class ReservationRoomDetails extends Model
                 $rooms[] = [
                     "reservation_room_details_id" => $room->id,
                     "room_id" => $room->room_id,
-                    "category_id" => $room->room->room_category_id,
-                    "room_name" => $room->room->name
+                    "category_id" => optional($room->room)->room_category_id,
+                    "room_name" => optional($room->room)->name
                 ];
             }
         }

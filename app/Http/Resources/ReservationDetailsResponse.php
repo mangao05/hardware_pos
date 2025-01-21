@@ -18,7 +18,7 @@ class ReservationDetailsResponse extends JsonResource
         return [
             "reservation_room_details_id" => $this->id,
             "name" => optional($this->reservation)->name,
-            "room" => $this->room->name,
+            "room" => optional($this->room)->name,
             "room_id" => $this->room_id,
             "reservation_id" => $this->reservation_id,
             "email" => optional($this->reservation)->email,

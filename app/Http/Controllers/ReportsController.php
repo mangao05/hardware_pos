@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Traits\ResponseFormatter;
+use App\Models\ReservationPayments;
 use App\Models\ReservationRoomDetails;
 use App\Models\Room;
 use Illuminate\Http\Request;
@@ -29,8 +30,8 @@ class ReportsController extends Controller
             ->pluck('room_id')
             ->toArray();
 
-        $statusCounts = []; 
-            
+        $statusCounts = [];
+
         foreach ($roomsByCategory as $categoryName => $roomData) {
             $allRooms = $roomData['all_rooms'];
             $outOfServiceRooms = $roomData['out_of_service'];
@@ -48,5 +49,32 @@ class ReportsController extends Controller
         }
 
         return $this->success($statusCounts);
+    }
+
+
+    public function sales_summary()
+    {
+        $date = request()->get('date', now());
+        $payments = ReservationPayments::select('initial_payment', 'user_name')->whereDate('created_at', $date)->get();
+
+        $reports = [];
+
+        foreach ($payments as $payment) {
+            if (isset($reports[$payment->user_name])) {
+                $reports[$payment->user_name] += $payment->initial_payment;
+            } else {
+                $reports[$payment->user_name] = $payment->initial_payment;
+            }
+        }
+
+        $finalReports = [];
+        foreach ($reports as $userName => $totalPayment) {
+            $finalReports[] = [
+                'user_name' => $userName,
+                'sales' => $totalPayment,
+            ];
+        }
+
+        return response()->json($finalReports);
     }
 }

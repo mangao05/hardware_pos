@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers;
 
-namespace App\Http\Controllers;
-
 use App\Exceptions\RoomUnavailableException;
 use Carbon\Carbon;
 use App\Models\Reservation;
@@ -38,6 +36,7 @@ class ReservationController extends Controller
             }
 
             $reservations = $query->orderBy('check_in_date')->get();
+            
             return $this->success(ReservationDetailsResponse::collection($reservations));
         } catch (\Exception $e) {
             return $this->error([], $e->getMessage());
