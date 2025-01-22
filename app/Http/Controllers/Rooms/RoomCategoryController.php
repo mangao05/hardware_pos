@@ -115,7 +115,7 @@ class RoomCategoryController extends Controller
             $query->where(function ($query) use ($checkIn, $checkOut) {
                 $query->where('check_in_date', '<', $checkOut)
                     ->where('check_out_date', '>', $checkIn)
-                    ->whereIn('status', ['checkin', 'booked']);
+                    ->whereNotIn('status', ['checkout']);
             });
         })->where('availability', true)->get();
 
