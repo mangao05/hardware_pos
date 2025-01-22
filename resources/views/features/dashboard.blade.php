@@ -178,7 +178,6 @@
             @php
                 $userRoles = auth()->user()->roles()->pluck('role_id')->toArray();
             @endphp
-            @dd(!in_array(12, $userRoles))
             <input type="hidden" name="roles_input" value="{{ json_encode($userRoles) }}">
             <div class="row" @if(!in_array(12, $userRoles)) style="display:none;" @endif>
                 <div class="col">
