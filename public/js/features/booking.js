@@ -3,6 +3,8 @@ let cachedRooms = null;
 let cachedBookings = null;
 let selected_category = null;
 let all_add_ons = null;
+let current_room_guest = null;
+let current_status = null
 
 
 async function loadallAddOns(){
@@ -55,9 +57,6 @@ function loadDate(startDate, extendDays = 2) {
 }
 
 async function handleReservationClick(reservation) {
-
-    console.log(reservation);
-    
     $('.room_list_display tbody').empty();
     $('.add_ons_table tbody').empty();
     selectedAddOns = []
@@ -75,7 +74,8 @@ async function handleReservationClick(reservation) {
     selectedRooms = [];
     const startDate = reservation.start_date ? new Date(reservation.start_date) : new Date();
     const endDate = reservation.end_date ? new Date(reservation.end_date) : new Date();
-
+    current_room_guest = reservation.guest
+    current_status = reservation.status
     // Initialize daterangepicker with a callback
     $('#edit_daterange').daterangepicker({
         startDate: startDate,
@@ -118,16 +118,25 @@ async function handleReservationClick(reservation) {
     
     check_status_date = transaction_button_control(start_book);
 
-    if(reservation.status == "checkin"){
+    if(current_status == "checkin_paid"){
+        $('.btn_edit').hide()
+        $('.btn_view_summary').hide()
+    }else{
+        $('.btn_edit').show()
+        $('.btn_view_summary').show()
+    }
+
+    if(reservation.status == "checkin" && current_status == "checkin_paid"){
         $('.btn_early_check_out').show()
         $('.btn_check_out').show()
     }else{
         $('.btn_early_check_out').hide()
         $('.btn_check_out').hide()
+        // $('.btn_edit').show()
     }
         
     
-    if(check_status_date && reservation.status != "checkin"){
+    if(check_status_date && reservation.status != "checkin_paid" && reservation.status != "checkin"){
         $('.btn_checkin').show()
     }else{
         $('.btn_checkin').hide()
@@ -275,9 +284,12 @@ async function get_all_booking() {
 function getReservationColor(status) {
     switch (status) {
         case "booked": return "#EE534F";
+        case "reserved_partial": return "#5E6AC0";
         case "checkout": return "#F6911B";
-        case "cancel": return "red";
-        case "checkin": return "#65BB6A"
+        case "cancelled": return "BDBDBD";
+        case "checkin": return "#65BB6A";
+        case "checkin_partial": return "#42A5F6";
+        case "checkin_paid": return "#FFEE58";
         default: return "#012866";
     }
 }
@@ -740,12 +752,12 @@ function update_booking() {
                 "check_in_date": start_book,
                 "check_out_date": end_book,
                 "status" : status,
-                "guest" : 0
+                "guest" : current_room_guest
             },
             addons:selectedAddOns
             
-        };        
-
+        };     
+        
         
         update_data(myUrl, myData).then(async response => {
             const textbox = document.getElementById("edit_daterange");

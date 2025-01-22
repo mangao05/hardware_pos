@@ -1,3 +1,8 @@
+let sum = 0; // Total price
+
+
+
+
 function change_status(status){
 
     var confirm_button = ""
@@ -59,7 +64,6 @@ function extend_book(){
 
 let payment = 0; // Default initial payment value
 const total_price = []; // Array to store room prices
-let sum = 0; // Total price
 let total_balance = 0;
 let initial_pyment_list = []
 
@@ -68,10 +72,9 @@ async function view_summary() {
     const myUrl = "/reservations/" + reservation_id;
     const res = await get_data(myUrl);
     let new_price = null
-    let percent = null
-    let result = ""
     let total_res = 0
     let total_guest = [];
+
 
     $('#transaction_name').text(res.data.name);
     $('#trans_email').text(res.data.email);
@@ -81,8 +84,14 @@ async function view_summary() {
     $('.order_details_summary tbody').empty();
     total_price.length = 0; // Clear previous values
     res.data.reservation_details.forEach(details => {
+
+        let startDate = new Date(details.check_in_date);
+        let endDate = new Date(details.check_out_date);
+
+        let diffInMilliseconds = Math.abs(endDate - startDate);
+        let diffInDays = Math.ceil(diffInMilliseconds / (1000 * 60 * 60 * 24));
+
         total_guest.push(parseInt(details.guest))
-        console.log(type_rate);
         
         if(type_rate){
             if (/^\d+%$/.test(type_rate)) {
@@ -91,30 +100,30 @@ async function view_summary() {
                     const per = parseInt(type_rate_value) / 100;
                     const res = parseInt(details.room_details.price) * per.toFixed(2);
                     total_res = parseInt(details.room_details.price) - res
-                    total_price.push(total_res);
+                    total_price.push(total_res * diffInDays);
 
                 }else{
                     total_res = parseInt(details.room_details.price) - parseInt(type_rate);
-                    total_price.push(total_res);
+                    total_price.push(total_res * diffInDays);
                 }
         }else{
-            total_price.push(details.room_details.price);
+            total_price.push(details.room_details.price * diffInDays);
         }
 
         
 
         const row = `
             <tr>
-                <td class="table-custome-align">${details.room_details.name}(<sup>guest:${details.guest}</sup>)</td>
+                <td class="table-custome-align">${details.room_details.name}(<sup>guest:${details.guest}</sup>)(<sup>₱${details.room_details.price}</sup>)</td>
                 <td class="table-custome-align">${details.room_details.room_category_name}</td>
-                <td class="table-custome-align">N/A</td>
+                <td class="table-custome-align">${diffInDays}<sup>day/s</sup></td>
                 <td class="table-custome-align">
                     
                     <span>
-                    ${type_rate?"<span class='text-danger'><s>₱"+details.room_details.price+"</s><sup>-"+type_rate+"<sup></span>":"₱"+details.room_details.price}
+                    ${type_rate?"<span class='text-danger'><s>₱"+details.room_details.price * diffInDays+"</s><sup>-"+type_rate+"<sup></span>":"₱"+details.room_details.price * diffInDays}
                     </span>
                     <br>
-                    ${type_rate?"₱"+total_res:''}
+                    ${type_rate?"₱"+total_res*diffInDays:''}
                 </td>
             </tr>
         `;
@@ -123,7 +132,6 @@ async function view_summary() {
 
     res.data.addons.forEach(addon => {
         total_price.push(parseInt(addon.addon_price) * parseInt(addon.qty));
-        console.log(addon);
         
         $('.order_details_summary tbody').append(`
             <tr>
@@ -140,27 +148,24 @@ async function view_summary() {
     
     sum = total_price.reduce((acc, val) => acc + val, 0);
 
+    let total_payment = 0
+    
+    
     if(res.data.payments.length == 0){
         total_balance = sum
         $('#total_balance').text("₱"+sum)
     }else{
-        const payment_list = res.data.payments
+        
+        res.data.payments.forEach(payment => {
+            total_payment += parseInt(payment.initial_payment)
+        });
+        
+        balance = sum - total_payment
        
         
-        payment_list.forEach(element => {
-            initial_pyment_list.push(parseInt(element.initial_payment))
-        });
-
-        total_balance = sum - initial_pyment_list.reduce((acc, val) => acc + val, 0);
-        const a = res.data.payments
-
-        // console.log(sum);
-        console.log(initial_pyment_list.reduce((acc, val) => acc + val, 0));
-        
-        
-        $('#total_balance').html(total_balance <= 0 
+        $('#total_balance').html(balance <= 0 
             ? "<span class='text-success'><strong>Paid</strong></span>" 
-            : "₱" + total_balance);
+            : "₱" + balance);
     }
 
     fetchTransaction(res.data.payments)
@@ -322,8 +327,6 @@ let rooms_selected = [];
 async function load_available_room_per_category(category_id, start_book, end_book) {
     const myUrl = "/api/categories/" + category_id + "/available-rooms?start=" + start_book + "&end=" + end_book;
     const roomDataList = await get_data(myUrl);
-
-    console.log(roomDataList);
     
     $('.room_list_display tbody').empty();
 

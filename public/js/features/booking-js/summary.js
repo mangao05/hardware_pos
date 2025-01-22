@@ -78,11 +78,11 @@ function store_transaction(){
                 const payment_list = payment.data.payments
                 fetchTransaction(payment_list);
                 const a = payment_list[payment_list.length - 1];
-                
                 $('#total_balance').html(a.balance <= 0 
                 ? "<span class='text-success'><strong>Paid</strong></span>" 
                 : "₱" + a.balance);
                 initial_pyment_list = []
+                change_status_after_payment(a.balance)
             })
         }
     });
@@ -90,6 +90,30 @@ function store_transaction(){
     
 
     $('#btn_save_transaction_receipt').hide()
+}
+
+async function change_status_after_payment(balance){
+    const reservation_id = $('#edit_reservation_id').val()
+    const room_id = $('#edit_room_id').val()
+    let status = null;
+
+    if(balance == 0 && current_status == "checkin"){
+        status = "checkin_paid"
+    }else{
+        status = "checkin_partial"
+    }
+
+    if(balance != 0 && current_status == "booked"){
+        status = "reserved_partial"
+    }
+    
+    const myUrl = "/reservations/"+reservation_id+"/update-status/"+room_id
+    const myData = {
+        status:status
+    }
+    await update_data(myUrl,myData)
+    window.location.reload();
+    
 }
 
 
