@@ -118,15 +118,15 @@ async function handleReservationClick(reservation) {
     
     check_status_date = transaction_button_control(start_book);
 
-    if(current_status == "checkin_paid"){
-        $('.btn_edit').hide()
-        $('.btn_view_summary').hide()
-    }else{
-        $('.btn_edit').show()
-        $('.btn_view_summary').show()
-    }
+    // if(current_status == "checkin_paid"){
+    //     $('.btn_edit').hide()
+    //     $('.btn_view_summary').hide()
+    // }else{
+    //     $('.btn_edit').show()
+    //     $('.btn_view_summary').show()
+    // }
 
-    if(reservation.status == "checkin" && current_status == "checkin_paid"){
+    if(reservation.status == "checkin" || current_status == "checkin_paid"){
         $('.btn_early_check_out').show()
         $('.btn_check_out').show()
     }else{
