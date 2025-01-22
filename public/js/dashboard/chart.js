@@ -62,6 +62,7 @@ async function loadReport() {
 
 
 function initializeChart() {
+  
   const ctx = document.getElementById("myChart").getContext("2d");
   chart = new Chart(ctx, {
     type: "bar",
@@ -92,6 +93,9 @@ function updateChart(labels, data, colors) {
 }
 
 $(document).ready(() => {
-  initializeChart(); // Initialize the chart once
+  var rolesInputValue = JSON.parse(document.querySelector('input[name="roles_input"]').value);
+  if (rolesInputValue.includes(12)) {
+    initializeChart();
+  } 
   loadReport(); // Load data and update the chart
 });

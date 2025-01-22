@@ -7,8 +7,8 @@
 
 
 @section('content')
-<div class="overview-boxes">
-  {{-- <div class="box">
+    <div class="overview-boxes">
+        {{-- <div class="box">
     <div class="right-side">
       <div class="box-topic">Total Order</div>
       <div class="number">40,876</div>
@@ -170,35 +170,38 @@
     </ul>
   </div> --}}
 
-<style scoped>
+        <style scoped>
 
-</style>
+        </style>
 
-<div class="container-fluid">
-  <div class="row">
-    <div class="col">
-      <canvas id="myChart" style="width:100%;max-width:700px"></canvas>
-    </div>
-  </div>
-  <div class="row">
-    <div class="col">
-      <div>
-        <strong>
-          Rooms
-        </strong>
-      </div>
-      <div class="row" id="report_room">
-      
-      </div>
-    </div>
-  </div>
-</div>
+        <div class="container-fluid">
+            @php
+                $userRoles = auth()->user()->roles()->pluck('role_id')->toArray();
+            @endphp
+            @dd(!in_array(12, $userRoles))
+            <input type="hidden" name="roles_input" value="{{ json_encode($userRoles) }}">
+            <div class="row" @if(!in_array(12, $userRoles)) style="display:none;" @endif>
+                <div class="col">
+                    <canvas id="myChart" style="width:100%;max-width:700px"></canvas>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <div>
+                        <strong>
+                            Rooms
+                        </strong>
+                    </div>
+                    <div class="row" id="report_room">
 
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endsection
 
-@endsection
-
-@section('js')
-  <script src="{{ asset('js/helper/app_helper.js') }}"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
-  <script src="{{ asset('js/dashboard/chart.js') }}"></script>
-@endsection
+    @section('js')
+        <script src="{{ asset('js/helper/app_helper.js') }}"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+        <script src="{{ asset('js/dashboard/chart.js') }}"></script>
+    @endsection
