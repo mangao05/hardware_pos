@@ -14,7 +14,7 @@ class RoleSeeder extends Seeder
      */
     public function run(): void
     {
-
+        DB::table('roles')->truncate();
         $roles = [
             ['name' => 'Reservationist'],
             ['name' => 'Front Desk'],
@@ -27,6 +27,7 @@ class RoleSeeder extends Seeder
             ['name' => 'Supervisor Aide'],
             ['name' => 'Guest Counter'],
             ['name' => 'Errand'],
+            ['name' => 'Super Admin'],
         ];
 
         foreach ($roles as $role) {
