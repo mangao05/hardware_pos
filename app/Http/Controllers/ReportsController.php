@@ -89,4 +89,17 @@ class ReportsController extends Controller
         }
         return $finalReports;
     }
+
+    public function payments_summary()
+    {
+        try {
+            $date = request()->get('date', now());
+            $payments = ReservationPayments::whereDate('created_at', $date)
+                ->whereNull('reservation_id')
+                ->paginate(10);
+            return $this->success($payments, 'Successfully fetched payments.');
+        } catch (\Exception $e) {
+            return $this->error([], $e->getMessage());
+        };
+    }
 }
