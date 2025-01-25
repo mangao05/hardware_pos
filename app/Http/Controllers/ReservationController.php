@@ -2,18 +2,19 @@
 
 namespace App\Http\Controllers;
 
-use App\Exceptions\RoomUnavailableException;
 use Carbon\Carbon;
+use App\Models\Room;
 use App\Models\Reservation;
+use App\Models\RoomCategory;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use App\Models\ReservationPayments;
 use App\Http\Traits\ResponseFormatter;
+use App\Models\ReservationRoomDetails;
 use App\Http\Requests\ReservationRequest;
+use App\Exceptions\RoomUnavailableException;
 use App\Http\Requests\UpdateReservationRequest;
 use App\Http\Resources\ReservationDetailsResponse;
-use App\Models\ReservationRoomDetails;
-use App\Models\Room;
-use App\Models\RoomCategory;
-use Illuminate\Support\Facades\DB;
 
 class ReservationController extends Controller
 {
@@ -36,7 +37,7 @@ class ReservationController extends Controller
             }
 
             $reservations = $query->orderBy('check_in_date')->get();
-            
+
             return $this->success(ReservationDetailsResponse::collection($reservations));
         } catch (\Exception $e) {
             return $this->error([], $e->getMessage());
@@ -207,44 +208,57 @@ class ReservationController extends Controller
     public function checkout(Request $request)
     {
         DB::beginTransaction();
-
         try {
             $total_amount = (float) $request->total;
             $payment = (float) $request->initial_payment;
-            $reservation = Reservation::find($request->reservation_id);
 
-            // Retrieve the most recent payment entry
-            $lastPayment = $reservation->payments()->orderBy('created_at', 'desc')->first();
+            if (! empty($request->reservation_id)) {
+                $reservation = Reservation::find($request->reservation_id);
 
-            // Initialize balance calculation
-            $initial_balance = $total_amount - $payment;
-            $current_balance = $initial_balance;
+                // Retrieve the most recent payment entry
+                $lastPayment = $reservation->payments()->orderBy('created_at', 'desc')->first();
 
-            if (!empty($lastPayment)) {
-                $previous_total_amount = (float) $reservation->total_amount; // Assuming `total_amount` is stored on the reservation
-                $balance_change = $total_amount - $previous_total_amount;
+                // Initialize balance calculation
+                $initial_balance = $total_amount - $payment;
+                $current_balance = $initial_balance;
 
-                // Adjust the new balance based on total amount changes and last payment balance
-                $current_balance = $lastPayment->balance + $balance_change - $payment;
+                if (!empty($lastPayment)) {
+                    $previous_total_amount = (float) $reservation->total_amount; // Assuming `total_amount` is stored on the reservation
+                    $balance_change = $total_amount - $previous_total_amount;
+
+                    // Adjust the new balance based on total amount changes and last payment balance
+                    $current_balance = $lastPayment->balance + $balance_change - $payment;
+                }
+
+                $data = [
+                    'customer' => $request->customer_name,
+                    'user_id' => auth()->check() ? auth()->user()->id : null,
+                    'user_name' => auth()->check() ? auth()->user()->firstname . ' ' . auth()->user()->lastname : 'Guest',
+                    'initial_payment' => $payment,
+                    'balance' => $current_balance,
+                    'transaction_number' => $request->transaction_number
+                ];
+
+                $reservation->payments()->create($data);
+                $reservation->update([
+                    'discount' => $request->discount,
+                    'total_amount' => $total_amount,
+                    'payment_status' => $current_balance > 0 ? 'unpaid' : 'paid'
+                ]);
+                DB::commit();
+                return $this->success($reservation->load('payments'), "Payment for Reservation success");
+            } else {
+                $payment = ReservationPayments::create([
+                    'customer' => $request->customer_name,
+                    'user_id' => auth()->check() ? auth()->user()->id : null,
+                    'user_name' => auth()->check() ? auth()->user()->firstname . '' . auth()->user()->lastname : 'Guest',
+                    'initial_payment' => $payment,
+                    'balance' => 0,
+                    'transaction_number' => $request->transaction_number
+                ]);
+                DB::commit();
+                return $this->success($payment, "Walk in payment success.");
             }
-
-            $data = [
-                'customer' => $request->customer_name,
-                'user_id' => auth()->check() ? auth()->user()->id : null,
-                'user_name' => auth()->check() ? auth()->user()->firstname . ' ' . auth()->user()->lastname : 'Guest',
-                'initial_payment' => $payment,
-                'balance' => $current_balance
-            ];
-
-            $reservation->payments()->create($data);
-            $reservation->update([
-                'discount' => $request->discount,
-                'total_amount' => $total_amount,
-                'payment_status' => $current_balance > 0 ? 'unpaid' : 'paid'
-            ]);
-            DB::commit();
-
-            return $this->success($reservation->load('payments'), "Payment for Reservation success");
         } catch (\Exception $e) {
             DB::rollBack();
             return $this->error([], $e->getMessage());
