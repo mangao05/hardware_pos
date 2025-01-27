@@ -264,4 +264,17 @@ class ReservationController extends Controller
             return $this->error([], $e->getMessage());
         }
     }
+
+    public function voidPayment()
+    {
+        try {
+            $paymentId = request()->get('reservation_payment_id');
+            $payment = ReservationPayments::findOrFail($paymentId);
+            $payment->delete();
+            
+            return $this->success($payment, 'Payment voided successfully.');
+        } catch (\Exception $e) {
+            return $this->error([], $e->getMessage());
+        }
+    }
 }

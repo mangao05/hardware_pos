@@ -16,6 +16,7 @@ use App\Http\Controllers\Authentication\Logout;
 use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\ReservationDetailsController;
 use App\Http\Controllers\Rooms\RoomCategoryController;
+use App\Http\Controllers\UserVerifyPasswordController;
 
 /*
 |--------------------------------------------------------------------------
@@ -152,9 +153,12 @@ Route::middleware(['auth'])->group(function () {
     Route::get('reports/rooms-status', [ReportsController::class, 'room_statuses']);
     Route::get('reports/sales-summary', [ReportsController::class, 'sales_summary']);
     Route::get('reports/walk-in/payments-summary', [ReportsController::class, 'payments_summary']);
-    
+
     Route::get('/categories/{category}/available-rooms', [RoomCategoryController::class, 'getAvailableRooms'])
         ->name('categories.available-rooms');
+
+    Route::post('/user/verify-password', [UserVerifyPasswordController::class, 'verify']);
+    Route::post('/payments/delete', [ReservationController::class, 'voidPayment']);
 });
 
 Route::post('checkout', [ReservationController::class, 'checkout']);
