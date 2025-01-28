@@ -114,10 +114,10 @@ async function view_summary() {
 
         const row = `
             <tr>
-                <td class="table-custome-align">${details.room_details.name}(<sup>guest:${details.guest}</sup>)(<sup>₱${details.room_details.price}</sup>)</td>
-                <td class="table-custome-align">${details.room_details.room_category_name}</td>
-                <td class="table-custome-align">${diffInDays}<sup>day/s</sup></td>
-                <td class="table-custome-align">
+                <td class="table-custome-align" style="font-size: 12px;padding:1px">${details.room_details.name}(<sup>guest:${details.guest}</sup>)(<sup>₱${details.room_details.price}</sup>)</td>
+                <td class="table-custome-align" style="font-size: 12px;padding:1px">${details.room_details.room_category_name}</td>
+                <td class="table-custome-align" style="font-size: 12px;padding:1px">${diffInDays}<sup>day/s</sup></td>
+                <td class="table-custome-align" style="font-size: 12px;padding:1px">
                     
                     <span>
                     ${type_rate?"<span class='text-danger'><s>₱"+details.room_details.price * diffInDays+"</s><sup>-"+type_rate+"<sup></span>":"₱"+details.room_details.price * diffInDays}
@@ -135,10 +135,10 @@ async function view_summary() {
         
         $('.order_details_summary tbody').append(`
             <tr>
-                <td class="table-custome-align">${addon.addon_name}<sup>₱${addon.addon_price}</sup></td>
-                <td class="table-custome-align"></td>
-                <td class="table-custome-align">${addon.qty}</td>
-                <td class="table-custome-align">₱${parseInt(addon.addon_price) * parseInt(addon.qty)}</td>
+                <td class="table-custome-align" style="font-size: 12px;padding:1px">${addon.addon_name}<sup>₱${addon.addon_price}</sup></td>
+                <td class="table-custome-align" style="font-size: 12px;padding:1px"></td>
+                <td class="table-custome-align" style="font-size: 12px;padding:1px">${addon.qty}</td>
+                <td class="table-custome-align" style="font-size: 12px;padding:1px">₱${parseInt(addon.addon_price) * parseInt(addon.qty)}</td>
             </tr>    
         `);
     });
@@ -180,19 +180,19 @@ async function view_summary() {
 function update_summary(guests) {
     $('.order_details_summary tbody').append(`
         <tr>
-            <td class="table-custome-align">Guest<sup><i>₱450/guest</i></sup></td>
-            <td class="table-custome-align"></td>
-            <td class="table-custome-align">${guests}</td>
-            <td class="table-custome-align">₱${guests * 450}</td>
+            <td class="table-custome-align" style="font-size: 12px;padding:1px">Guest<sup><i>₱450/guest</i></sup></td>
+            <td class="table-custome-align" style="font-size: 12px;padding:1px"></td>
+            <td class="table-custome-align" style="font-size: 12px;padding:1px">${guests}</td>
+            <td class="table-custome-align" style="font-size: 12px;padding:1px">₱${guests * 450}</td>
         </tr>    
     `);
 
     $('.order_details_summary tbody').append(`
         <tr style="background-color:linen">
-            <td class="table-custome-align"><strong>Total Payment:</strong></td>
-            <td class="table-custome-align"></td>
-            <td class="table-custome-align"></td>
-            <td class="table-custome-align">₱${sum}</td>
+            <td class="table-custome-align" style="font-size: 12px;padding:1px"><strong>Total Payment:</strong></td>
+            <td class="table-custome-align" style="font-size: 12px;padding:1px"></td>
+            <td class="table-custome-align" style="font-size: 12px;padding:1px"></td>
+            <td class="table-custome-align" style="font-size: 12px;padding:1px">₱${sum}</td>
         </tr>    
     `);
 
@@ -338,7 +338,7 @@ async function load_available_room_per_category(category_id, start_book, end_boo
 
         const row = `
             <tr data-room-id="${roomData.id}">
-                <td class="table-custome-align">${roomData.name}(category name)<small class="text-danger" id="room_${roomData.id}"></small></td>
+                <td class="table-custome-align">${roomData.name}<small class="text-danger" id="room_${roomData.id}"></small></td>
                 <td class="table-custome-align"><input class="form-control guest-input" name="guests[]" type="number" min="1" value="${guestCount}"></td>
                 <td class="table-custome-align"><input type="checkbox" class="room-checkbox" data-room-id="${roomData.id}" ${isChecked ? "checked" : ""}></td>
             </tr>

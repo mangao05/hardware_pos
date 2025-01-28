@@ -212,7 +212,7 @@ async function loadCalendar(startDate,category_id = 0) {
 
         if (roomReservations.length === 0) {
             const emptyRow = `<tr><td class="border sticky-left">${room}</td>` +
-                date_value.map(() => '<td class="border"></td>').join('') +
+                date_value.map(() => '<td class="border" style="border-color:gray !important"></td>').join('') +
                 "</tr>";
             tbodyRows.push(emptyRow);
         } else {
@@ -239,14 +239,14 @@ async function loadCalendar(startDate,category_id = 0) {
                                 row += `<td class="border clickable-reservation text-capitalize" 
                                              colspan="${daysSpanning}" 
                                              style="background-color:${bgColor}; text-align:center; vertical-align:middle; 
-                                             padding:2px; border-radius:15px; color:white;font-size:12px; cursor:pointer;"
+                                             padding:2px; border-radius:15px; color:white;font-size:12px; cursor:pointer;border-color:gray !important"
                                              data-reservation='${JSON.stringify(reservation)}'>
                                             ${reservation.name} (${transaction_type})
                                         </td>`;
                             }
                         }
                     } else {
-                        row += '<td class="border"></td>'; // Empty cell for dates without reservations
+                        row += '<td class="border" style="border-color:gray !important"></td>'; // Empty cell for dates without reservations
                     }
                 });
                 row += "</tr>";

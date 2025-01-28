@@ -2,13 +2,41 @@ $(document).ready(function() {
     loadRoomCategory()
 });
 
+var no_of_page = 10;
+var page = 1;
+var total_pages = 1;
 
+function next_page() {
+    if (page < total_pages) {
+        page++;
+        loadRoomCategory();
+        updatePaginationButtons();
+    }
+}
 
-async function loadRoomCategory(){
-    myUrl = "room-categories"
+function prev_page() {
+    if (page > 1) {
+        page--;
+        loadRoomCategory();
+        updatePaginationButtons();
+    }
+}
+
+function updatePaginationButtons() {
+    $("#prev-button").prop('disabled', page === 1);
+    $("#next-button").prop('disabled', page === total_pages);
+    $("#page-info").text(`Page ${page} of ${total_pages}`);
+}
+
+async function loadRoomCategory() {
+    const myUrl = `room-categories?per_page=${no_of_page}&page=${page}`;
     try {
         const response = await axios.get(myUrl);
-        $("#data-table-rooms_category tbody").empty();
+        const tbody = $("#data-table-rooms_category tbody");
+        tbody.empty();
+
+        total_pages = response.data.categories.last_page;
+
         response.data.categories.data.forEach(item => {
             const row = `
                 <tr>
@@ -17,21 +45,21 @@ async function loadRoomCategory(){
                     <td>${item.near_at}</td>
                     <td>${item.description}</td>
                     <td>
-                        ${item.availability == 0?`<span class="badge bg-danger">Inactive</span>`:`<span class="badge bg-success">Active</span>`}
-                        
+                        ${item.availability == 0 ? `<span class="badge bg-danger">Inactive</span>` : `<span class="badge bg-success">Active</span>`}
                     </td>
                     <td>
-                        <span class="badge bg-primary edit-button" data-user='${JSON.stringify(item)}' onclick="edit_room_category(this)">Edit</span>
-                        <span class="badge bg-danger delete-button" onclick="delete_room_category(${item.id})">Delete</span>
+                        <button class="btn btn-primary btn-sm me-1 edit-button" data-user='${JSON.stringify(item)}' onclick="edit_room_category(this)">Edit</button>
+                        <button class="btn btn-danger btn-sm delete-button" onclick="delete_room_category(${item.id})">Delete</button>
                     </td>
                 </tr>
             `;
-            $("#data-table-rooms_category tbody").append(row);
+            tbody.append(row);
         });
-        
+
+        updatePaginationButtons();
     } catch (error) {
         if (error.response) {
-            return error.response.data
+            console.error("Error loading room categories:", error.response.data);
         }
     }
 }

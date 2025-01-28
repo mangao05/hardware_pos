@@ -72,7 +72,7 @@
             <div class="col p-4" id="printableArea">
               <img src="{{ asset('img/pantukan_logo.png') }}" class="mt-3" style="width: 70px" alt="">
               <hr>
-              <div class="row">
+              <div class="row" style="border-bottom: 1px solid black">
                 <div class="col">
                   <small>
                     <strong>
@@ -81,7 +81,7 @@
                   </small>
                   <table>
                     <tbody>
-                      <tr>
+                      <tr style="height: 10px !important">
                         <td class="summary_label">Name:</td><td style="text-align: left;font-size:14px"><span id="transaction_name"></span></td>
                       </tr>
                       <tr>
@@ -89,9 +89,6 @@
                       </tr>
                       <tr>
                         <td class="summary_label">Contact No:</td><td style="text-align: left;font-size:14px"><span id="trans_phone"></span></td>
-                      </tr>
-                      <tr>
-                        <td class="summary_label">Address:</td><td style="text-align: left;font-size:14px"><span id="trans_address"></span></td>
                       </tr>
                     </tbody>
                   </table>
@@ -104,6 +101,9 @@
                     <table>
                       <tbody>
                         <tr>
+                          <td class="summary_label">Address:</td><td style="text-align: left;font-size:14px"><span id="trans_address"></span></td>
+                        </tr>
+                        <tr>
                           <td class="summary_label">Date:</td><td style="text-align: left"><span id="date_transaction_current">Jan 23, 2025</span></td>
                         </tr>
                         <tr>
@@ -114,7 +114,7 @@
                   </small>
                 </div>
               </div>
-              <hr>
+              
               <div class="row">
                 <div class="col">
                   <small>
@@ -123,10 +123,10 @@
                     </strong>
                     <table class="table order_details_summary">
                       <thead>
-                        <th class="table-custome-align">Item Name</th>
-                        <th class="table-custome-align">Category</th>
-                        <th class="table-custome-align">Qty</th>
-                        <th class="table-custome-align">Price</th>
+                        <th class="table-custome-align" style="font-size: 12px;padding:0px">Item Name</th>
+                        <th class="table-custome-align" style="font-size: 12px;padding:0px">Category</th>
+                        <th class="table-custome-align" style="font-size: 12px;padding:0px">Qty</th>
+                        <th class="table-custome-align" style="font-size: 12px;padding:0px">Price</th>
                       </thead>
                       <tbody>
                           
@@ -135,9 +135,8 @@
                   </small>
                 </div>
               </div>
-              <hr>
               {{-- Transaction reciept logs --}}
-              <div class="row">
+              <div class="row" style="border-top: 1px solid black">
                 <div class="col">
                   <small>
                     <strong>
@@ -145,10 +144,10 @@
                     </strong>
                     <table class="table transaction_history">
                       <thead>
-                        <th>Customer</th>
-                        <th>Payment</th>
-                        <th>Balance</th>
-                        <th>Date</th>
+                        <th style="font-size: 12px;padding:1px">Customer</th>
+                        <th style="font-size: 12px;padding:1px">Payment</th>
+                        <th style="font-size: 12px;padding:1px">Balance</th>
+                        <th style="font-size: 12px;padding:1px">Date</th>
                       </thead>
                       <tbody>
                          
@@ -158,10 +157,8 @@
                 </div>
               </div>
               {{-- end Transaction reciept logs --}}
-
-              <hr>
               <div class="row rules_regulation" style="display: none">
-                <div class="col" style="font-size: 12px">
+                <div class="col" style="font-size: 8px">
                   <p><strong>TO OUR VALUED GUESTS</strong></p>
                   <p>
                     Thank you for choosing Water World Pantukan Beach Resort! It is our main priority to meet your expectations. We would like to remind you of our minimal Rules and Regulations to ensure a satisfying stay:

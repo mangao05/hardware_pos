@@ -36,8 +36,8 @@
     </div>
     <div class="row justify-content-end">
         <div class="col-3 text-end">
-            <button class="btn btn-secondary me-2" onclick="prev_page()">Prev</button>
-            <button class="btn btn-secondary" onclick="next_page()">Next</button>
+            <button id="prev-button" class="btn btn-secondary me-2" onclick="prev_page()">Prev</button>
+            <button id="next-button" class="btn btn-secondary" onclick="next_page()">Next</button>
         </div>
     </div>
 

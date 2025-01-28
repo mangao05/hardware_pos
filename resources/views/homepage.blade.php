@@ -100,7 +100,7 @@
 
         <div class="home-content">
             {{-- <div class="main-content"> --}}
-            <div class="">
+            <div class="container-fluid">
                 @yield('content')
             </div>
 

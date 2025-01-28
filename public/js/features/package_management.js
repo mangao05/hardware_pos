@@ -3,8 +3,34 @@ $(document).ready(function() {
     loadPackageList()
 });
 
+
+var no_of_page = 10;
+var page = 1;
+var total_pages = 1;
+
+function next_page() {
+    if (page < total_pages) {
+        page++;
+        loadPackageList();
+        updatePaginationButtons();
+    }
+}
+
+function prev_page() {
+    if (page > 1) {
+        page--;
+        loadPackageList();
+        updatePaginationButtons();
+    }
+}
+
+function updatePaginationButtons() {
+    $("#prev-button").prop('disabled', page === 1);
+    $("#next-button").prop('disabled', page === total_pages);
+}
+
 function loadPackageList(){
-    myUrl = "/api/packages"
+    myUrl = "/api/packages?per_page="+no_of_page+"&page="+page
     axios.get(myUrl, null, {
         headers: {
         'Content-Type': 'application/json'
@@ -12,6 +38,7 @@ function loadPackageList(){
     })
     .then(function (response) {
         db_data = response.data.data.data;
+        total_pages = response.data.data.last_page;
         
         $("#package_table_list tbody").empty();
         db_data.forEach(item => {
@@ -31,6 +58,7 @@ function loadPackageList(){
             `;
             $("#package_table_list tbody").append(row);
         });
+        updatePaginationButtons();
     })
     .catch(function (error) {
         alert('oops');

@@ -27,26 +27,44 @@ async function loadRoomCategory(){
     }
 }
 
-var no_of_page = 10
-var page = 1
+var no_of_page = 10;
+var page = 1;
+var total_pages = 1;
 
-function next_page(){
-    page++
-    loadRoom()
+function next_page() {
+    if (page < total_pages) {
+        page++;
+        loadRoom();
+        updatePaginationButtons();
+    }
 }
 
-function prev_page(){
-    page--
-    loadRoom()
+function prev_page() {
+    if (page > 1) {
+        page--;
+        loadRoom();
+        updatePaginationButtons();
+    }
+}
+
+function updatePaginationButtons() {
+    $("#prev-button").prop('disabled', page === 1);
+    $("#next-button").prop('disabled', page === total_pages);
 }
 
 async function loadRoom(){
     myUrl = "rooms-data?per_page="+no_of_page+"&page="+page
-    try {
-        const response = await axios.get(myUrl);
+    axios.get(myUrl, null, {
+        headers: {
+        'Content-Type': 'application/json'
+        }
+    }).then(function (response) {
+        db_data = response.data.rooms.data;
+        console.log(response);
+        
+        total_pages = response.data.rooms.last_page;
         $("#data-table-rooms tbody").empty();
-        response.data.rooms.data.forEach(item => {
-            console.log(item);
+        response.data.rooms.data.forEach((item, index) => {
             
             const row = `
                 <tr>
@@ -65,12 +83,48 @@ async function loadRoom(){
             `;
             $("#data-table-rooms tbody").append(row);
         });
+        updatePaginationButtons();
+
+    })
+    .catch(function (error) {
+        alert('oops');
+        console.log(error);
+    });
+
+
+    // try {
+    //     const response = await axios.get(myUrl);
+    //     $("#data-table-rooms tbody").empty();
+
+    //     total_pages = response.data.data.last_page;
+
+    //     response.data.rooms.data.forEach((item, index) => {
+    //         console.log(item);
+            
+    //         const row = `
+    //             <tr>
+    //                 <td>${item.name}</td>
+    //                 <td>₱${item.price}</td>
+    //                 <td>pending data ${item.room_category_id}</td>
+    //                 <td>${item.pax}</td>
+    //                 <td>
+    //                     ${item.availability == 0?`<span class="badge bg-danger">Inactive</span>`:`<span class="badge bg-success">Active</span>`}
+    //                 </td>
+    //                 <td>
+    //                     <span class="badge bg-primary edit-button" data-room='${JSON.stringify(item)}' onclick="edit_room(this)">Edit</span>
+    //                     <span class="badge bg-danger delete-button" onclick="delete_rooms(${item.id})">Delete</span>
+    //                 </td>
+    //             </tr>
+    //         `;
+    //         $("#data-table-rooms tbody").append(row);
+    //     });
+    //     updatePaginationButtons();
         
-    } catch (error) {
-        if (error.response) {
-            return error.response.data
-        }
-    }
+    // } catch (error) {
+    //     if (error.response) {
+    //         return error.response.data
+    //     }
+    // }
 }
 
 

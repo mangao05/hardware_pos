@@ -38,6 +38,13 @@
             </table>
         </div>
     </div>
+    <div class="row justify-content-end">
+        <div class="col-3 text-end">
+            <span id="page-info" class="me-3">Page 1 of 1</span>
+            <button id="prev-button" class="btn btn-secondary me-2" onclick="prev_page()">Prev</button>
+            <button id="next-button" class="btn btn-secondary" onclick="next_page()">Next</button>
+        </div>
+    </div>
 </div>
 @endsection
 

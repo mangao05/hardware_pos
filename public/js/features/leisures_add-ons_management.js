@@ -4,8 +4,34 @@ $(document).ready(function() {
     // alert(123)
 });
 
+
+var no_of_page = 10;
+var page = 1;
+var total_pages = 1;
+
+function next_page() {
+    if (page < total_pages) {
+        page++;
+        loadLeisuresList();
+        updatePaginationButtons();
+    }
+}
+
+function prev_page() {
+    if (page > 1) {
+        page--;
+        loadLeisuresList();
+        updatePaginationButtons();
+    }
+}
+
+function updatePaginationButtons() {
+    $("#prev-button").prop('disabled', page === 1);
+    $("#next-button").prop('disabled', page === total_pages);
+}
+
 function loadLeisuresList(){
-    myUrl = "/api/leisures/"
+    myUrl = "/api/leisures?per_page="+no_of_page+"&page="+page
     axios.get(myUrl, null, {
         headers: {
         'Content-Type': 'application/json'
@@ -13,8 +39,8 @@ function loadLeisuresList(){
     })
     .then(function (response) {
         db_data = response.data.data.leisures;
-        console.log(db_data);
-        
+        total_pages = response.data.data.last_page;
+    
         $("#leisures_table_list tbody").empty();
         db_data.forEach(item => {
             const row = `
@@ -38,6 +64,7 @@ function loadLeisuresList(){
             `;
             $("#leisures_table_list tbody").append(row);
         });
+        updatePaginationButtons();
     })
     .catch(function (error) {
         alert('oops');

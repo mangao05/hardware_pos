@@ -127,10 +127,10 @@ async function fetchTransaction(payments){
 
         const row = `
             <tr>
-                <td>${payment.customer}</td>
-                <td>₱${payment.initial_payment}</td>
-                <td>₱${payment.balance}</td>
-                <td>${formattedDate}</td>
+                <td style="font-size: 12px;padding:1px">${payment.customer}</td>
+                <td style="font-size: 12px;padding:1px">₱${payment.initial_payment}</td>
+                <td style="font-size: 12px;padding:1px">₱${payment.balance}</td>
+                <td style="font-size: 12px;padding:1px">${formattedDate}</td>
             </tr>
         `
         $('.transaction_history tbody').append(row)
@@ -171,6 +171,7 @@ function printDiv(divId) {
 
     // Show elements with class 'rules_regulation' (if any)
     $('.rules_regulation').show();
+    $('.customers_copy').show()
 
     // Log before printing
     console.log("Attempting to print...");
