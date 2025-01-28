@@ -70,4 +70,6 @@ Route::post('checkout', [ReservationController::class, 'checkout']);
 Route::get('/categories/{category}/available-rooms', [RoomCategoryController::class, 'getAvailableRooms'])
     ->name('categories.available-rooms');
 
+Route::post('/payments/delete', [ReservationController::class, 'voidPayment']);
+
 // Route::get('reports/sales-summary',[ReportsController::class, 'sales_summary']);
