@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use Exception;
 use Carbon\Carbon;
 use App\Models\Room;
+use App\Models\Leisure;
 use App\Models\Reservation;
 use App\Models\RoomCategory;
 use Illuminate\Http\Request;
@@ -256,8 +258,25 @@ class ReservationController extends Controller
                     'balance' => 0,
                     'transaction_number' => $request->transaction_number
                 ]);
+
+                if (empty($request->addons)) {
+                    throw new Exception('No add-ons added.');
+                }
+
+                foreach ($request->addons as $addon) {
+                    $leisure = Leisure::find($addon['addon_id']);
+                    $addonData = [
+                        'addon_id' => $addon['addon_id'],
+                        'addon_price' => $addon['addon_price'],
+                        'addon_name' => $leisure->item_name,
+                        'addon_details' => $leisure,
+                        'qty' => $addon['qty']
+                    ];
+                    $payment->addons()->create($addonData);
+                }
+
                 DB::commit();
-                return $this->success($payment, "Walk in payment success.");
+                return $this->success($payment->load('addons'), "Walk in payment success.");
             }
         } catch (\Exception $e) {
             DB::rollBack();
@@ -271,7 +290,7 @@ class ReservationController extends Controller
             $paymentId = request()->get('reservation_payment_id');
             $payment = ReservationPayments::findOrFail($paymentId);
             $payment->delete();
-            
+
             return $this->success($payment, 'Payment voided successfully.');
         } catch (\Exception $e) {
             return $this->error([], $e->getMessage());

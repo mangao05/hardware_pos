@@ -16,4 +16,9 @@ class ReservationPayments extends Model
     {
         return $this->belongsTo(Reservation::class);
     }
+
+    public function addons()
+    {
+        return $this->hasMany(RoomReservationAddon::class, 'reservation_payment_id');
+    }
 }
