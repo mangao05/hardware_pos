@@ -253,6 +253,7 @@ let selectedAddOns = [];
 
 $(".selected_add_ons").on("change", function () {
     const selectedValue = $(this).val();
+    
     const filteredAddOns = all_add_ons.filter(addOn => addOn.type === selectedValue);
 
     $('.add_ons_table tbody').empty();

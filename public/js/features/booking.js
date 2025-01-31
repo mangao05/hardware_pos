@@ -437,9 +437,7 @@ async function loadCategory(category_id = null, checkedRoomId = null) {
 async function loadallAddOns(){
     myUrl = "/api/leisures"
     res = await get_data(myUrl);
-    all_add_ons = res.data.leisures;
-    console.log(all_add_ons);
-    
+    all_add_ons = res.data;
 }
 
 

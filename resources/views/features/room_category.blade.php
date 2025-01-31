@@ -16,11 +16,8 @@
         width: 0%;
         height: 4px;
         background: #007bff;
-        position: fixed;
-        top: 0;
-        left: 0;
-        transition: width 0.4s ease-in-out;
     }
+
 </style>
 <div class="container-fluid">
     <div class="row border position-relative header-content" style="background-image: url('../img/header/header2.jpeg');">
@@ -34,7 +31,7 @@
     @include('modal.room-category-management.room_category_edit')
 
     <div class="row">
-        <div class="col">
+        <div class="col position-relative">
             <div id="line-loader"></div>
         </div>
     </div>

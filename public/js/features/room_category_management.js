@@ -1,5 +1,6 @@
 $(document).ready(function() {
     loadRoomCategory()
+    startLoader()
 });
 
 var no_of_page = 10;
@@ -177,14 +178,4 @@ function clear_form(){
     $('#room_category_type').val("")
 }
 
-function startLoader() {
-    $("#line-loader").css("width", "100%");
-}
 
-function stopLoader() {
-    setTimeout(() => {
-        $("#line-loader").css("width", "0%");
-    }, 500);
-}
-
-startLoader()
