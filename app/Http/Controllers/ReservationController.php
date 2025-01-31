@@ -252,8 +252,8 @@ class ReservationController extends Controller
             } else {
                 $payment = ReservationPayments::create([
                     'customer' => $request->customer_name,
-                    'user_id' => auth()->check() ? auth()->user()->id : null,
-                    'user_name' => auth()->check() ? auth()->user()->firstname . '' . auth()->user()->lastname : 'Guest',
+                    'user_id' => auth()->id(),
+                    'user_name' => auth()->check() ? auth()->user()->firstname . ' ' . auth()->user()->lastname : 'Guest',
                     'initial_payment' => $payment,
                     'balance' => 0,
                     'transaction_number' => $request->transaction_number
@@ -263,17 +263,22 @@ class ReservationController extends Controller
                     throw new Exception('No add-ons added.');
                 }
 
-                foreach ($request->addons as $addon) {
-                    $leisure = Leisure::find($addon['addon_id']);
-                    $addonData = [
+                $addonIds = collect($request->addons)->pluck('addon_id')->toArray();
+                $leisures = Leisure::whereIn('id', $addonIds)->get()->keyBy('id');
+
+                $addonData = collect($request->addons)->map(function ($addon) use ($leisures) {
+                    $leisure = $leisures[$addon['addon_id']] ?? null;
+
+                    return [
                         'addon_id' => $addon['addon_id'],
                         'addon_price' => $addon['addon_price'],
-                        'addon_name' => $leisure->item_name,
+                        'addon_name' => $leisure ? $leisure->item_name : null,
                         'addon_details' => $leisure,
                         'qty' => $addon['qty']
                     ];
-                    $payment->addons()->create($addonData);
-                }
+                })->toArray();
+
+                $payment->addons()->createMany($addonData);
 
                 DB::commit();
                 return $this->success($payment->load('addons'), "Walk in payment success.");

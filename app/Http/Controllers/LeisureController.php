@@ -20,19 +20,28 @@ class LeisureController extends Controller
     public function index()
     {
         try {
-            $data = Leisure::when(request()->has('is_available'), function ($query) {
-                        return $query->where('availability', (bool)request()->get('is_available'));
-                    })
-                    ->paginate(request()->get('per_page') ?? 10);
 
-            return $this->success([
+            $data = Leisure::query();
+
+            if (request()->has('is_available')) {
+                $data->where('availability', filter_var(request()->get('is_available'), FILTER_VALIDATE_BOOLEAN));
+            }
+
+            $data = request()->has('per_page')
+                ? $data->paginate(request()->get('per_page'))
+                : $data->get();
+            $response = [
                 'leisures' => LeisureResource::collection($data),
-                'meta' => [
+            ];
+
+            if(request()->has('per_page')) {
+                $response['meta'] = [
                     'current_page' => $data->currentPage(),
                     'last_page' => $data->lastPage(),
                     'total' => $data->total()
-                ]
-            ]);
+                ];
+            }
+            return $this->success($response);
         } catch (Exception $ex) {
             return $this->error([], $ex->getMessage());
         }
