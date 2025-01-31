@@ -59,7 +59,7 @@ class Reservation extends Model
             'reservation_id' => $reservation->id,
             'new_data' => $reservation->load('reservationDetails'),
         ];
-        
+
         $reservation->logAction($logs);
 
         return $reservation;
@@ -67,7 +67,7 @@ class Reservation extends Model
 
     public function attachAddon($reservation_id, $addons)
     {
-        foreach($addons as $addon) {
+        foreach ($addons as $addon) {
             $leisure = Leisure::find($addon['addon_id']);
             $addonData = [
                 'addon_id' => $addon['addon_id'],
@@ -77,7 +77,7 @@ class Reservation extends Model
                 'reservation_id' => $reservation_id,
                 'qty' => $addon['qty']
             ];
-            
+
             RoomReservationAddon::create($addonData);
         }
     }
@@ -100,7 +100,7 @@ class Reservation extends Model
             throw new RoomUnavailableException($unavailableRooms, 'The following rooms are unavailable.');
         }
 
-        if(! empty($data['addons'])) {
+        if (! empty($data['addons'])) {
             $reservation->addons()->delete();
             $reservation->attachAddon($reservation->id, $data['addons']);
         }
@@ -132,14 +132,17 @@ class Reservation extends Model
     public static function checkRoomAvailability(array $roomIds, string $checkInDate, string $checkOutDate, ?int $excludeReservationId = null): array
     {
         $unavailableRooms = [];
+
         foreach ($roomIds as $roomId) {
             $query = ReservationRoomDetails::where('room_id', $roomId)
                 ->where(function ($query) use ($checkInDate, $checkOutDate) {
-                    $query->whereBetween('check_in_date', [$checkInDate, date('Y-m-d', strtotime($checkOutDate . '-1 day'))])
-                        ->orWhereBetween('check_out_date', [date('Y-m-d', strtotime($checkInDate . '+1 day')), $checkOutDate])
+                    $query->where(function ($query) use ($checkInDate, $checkOutDate) {
+                        $query->where('check_in_date', '<', $checkOutDate)  // Existing check-in is before new check-out
+                            ->where('check_out_date', '>', $checkInDate); // Existing check-out is after new check-in
+                    })
                         ->orWhere(function ($query) use ($checkInDate, $checkOutDate) {
-                            $query->where('check_in_date', '<', $checkInDate)
-                                ->where('check_out_date', '>', $checkOutDate);
+                            $query->where('check_in_date', '=', $checkInDate)   // Exact same check-in
+                                ->where('check_out_date', '=', $checkOutDate); // Exact same check-out
                         });
                 });
 
@@ -152,8 +155,12 @@ class Reservation extends Model
                 $unavailableRooms[] = $room_details->room_details;
             }
         }
+
         return $unavailableRooms;
     }
+
+
+
 
     /**
      * Add Reservation Details

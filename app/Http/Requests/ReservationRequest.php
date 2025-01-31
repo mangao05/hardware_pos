@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use Illuminate\Validation\Rule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class ReservationRequest extends BaseFormRequest
@@ -27,13 +28,25 @@ class ReservationRequest extends BaseFormRequest
             'address' => 'nullable|string|max:255',
             'phone' => 'nullable|string|max:20',
             'nationality' => 'required|string|max:50',
-            'type' => 'required',
+            'type' => 'required|string',
             'check_in_date' => 'required|date',
-            'check_out_date' => 'required|date|after:check_in_date',
-            // 'room' => 'required|array|min:1',  
-            // 'room.*' => 'required|exists:rooms,id',  
+            'check_out_date' => [
+                'required',
+                'date',
+                function ($attribute, $value, $fail) {
+                    $checkInDate = request('check_in_date');
+                    $type = request('type');
+
+                    if (!$checkInDate) {
+                        return; // No need to validate if check_in_date is missing
+                    }
+
+                    if ($type !== 'tour' && $value <= $checkInDate) {
+                        $fail('The check-out date must be after the check-in date.');
+                    }
+                }
+            ],
             'remarks' => 'nullable|string',
-            // 'category_id' => 'required|exists:room_categories,id'
         ];
     }
 }
