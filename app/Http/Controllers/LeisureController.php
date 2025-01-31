@@ -30,18 +30,8 @@ class LeisureController extends Controller
             $data = request()->has('per_page')
                 ? $data->paginate(request()->get('per_page'))
                 : $data->get();
-            $response = [
-                'leisures' => LeisureResource::collection($data),
-            ];
-
-            if(request()->has('per_page')) {
-                $response['meta'] = [
-                    'current_page' => $data->currentPage(),
-                    'last_page' => $data->lastPage(),
-                    'total' => $data->total()
-                ];
-            }
-            return $this->success($response);
+            
+            return $this->success($data);
         } catch (Exception $ex) {
             return $this->error([], $ex->getMessage());
         }
