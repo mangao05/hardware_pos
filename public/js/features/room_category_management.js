@@ -176,3 +176,15 @@ function clear_form(){
     $('#room_category_name').val("")
     $('#room_category_type').val("")
 }
+
+function startLoader() {
+    $("#line-loader").css("width", "100%");
+}
+
+function stopLoader() {
+    setTimeout(() => {
+        $("#line-loader").css("width", "0%");
+    }, 500);
+}
+
+startLoader()

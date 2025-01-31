@@ -262,9 +262,9 @@ $(".selected_add_ons").on("change", function () {
                 <td class="table-custome-align">
                     <input type="checkbox" class="add-on-checkbox" data-id="${add_ons.id}">
                 </td>
-                <td class="table-custome-align">${add_ons.item_name}</td>
+                <td class="table-custome-align"><span id="selected_add_on_name">${add_ons.item_name}</span></td>
                 <td class="table-custome-align">
-                    <input type="number" class="form-control add-on-qty" data-id="${add_ons.id}" value="0" min="1">
+                    <input type="number" class="form-control add-on-qty" data-id="${add_ons.id}" value="1" min="1">
                 </td>
                 <td class="table-custome-align">₱${add_ons.price_rate}</td>
             </tr>
@@ -288,6 +288,7 @@ $(".add_ons_table").on("change", ".add-on-checkbox", function () {
     const addOnId = $(this).data("id");
     const quantityInput = $(`.add-on-qty[data-id="${addOnId}"]`);
     const qty = parseInt(quantityInput.val()) || 1; 
+    const add_ons_name = $('#selected_add_on_name').text()
     
     const priceRate = parseFloat($(`td:contains("₱")`, $(this).closest('tr')).text().replace("₱", ""));
 
@@ -296,7 +297,8 @@ $(".add_ons_table").on("change", ".add-on-checkbox", function () {
             selectedAddOns.push({ 
                 addon_id: addOnId, 
                 qty: qty, 
-                addon_price: priceRate
+                addon_price: priceRate,
+                name:add_ons_name
             });
         }
     } else {

@@ -21,17 +21,24 @@
                         <div class="row g-3">
                             <div class="col">
                                 <div>
-                                    <label for="daterange" class="form-label">Check-in Date:</label>
-                                    <input type="text" name="daterange" id="daterange" class="form-control" placeholder="Select date range" />
-                                    <small id="date_error" class="text-danger"></small>
-                                </div>
-                                <div>
                                     <label for="room" class="form-label">Category:</label>
                                     <select class="form-control room_list category_list" id="category" data-live-search="true">
                                         
                                     </select>
                                     <small id="room_category_error" class="text-danger"></small>
                                 </div>
+                                <div class="mt-2" style="display: none" id="booking_date_picker">
+                                    <label for="daterange" class="form-label">Check-in Date:</label>
+                                    <input type="text" name="daterange" id="daterange" class="form-control" placeholder="Select date range" />
+                                    <small id="date_error" class="text-danger"></small>
+                                </div>
+
+                                <div class="mt-2" style="display: none" id="tour_date_picker">
+                                    <label for="daterange" class="form-label">Check-in Date:</label>
+                                    <input type="date" class="form-control" id="tour_date" placeholder="Select date range" />
+                                    <small id="date_tour_error" class="text-danger"></small>
+                                </div>
+                                
                                 {{-- <div class="select_room_div" style="display: none">
                                     <label for="room" class="form-label">Room:</label>
                                     <select class="form-control room_list room_list_data room_list_selection" id="room_list_selection" data-live-search="true">
@@ -63,7 +70,7 @@
                                 <div class="mb-3">
                                     <label for="nationality" class="form-label">Nationality:</label>
                                     <select id="nationality" class="nationality_list form-control">
-                                        <option value="" selected hidden>-- Select Nationality --</option>
+                                        <option value="Filipino" selected hidden>-- Select Nationality --</option>
                                     </select>
                                     <small id="nationality_error" class="text-danger"></small>
                                 </div>
@@ -109,7 +116,7 @@
                                 <table class="table room_list_display">
                                     <thead>
                                         <th class="table-custome-align">Room name</th>
-                                        <th class="table-custome-align" style="width:20px">Guests</th>
+                                        <th class="table-custome-align" style="width:20px">Excess</th>
                                         <th class="table-custome-align">Action</th>
                                     </thead>
 

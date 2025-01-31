@@ -5,20 +5,17 @@ let selected_category = null;
 let all_add_ons = null;
 let current_room_guest = null;
 let current_status = null
-
-
-async function loadallAddOns(){
-    myUrl = "/api/leisures"
-    res = await get_data(myUrl);
-    all_add_ons = res.data.leisures;
-}
-
+var selectedCategory = 0;
+let selectedMonth = ""
+let book_type = ""
 
 // Debounce function to optimize frequent calls
 function debounce(func, wait) {
     let timeout;
     return function (...args) {
         clearTimeout(timeout);
+        console.log(selectedMonth);
+        
         timeout = setTimeout(() => func.apply(this, args), wait);
     };
 }
@@ -62,6 +59,8 @@ async function handleReservationClick(reservation) {
     selectedAddOns = []
     if(reservation.add_ons){
         reservation.add_ons.forEach(element => {
+            console.log(element);
+            
             selectedAddOns.push({
                 "addon_id": element.addon_id, 
                 "qty": element.qty, 
@@ -176,9 +175,6 @@ function transaction_button_control(input_date){
         return true
     }
 }
-
-
-
 
 
 async function loadCalendar(startDate,category_id = 0) {
@@ -332,7 +328,7 @@ async function getReservationsForRoom(room, date_value) {
 
 async function loadRoom(category_id) {
     // if (cachedRooms) return cachedRooms;
-    const myUrl = "api/room-categories/"+category_id;
+    const myUrl = "api/room-categories/"+selectedCategory;
     try {
         const response = await axios.get(myUrl);
         
@@ -347,7 +343,7 @@ async function loadRoom(category_id) {
 
 var start_book = "";
 var end_book = ""
-var selectedCategory = "";
+
 var selectedRooms = [];
 var trans_type = null;
 var category_list_data = null;
@@ -405,6 +401,9 @@ async function loadCategory(category_id = null, checkedRoomId = null) {
         const selectedOption = $(this).find("option:selected");
         selectedCategory = selectedOption.attr("id");
         const selectedData = JSON.parse(selectedOption.attr("data_list"));
+        book_type = selectedData.type
+      
+        
         $('.select_room_div').show();
         $('.room_list_data').empty();
         
@@ -417,53 +416,30 @@ async function loadCategory(category_id = null, checkedRoomId = null) {
         });
 
 
+        if(book_type == "booking"){
+            $('#booking_date_picker').show()
+            $('#tour_date_picker').hide()
+        }else{
+            $('#booking_date_picker').hide()
+            $('#tour_date_picker').show()
+        }
+
         attachRoomCheckboxEvent(); // Attach event listener to room checkboxes
         liveReload(selectedCategory)
         selected_category = selectedCategory
         
         await load_available_room_per_category(selected_category,start_book, end_book)
     });
+}
 
-    // $('.room_list_selection').on("change",function(){
-    //     const selectedOption = $(this).find("option:selected");
-    //     const roomData = JSON.parse(selectedOption.attr("data"));
-    //     const category_name = category_list_data.find(category => category.id === roomData.room_category_id)
 
-    //     const isRoomAlreadySelected = selectedRooms.some(room => room.room_id === roomData.id);
-        
-    //     if (isRoomAlreadySelected) {
-    //         toaster("This room is already selected.!","error")
-    //         return; 
-    //     }
 
-    //     selectedRooms.push({
-    //         "room_id":roomData.id,
-    //         "guest":0
-    //     })
-        
-    //     const row = `
-    //         <tr data-room-id="${roomData.id}">
-    //             <td class="table-custome-align">${roomData.name}(${category_name.display_name})<small class="text-danger" id="room_${roomData.id}"></small></td>
-    //             <td class="table-custome-align"><input class="form-control" name="guests[]" type="text"></td>
-    //             <td class="table-custome-align"><badge class="badge bg-danger remove-room" type="button" name="guests[]">X</badge></td>
-    //         </tr>
-    //     `
-    //     $('.room_list_display tbody').append(row)
-
-    //     // edit part 
-    //     if(trans_type == "add_room_update"){
-    //         const editrow = `
-    //             <div><small><span class="badge bg-danger">X</span>${roomData.name}(room category)</small></div>
-    //         `
-    //         $('#edit_room_list_display').append(editrow)
-    //     }
-
-    //     if(trans_type == "transfer_room_update"){
-    //         $('#edit_current_room').empty()
-    //         $('#edit_current_room').text(roomData.name)
-    //     }
-        
-    // })
+async function loadallAddOns(){
+    myUrl = "/api/leisures"
+    res = await get_data(myUrl);
+    all_add_ons = res.data.leisures;
+    console.log(all_add_ons);
+    
 }
 
 
@@ -512,6 +488,12 @@ function add_booking(){
     const guest = [];
     const rooms = [];
 
+
+    if(book_type == "tour"){
+        start_book = $('#tour_date').val()
+        end_book = $('#tour_date').val()
+    }
+
     guestInputs.forEach(item => {
         if(item.value == ''){
             guests = 0
@@ -551,7 +533,8 @@ function add_booking(){
         check_out_date: end_book,
         guests: rooms_selected,
         remarks: remarks,
-        addons:selectedAddOns
+        addons:selectedAddOns,
+        type:book_type
     };   
     
     
@@ -979,14 +962,25 @@ function loadNationalities(){
         "Zimbabwean"
     ];
 
-    const $nationalitySelect = $(".nationality_list"); // Select the dropdown by ID
+    const $nationalitySelect = $(".nationality_list"); 
 
-    // Add options to the dropdown
+
+    // $nationalitySelect.append(
+    //     $("<option></option>").val("").text("Select Nationality").prop("disabled", true).prop("selected", true)
+    // );
+
+  
     $.each(nationalities, function (index, nationality) {
         $nationalitySelect.append(
             $("<option></option>").val(nationality).text(nationality)
         );
     });
+
+    $('.nationality_list').val("Filipino")
+
+    // // Set a default selected nationality if needed
+    // const defaultNationality = "Filipino"; // Change this to any nationality you prefer
+    // $nationalitySelect.val(defaultNationality);
 }
 
 
@@ -1004,6 +998,7 @@ $(document).ready(() => {
     // Reload calendar on date picker change
     $("#datePicker").on("change", function () {
         debouncedLoadCalendar($(this).val());
+        selectedMonth = $(this).val()
     });
     
     loadNationalities();

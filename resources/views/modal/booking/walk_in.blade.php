@@ -9,33 +9,63 @@
         <div class="row">
             <div class="col">      
                 <div class="row">
-                    <div class="col">
+                    <div class="col-6">
                         <label for="">Customer:</label>
                         <span><input type="text" class="form-control" id="walk_in_customer_name" placeholder="Enter Customer Name"></span>
                         <div>
                             <small><span id="walk_in_customer_name_error" class="text-danger"></span></small>
                         </div>
                     </div>
+                </div>
+                <div class="row mt-2">
+                    
                     <div class="col">
-                        <label for="">Quantity:</label>
-                        <span><input type="number" class="form-control" id="walk_in_quantity" placeholder="Enter Quantity"></span>
-                        <div>
-                            <small><span id="walk_in_quantity_error" class="text-danger"></span></small>
+                        <div class="">
+                            <div>
+                                <label for="daterange" class="form-label">Add-ons:</label>
+                                <select name="" class="form-control selected_add_ons">
+                                    <option value="" disabled selected>-- Select --</option>
+                                    <option value="Entrance">Entrance</option>
+                                    <option value="Transportation">Transportation</option>
+                                    <option value="Sports">Sports</option>
+                                    <option value="Leisures">Leisures</option>
+                                    <option value="Items">Items</option>
+                                    <option value="Corkage">Corkage</option>
+                                    <option value="Misc">Misc</option>
+                                  </select>
+                                  <div>
+                                    <small><span id="walk_in_add_ons_error" class="text-danger"></span></small>
+                                </div>
+                            </div>
+                            <div>
+                                <table class="table add_ons_table">
+                                    <thead>
+                                        <th class="table-custome-align"></th>
+                                        <th class="table-custome-align" >Add-ons</th>
+                                        <th class="table-custome-align" style="width: 15%">Qty</th>
+                                        <th class="table-custome-align">Price</th>
+                                    </thead>
+                                    <tbody>
+
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
                 <div class="row mt-2">
                     <div class="col text-end">
-                        {{-- <span><button class="btn button-success btn_walk_in_confirm" onclick="confirm_transaction()">Confirm</button></span> --}}
-                        <span><button class="btn button-success btn_walk_in_submit" onclick="storeWalkinPayment()">Submit</button></span>
+                        <span><button class="btn button-success btn_walk_in_confirm" onclick="confirm_transaction()">Confirm</button></span>
+                        <span><button class="btn btn-danger btn_walk_in_cancel" style="display: none" onclick="cancel_transaction()">Cancel</button></span>
+                        <span><button class="btn button-success btn_walk_in_submit" style="display: none" onclick="storeWalkinPayment()">Submit</button></span>
                     </div>
                 </div>  
-                <hr>
-                <div class="row">
+                
+                {{-- <div class="row">
                     <div class="col-md-5">
                         <input type="date" class="form-control" onchange="selectedDate(this)">
                     </div> 
-                </div>
+                </div> --}}
                     
                 <div class="row mt-2">
                 <div class="col">
@@ -52,7 +82,7 @@
                         </tbody>
                     </table> --}}
 
-                    <table class="table table-bordered table-striped transaction_receipt_walk_in">
+                    {{-- <table class="table table-bordered table-striped transaction_receipt_walk_in">
                         <thead class="table-light">
                           <tr>
                             <th class="summary_label">Customer </th>
@@ -65,14 +95,14 @@
                         <tbody>
                           
                         </tbody>
-                      </table>
-                        <div class="row justify-content-end">
-                            <div class="col-6 text-end">
-                                <span id="page-info" class="me-3">Page 1 of 1</span>
-                                <button id="prev-button" class="btn btn-secondary me-2" onclick="prev_page()">Prev</button>
-                                <button id="next-button" class="btn btn-secondary" onclick="next_page()">Next</button>
-                            </div>
+                    </table>
+                    <div class="row justify-content-end">
+                        <div class="col-6 text-end">
+                            <span id="page-info" class="me-3">Page 1 of 1</span>
+                            <button id="prev-button" class="btn btn-secondary me-2" onclick="prev_page()">Prev</button>
+                            <button id="next-button" class="btn btn-secondary" onclick="next_page()">Next</button>
                         </div>
+                    </div> --}}
                 </div>
                 </div>
                 
@@ -160,18 +190,15 @@
                                         <th class="table-custome-align" style="font-size: 12px;padding:0px">Item Name</th>
                                         <th class="table-custome-align" style="font-size: 12px;padding:0px">Qty</th>
                                         <th class="table-custome-align" style="font-size: 12px;padding:0px">Price</th>
+                                        <th class="table-custome-align" style="font-size: 12px;padding:0px">Sub total</th>
                                     </thead>
                                     <tbody>
-                                        <tr>
+                                        {{-- <tr>
                                             <td style="font-size: 12px;padding:1px">Tour</td>
                                             <td style="font-size: 12px;padding:1px">0</td>
                                             <td style="font-size: 12px;padding:1px">₱0</td>
-                                        </tr>
-                                        <tr style="background-color:linen">
-                                            <td class="table-custome-align" style="font-size: 12px;padding:1px"><strong>Total Payment:</strong></td>
-                                            <td class="table-custome-align" style="font-size: 12px;padding:1px"></td>
-                                            <td class="table-custome-align" style="font-size: 12px;padding:1px">₱0</td>
-                                        </tr>
+                                        </tr> --}}
+                                        
                                     </tbody>
                                     </table>
                                 </small>

@@ -27,6 +27,7 @@ function prev_page() {
 function updatePaginationButtons() {
     $("#prev-button").prop('disabled', page === 1);
     $("#next-button").prop('disabled', page === total_pages);
+    $("#page-info").text(`Page ${page} of ${total_pages}`);
 }
 
 function loadPackageList(){
@@ -39,6 +40,7 @@ function loadPackageList(){
     .then(function (response) {
         db_data = response.data.data.data;
         total_pages = response.data.data.last_page;
+        console.log(response);
         
         $("#package_table_list tbody").empty();
         db_data.forEach(item => {

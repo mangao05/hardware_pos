@@ -50,6 +50,7 @@ function prev_page() {
 function updatePaginationButtons() {
     $("#prev-button").prop('disabled', page === 1);
     $("#next-button").prop('disabled', page === total_pages);
+    $("#page-info").text(`Page ${page} of ${total_pages}`);
 }
 
 async function loadRoom(){

@@ -1,22 +1,90 @@
+var total = 0
+
+
 async function walk_in(){
     fetch_all_walking_row()
     $('#walk_in_modal').modal('show')
+    $('#walk_in_customer_name_error').text("")
+    $('#walk_in_add_ons_error').text("")
+    $('.add_ons_table tbody').empty()
 }
 
 
-function confirm_transaction(){
+function confirm_transaction(){ 
     const walk_in_customer = $('#walk_in_customer_name').val()
-    const walk_in_quantity = $('#walk_in_quantity').val()
+    total = 0
+    var is_valid = field_validation()
 
-    let is_valid = validate_form(walk_in_customer,walk_in_quantity)
     
-    if(is_valid){
-        toaster("Check actual receipt, then submit!","success")
-        receipt_computation(walk_in_customer,walk_in_quantity)
-        $(".btn_walk_in_confirm").hide()
-        $(".btn_walk_in_submit").show()
+    if(is_valid == false){
+        return;
     }
+
+    $('#walk_in_receipt_name').text(walk_in_customer)
+    
+    $('.order_details_summary_walk_in tbody').empty()
+    selectedAddOns.forEach(add_ons => {
+        const name = add_ons.name
+        const qty = add_ons.qty
+        const addon_price = add_ons.addon_price
+        const sub_total = addon_price * qty
+
+        total += sub_total
+        const row = `
+            <tr>
+                <td style="font-size: 12px;padding:1px">${name}</td>
+                <td style="font-size: 12px;padding:1px">${qty}</td>
+                <td style="font-size: 12px;padding:1px">₱${addon_price}</td>
+                <td style="font-size: 12px;padding:1px">₱${sub_total}</td>
+            </tr>
+        `
+        $('.order_details_summary_walk_in tbody').append(row)
+    });
+
+    $('.order_details_summary_walk_in tbody').append(`
+            <tr style="background-color:linen">
+                <td class="table-custome-align" style="font-size: 12px;padding:1px"><strong>Total Payment:</strong></td>
+                <td class="table-custome-align" style="font-size: 12px;padding:1px"></td>
+                <td class="table-custome-align" style="font-size: 12px;padding:1px"></td>
+                <td class="table-custome-align" style="font-size: 12px;padding:1px">₱${total}</td>
+            </tr>
+        `)
+
+    $('#walk_in_total_balance').text(total)
+    $('.btn_walk_in_confirm').hide()
+    $('.btn_walk_in_cancel').show()
+    $('.btn_walk_in_submit').show()
 }
+
+function cancel_transaction(){
+    $('.btn_walk_in_confirm').show()
+    $('.btn_walk_in_cancel').hide()
+    $('.btn_walk_in_submit').hide()
+}
+
+function field_validation(){
+    const walk_in_customer = $('#walk_in_customer_name').val()
+    var status = true
+   
+    if(walk_in_customer == ""){
+        $('#walk_in_customer_name_error').text("Customer field is required")
+        status = false
+    }else{
+        $('#walk_in_customer_name_error').text("")
+        status = true
+    }
+
+    if(selectedAddOns.length == 0){
+        $('#walk_in_add_ons_error').text("Please select at least one add-ons")
+        status = false
+    }else{
+        $('#walk_in_add_ons_error').text("")
+        status = true
+    }
+
+    return status
+}
+
 
 function storeWalkinPayment(){
     const myUrl = "/checkout"
@@ -27,11 +95,9 @@ function storeWalkinPayment(){
 
     const myData = {
         "customer_name":walk_in_customer_name,
-        "initial_payment":walk_in_quantity * 20,
-        "reservation_id":null,
-        "discount":"",
+        "initial_payment":total,
         "transaction_number":tr,
-        "total":sum
+        "addons" : selectedAddOns
     }
 
     Swal.fire({
@@ -51,10 +117,7 @@ function storeWalkinPayment(){
             });
 
             store_data(myUrl, myData).then(async response => {
-                confirm_transaction()
-                fetch_all_walking_row()
-                $('#walk_in_customer_name').val("")
-                $('#walk_in_quantity').val("")
+                $('#walk_in_modal').modal('hide')
             })
         }
     });
