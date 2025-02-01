@@ -82,6 +82,14 @@ class Reservation extends Model
         }
     }
 
+    public function updateGuest($otherGuests)
+    {
+        foreach ($otherGuests as $guest) {
+            ReservationRoomDetails::where('id', $guest['id'])
+                ->update(['guest' => $guest['qty']]);
+        }
+    }
+
     /**
      * Update reservation with Room Details
      *
@@ -90,6 +98,7 @@ class Reservation extends Model
      **/
     public static function updateWithDetails($reservation, array $data): Reservation
     {
+
         $roomIds = [$data['room']['room_id']];
         $checkInDate = $data['room']['check_in_date'];
         $checkOutDate = $data['room']['check_out_date'];
@@ -104,6 +113,7 @@ class Reservation extends Model
             $reservation->addons()->delete();
             $reservation->attachAddon($reservation->id, $data['addons']);
         }
+
         $oldData = $reservation->load('reservationDetails');
         $reservation->update($data['reservation']);
 
@@ -118,6 +128,10 @@ class Reservation extends Model
         ];
 
         $reservation->logAction($logs);
+
+        if (! empty($data['other_rooms'])) {
+            $reservation->updateGuest($data['other_rooms']);
+        }
         return $reservation;
     }
     /**
