@@ -7,8 +7,7 @@ let bal = null
 function savePayment(){
     type_rate = $('#type_rate').val()
     $('.transaction_history tbody').empty()
-
-    // view_summary()
+    view_summary()
 }
 
 function preview(){

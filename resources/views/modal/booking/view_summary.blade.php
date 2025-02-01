@@ -11,7 +11,7 @@
           <div class="row mt-2">
             <div class="col-6">
                   <label for="">Type of Rate</label>
-                  <select name="" class="form-control" id="type_rate" onclick="savePayment()">
+                  <select name="" class="form-control" id="type_rate" onchange="savePayment()">
                     <option value="" disabled selected>--Select Type of Rate--</option>
                     <option value="10%">EMPLOYEE RATE</option>
                     {{-- <option value="0">FREE OF CHARGE</option> --}}

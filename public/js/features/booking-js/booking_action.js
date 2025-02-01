@@ -76,6 +76,11 @@ async function view_summary() {
     let total_guest = [];
 
 
+    if(res.data.discount){
+        $('#type_rate').val(res.data.discount)
+        type_rate = res.data.discount
+    }
+
     $('#transaction_name').text(res.data.name);
     $('#trans_email').text(res.data.email);
     $('#trans_phone').text(res.data.phone);
