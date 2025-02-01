@@ -5,7 +5,14 @@
 @endsection
 
 @section('content')
+<style scoped>
+    #line-loader {
+        width: 0%;
+        height: 4px;
+        background: #007bff;
+    }
 
+</style>
 
 <div class="container-fluid">
     <div class="row border position-relative header-content" style="background-image: url('../img/header/header1.jpg');">
@@ -18,6 +25,12 @@
     @include('modal.rooms-management.room_create')
     @include('modal.rooms-management.room_edit')
 
+
+    <div class="row">
+        <div class="col position-relative">
+            <div id="line-loader"></div>
+        </div>
+    </div>
     <div class="row">
         <div class="col-12"> 
             <table class="table table-hover" id="data-table-rooms">

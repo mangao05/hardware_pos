@@ -3,6 +3,39 @@ $(document).ready(function() {
     loadRoomCategory()
 });
 
+let loaderRunning = true; // Flag to track animation state
+
+function animateLoader() {
+    if (!loaderRunning) return; // Prevent starting if stopped
+
+    $("#line-loader").css({ width: "0%", left: "0%" });
+
+    function moveRight() {
+        if (!loaderRunning) return;
+        $("#line-loader").animate({ width: "100%" }, 1000, function() {
+            if (!loaderRunning) return;
+            $(this).animate({ left: "100%", width: "0%" }, 1000, moveLeft);
+        });
+    }
+
+    function moveLeft() {
+        if (!loaderRunning) return;
+        $("#line-loader").css({ left: "0%" });
+        $("#line-loader").animate({ width: "100%" }, 1000, function() {
+            if (!loaderRunning) return;
+            $(this).animate({ left: "0%", width: "0%" }, 1000, moveRight);
+        });
+    }
+
+    moveRight();
+}
+
+function stopLoader() {
+    loaderRunning = false; // Stop new animations
+    $("#line-loader").stop(true, true).css({ width: "0%" }); // Stop and reset
+}
+
+
 async function loadRoomCategory(){
     myUrl = "api/room-categories"
     
@@ -54,12 +87,15 @@ function updatePaginationButtons() {
 }
 
 async function loadRoom(){
+    animateLoader();
+
     myUrl = "rooms-data?per_page="+no_of_page+"&page="+page
     axios.get(myUrl, null, {
         headers: {
         'Content-Type': 'application/json'
         }
     }).then(function (response) {
+        stopLoader();
         db_data = response.data.rooms.data;
         console.log(response);
         

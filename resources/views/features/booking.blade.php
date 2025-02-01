@@ -231,5 +231,6 @@
     <script src="{{ asset('js/helper/app_helper.js') }}"></script>
     <script src="{{ asset('js/features/booking-js/summary.js') }}"></script>
     <script src="{{ asset('js/features/booking-js/walk_in.js') }}"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
     
 @endsection
