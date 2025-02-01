@@ -70,7 +70,7 @@
                                 <div class="mb-3">
                                     <label for="nationality" class="form-label">Nationality:</label>
                                     <select id="nationality" class="nationality_list form-control">
-                                        <option value="Filipino" selected hidden>-- Select Nationality --</option>
+                                        <option value="" selected hidden>Filipino</option>
                                     </select>
                                     <small id="nationality_error" class="text-danger"></small>
                                 </div>

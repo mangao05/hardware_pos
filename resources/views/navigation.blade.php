@@ -52,6 +52,16 @@
             </a>
         </li>
     @endif
+
+    {{-- @if (in_array(12, $userRoles) || in_array(2, $userRoles) || in_array(11, $userRoles)) --}}
+    <li>
+        <a href="{{ url('/booking') }}" class="{{ request()->is('POS') ? 'active' : '' }}">
+            <i class='bx bx-heart'></i>
+            <span class="links_name">Point of Sale</span>
+        </a>
+    </li>
+    {{-- @endif --}}
+
     <li class="log_out">
         <!-- Logout Form -->
         <form action="{{ route('auth.logout') }}" method="POST" id="logoutForm">

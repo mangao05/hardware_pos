@@ -388,3 +388,14 @@ async function load_available_room_per_category(category_id, start_book, end_boo
 
 // end add rooms on create reservation
 
+
+// edit room guest number 
+function enable_room_guest(){
+    $(".current_room_guest").prop("disabled", false).focus();
+    $(".room_guest").prop("disabled", false).focus();
+}
+
+
+
+// end edit room guest number 
+

@@ -35,7 +35,9 @@
         
                             <div class="col-md-6">
                                 <label for="daterange" class="form-label">Room List:</label>
-
+                                <span class="float-end text-info" onclick="enable_room_guest()" style="cursor: pointer">
+                                    <small>🔄Edit room guest</small>
+                                </span>
                                 <div class="row">
                                     <div class="col">
                                         <ul style="margin-left: 17px;">
@@ -45,17 +47,16 @@
                                                 </span>
                                             </li>
                                         </ul>
-                                        
+                                    </div>
+                                    <div class="col">
+                                        <input class="form-control current_room_guest" disabled type="number" id="edit_current_room_guest">
                                     </div>
                                 </div>
                                 <hr>
-                                <div>
-                                    <small>
-                                        <ul id="edit_room_list_display" style="margin-left: 17px;">
-
-                                        </ul>
-                                    </small>
-                                    
+                                <div class="row">
+                                    <div class="col" id="edit_room_list_display">
+                                        
+                                    </div>
                                 </div>
 
                             </div>
@@ -98,7 +99,7 @@
                                 <div class="mb-3">
                                     <label for="nationality" class="form-label">Nationality:</label>
                                     <select id="edit_nationality" class="nationality_list form-control" disabled>
-                                        <option value="" selected hidden>-- Select Nationality --</option>
+                                        
                                     </select>
                                     <small id="nationality_error" class="text-danger"></small>
                                 </div>

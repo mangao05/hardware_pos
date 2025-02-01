@@ -56,6 +56,7 @@ function loadDate(startDate, extendDays = 2) {
 async function handleReservationClick(reservation) {
     $('.room_list_display tbody').empty();
     $('.add_ons_table tbody').empty();
+    $(".current_room_guest").prop("disabled", true);
     selectedAddOns = []
     if(reservation.add_ons){
         reservation.add_ons.forEach(element => {
@@ -68,7 +69,7 @@ async function handleReservationClick(reservation) {
             })
         });
     }
-    
+
     
     selectedRooms = [];
     const startDate = reservation.start_date ? new Date(reservation.start_date) : new Date();
@@ -104,11 +105,22 @@ async function handleReservationClick(reservation) {
     $('#booking_status').text(reservation.status)
     $('#reservation_room_details_id').val(reservation.reservation_room_details_id)
 
+    $('#edit_current_room_guest').val(reservation.guest)
+
+
+   
     $('#edit_room_list_display').empty();
 
     reservation.other_rooms.forEach(element => {
         const row = `
-            <li>${element.room_name}</li>
+            <div class="row">
+                <div class="col">
+                    ${element.room_name}
+                </div>
+                <div class="col">
+                    <input class="form-control room_guest" disabled type="number" value="${element.guest}" id="${element.reservation_room_details_id}">
+                </div>
+            </div>
         `
         $('#edit_room_list_display').append(row);
     });
@@ -117,21 +129,12 @@ async function handleReservationClick(reservation) {
     
     check_status_date = transaction_button_control(start_book);
 
-    // if(current_status == "checkin_paid"){
-    //     $('.btn_edit').hide()
-    //     $('.btn_view_summary').hide()
-    // }else{
-    //     $('.btn_edit').show()
-    //     $('.btn_view_summary').show()
-    // }
-
     if(reservation.status == "checkin" || current_status == "checkin_paid"){
         $('.btn_early_check_out').show()
         $('.btn_check_out').show()
     }else{
         $('.btn_early_check_out').hide()
         $('.btn_check_out').hide()
-        // $('.btn_edit').show()
     }
         
     
@@ -140,15 +143,11 @@ async function handleReservationClick(reservation) {
     }else{
         $('.btn_checkin').hide()
     }
- 
-    
 
     myUrl = "/history-logs?reservation_id="+reservation.reservation_id
     history_data = await get_data(myUrl);
 
     display_logs_history(history_data);
-    
-    // Load category and pre-select rooms
     
     $('#edit_booking').modal('show');
 }
@@ -525,7 +524,7 @@ function add_booking(){
         email: email,
         address: address,
         phone: phone,
-        nationality: nationality,
+        nationality: nationality == ""?"Filipino":nationality,
         type: bookingType,
         check_in_date: start_book,
         check_out_date: end_book,
@@ -540,13 +539,6 @@ function add_booking(){
         $('#date_error').text("Please select a valid start date.")
         return;
     } 
-
-    // if (rooms.length == 0){
-    //     $('#room_list_selection').val(null)
-    //     $('#room_error').text("Please select at least one room.")
-    //     return;
-    // }
-    
 
     store_data(myUrl, myData).then(async (response) => {
        
@@ -714,9 +706,17 @@ function update_booking() {
         let remarks = $('#edit_remarks').val();
         let room_id = $('#edit_room_id').val();
         let status = $("#booking_status").text();
+        let guestValues = [];
+
+        $(".room_guest").each(function() {
+            guestValues.push({
+                id: parseInt($(this).attr("id")),
+                qty: parseInt($(this).val())
+            });
+        });
         
         
-        const myUrl = `/api/reservations/${reservation_id}`;
+        const myUrl = `/reservations/${reservation_id}`;
 
         const myData = {
             "reservation" : {
@@ -726,20 +726,20 @@ function update_booking() {
                 "phone": phone,
                 "nationality": nationality,
                 "type": bookingType,
-                "remarks": remarks
+                "remarks": remarks,
+                "type":"booking"
             },
             "room" : {
                 "room_id" : room_id,
                 "check_in_date": start_book,
                 "check_out_date": end_book,
                 "status" : status,
-                "guest" : current_room_guest
+                "guest" : $('#edit_current_room_guest').val()
             },
-            addons:selectedAddOns
-            
-        };     
-        
-        
+            addons:selectedAddOns,
+            other_rooms:guestValues
+        };
+
         update_data(myUrl, myData).then(async response => {
             const textbox = document.getElementById("edit_daterange");
             textbox.disabled = true;
@@ -963,22 +963,11 @@ function loadNationalities(){
     const $nationalitySelect = $(".nationality_list"); 
 
 
-    // $nationalitySelect.append(
-    //     $("<option></option>").val("").text("Select Nationality").prop("disabled", true).prop("selected", true)
-    // );
-
-  
     $.each(nationalities, function (index, nationality) {
         $nationalitySelect.append(
             $("<option></option>").val(nationality).text(nationality)
         );
     });
-
-    $('.nationality_list').val("Filipino")
-
-    // // Set a default selected nationality if needed
-    // const defaultNationality = "Filipino"; // Change this to any nationality you prefer
-    // $nationalitySelect.val(defaultNationality);
 }
 
 

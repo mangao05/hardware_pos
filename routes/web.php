@@ -38,6 +38,10 @@ Route::get('/', function () {
 
 Route::get('/roles', GetRoles::class)->name('role.index');
 Route::post('/login', Login::class)->name('auth.login');
+
+
+
+
 Route::middleware(['auth'])->group(function () {
     // Routes for 'Super Admin' and 'Front Desk' roles
     Route::middleware('check.role:Super Admin,Front Desk')->group(function () {
@@ -52,6 +56,8 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/booking', function () {
             return view('features.booking');
         });
+
+        
     });
 
     Route::middleware('check.role:Super Admin')->group(function () {
@@ -69,6 +75,10 @@ Route::middleware(['auth'])->group(function () {
 
         Route::get('/leisures-add-ons', function () {
             return view('features.leisures_add_ons');
+        });
+
+        Route::get('/pos', function () {
+            return view('pos.pos_order');
         });
     });
 
@@ -159,3 +169,5 @@ Route::middleware(['auth'])->group(function () {
 });
 
 Route::post('checkout', [ReservationController::class, 'checkout']);
+
+
