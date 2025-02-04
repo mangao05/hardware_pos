@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\CreateUserRequest;
+use App\Http\Traits\ResponseFormatter;
 use Exception;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -12,12 +13,12 @@ use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
-    // Display all users, including an option to view soft-deleted users
+    use ResponseFormatter;
     public function index(Request $request)
     {
         try {
             $users = User::query();
-            
+
             // Check if soft-deleted users should be included
             if ($request->include_deleted) {
                 $users->withTrashed();
@@ -200,6 +201,22 @@ class UserController extends Controller
                 'message' => $e->getMessage(),
                 'code' => 500
             ], 500);
+        }
+    }
+
+    public function updateProfile(Request $request)
+    {
+        try {
+            $user = User::findOrFail(auth()->user()->id);
+
+            $voidPassword = $request->void_password;
+
+            $user->update([
+                'void_password' => Hash::make($voidPassword)
+            ]);
+            return $this->success($user, 'Void password updated successfully');
+        } catch (Exception $e) {
+            return $this->error([], $e->getMessage());
         }
     }
 }

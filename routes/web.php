@@ -56,8 +56,6 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/booking', function () {
             return view('features.booking');
         });
-
-        
     });
 
     Route::middleware('check.role:Super Admin')->group(function () {
@@ -85,12 +83,15 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/logout', Logout::class)->name('auth.logout');
 
     Route::prefix('users')->group(function () {
-        Route::get('/', [UserController::class, 'index']); // List all users
-        Route::post('/', [UserController::class, 'store']); // Create a new user
-        Route::put('/{id}', [UserController::class, 'update']); // Update a user
-        Route::delete('/{id}', [UserController::class, 'destroy']); // Soft delete a user
-        Route::get('/{id}', [UserController::class, 'view']); // View user details
-        Route::post('/restore/{id}', [UserController::class, 'restore']); // Restore a soft-deleted user
+        Route::get('/', [UserController::class, 'index']);
+        Route::post('/', [UserController::class, 'store']);
+        Route::put('/{id}', [UserController::class, 'update']);
+        Route::delete('/{id}', [UserController::class, 'destroy']);
+        Route::get('/{id}', [UserController::class, 'view']);
+        Route::post('/restore/{id}', [UserController::class, 'restore']);
+    });
+    Route::prefix('supervisor')->group(function () {
+        Route::post('/change-void-password', [UserController::class, 'updateProfile']);
     });
 
     Route::resource('room-categories', RoomCategoryController::class)->only([
@@ -169,5 +170,3 @@ Route::middleware(['auth'])->group(function () {
 });
 
 Route::post('checkout', [ReservationController::class, 'checkout']);
-
-
