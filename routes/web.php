@@ -17,6 +17,8 @@ use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\ReservationDetailsController;
 use App\Http\Controllers\Rooms\RoomCategoryController;
 use App\Http\Controllers\UserVerifyPasswordController;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 
 /*
 |--------------------------------------------------------------------------
@@ -43,8 +45,8 @@ Route::post('/login', Login::class)->name('auth.login');
 
 
 Route::middleware(['auth'])->group(function () {
-    // Routes for 'Super Admin' and 'Front Desk' roles
-    Route::middleware('check.role:Super Admin,Front Desk')->group(function () {
+    
+    Route::middleware('check.role:Super Admin,Front Desk,Supervisor')->group(function () {
         Route::get('/dashboard', function () {
             return view('features.dashboard');
         })->name('cms.dashboard');
@@ -89,10 +91,13 @@ Route::middleware(['auth'])->group(function () {
         Route::delete('/{id}', [UserController::class, 'destroy']);
         Route::get('/{id}', [UserController::class, 'view']);
         Route::post('/restore/{id}', [UserController::class, 'restore']);
+        Route::post('/update-user', [UserController::class, 'updateUser'])->name('user.update');
     });
-    Route::prefix('supervisor')->group(function () {
-        Route::post('/change-void-password', [UserController::class, 'updateProfile']);
-    });
+
+
+    // Route::prefix('supervisor')->group(function () {
+    //     Route::post('/change-void-password', [UserController::class, 'updateProfile']);
+    // });
 
     Route::resource('room-categories', RoomCategoryController::class)->only([
         'index',

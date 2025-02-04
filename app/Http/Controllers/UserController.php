@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\CreateUserRequest;
-use App\Http\Traits\ResponseFormatter;
 use Exception;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use App\Http\Traits\ResponseFormatter;
+use App\Http\Requests\CreateUserRequest;
 use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
@@ -112,40 +113,44 @@ class UserController extends Controller
         try {
             $user = User::with('roles.role')->findOrFail($id);
 
-            $userData = [];
+            $validator = Validator::make($request->all(), [
+                'username'   => 'sometimes|string|max:255|unique:users,username,' . $id,
+                'password'   => 'nullable|string|min:6|confirmed', // Use password_confirmation field for matching
+                'firstname'  => 'sometimes|string|max:255',
+                'lastname'   => 'sometimes|string|max:255',
+                'is_active'  => 'sometimes|boolean',
+                'role'       => 'sometimes|exists:roles,id',
+                'newPassword' => 'sometimes|string|min:6',
+                'confirmPassword' => 'sometimes|string|same:newPassword',
+            ]);
 
-            if ($request->has('username')) {
-                $userData['username'] = $request->username;
+            if ($validator->fails()) {
+                return response()->json([
+                    'message' => $validator->errors()->first(),
+                    'code' => 422
+                ], 422);
             }
 
-            if ($request->has('password')) {
-                $userData['password'] = Hash::make($request->password);
-            }
+            $userData = $request->only(['username', 'firstname', 'lastname', 'is_active']);
 
-            if ($request->has('firstname')) {
-                $userData['firstname'] = $request->firstname;
+            if ($request->filled('newPassword')) {
+                $userData['password'] = Hash::make($request->newPassword);
             }
-
-            if ($request->has('lastname')) {
-                $userData['lastname'] = $request->lastname;
-            }
-
-            if ($request->has('is_active')) {
-                $userData['is_active'] = $request->is_active;
-            }
-
-            // Update only the fields that are present in the request
+           
             if (!empty($userData)) {
                 $user->update($userData);
             }
 
             if ($request->has('role')) {
                 $user->roles()->updateOrCreate(
-                    ['user_id' => $user->id], // Condition to find the current role, assuming a user can only have one role
-                    ['role_id' => $request->role] // The values to update or create
+                    ['user_id' => $user->id],
+                    ['role_id' => $request->role]
                 );
             }
-            $user = User::with('roles.role')->find($user->id);
+
+            // Reload updated user data
+            $user->load('roles.role');
+
             return response()->json([
                 'data' => $user,
                 'code' => 200,
@@ -153,7 +158,7 @@ class UserController extends Controller
             ]);
         } catch (Exception $e) {
             return response()->json([
-                'message' => $e->getMessage(),
+                'message' => 'Something went wrong: ' . $e->getMessage(),
                 'code' => 500
             ], 500);
         }
@@ -201,22 +206,6 @@ class UserController extends Controller
                 'message' => $e->getMessage(),
                 'code' => 500
             ], 500);
-        }
-    }
-
-    public function updateProfile(Request $request)
-    {
-        try {
-            $user = User::findOrFail(auth()->user()->id);
-
-            $voidPassword = $request->void_password;
-
-            $user->update([
-                'void_password' => Hash::make($voidPassword)
-            ]);
-            return $this->success($user, 'Void password updated successfully');
-        } catch (Exception $e) {
-            return $this->error([], $e->getMessage());
         }
     }
 }
