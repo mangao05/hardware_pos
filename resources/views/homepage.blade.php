@@ -20,7 +20,6 @@
         href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.14.0-beta2/css/bootstrap-select.min.css">
     <!-- Bootstrap Select JS -->
 
-
     @yield('custom_css')
 </head>
 
@@ -111,7 +110,7 @@
         </div>
     </section>
 
-    <div class="modal fade d-block @if (\Hash::check('test1234', auth()->user()->password)) show @endif" id="changePasswordModal"
+    <div class="modal fade d-block @if (\Hash::check('Pantukan@2025', auth()->user()->password)) show @endif" id="changePasswordModal"
         tabindex="-1" aria-labelledby="changePasswordModalLabel" aria-hidden="true" data-bs-backdrop="static"
         data-bs-keyboard="false">
         <div class="modal-dialog modal-dialog-centered">
