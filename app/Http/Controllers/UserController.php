@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Traits\ResponseFormatter;
 use App\Http\Requests\CreateUserRequest;
+use App\Http\Requests\UpdateProfileRequest;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
@@ -108,21 +110,18 @@ class UserController extends Controller
     }
 
     // Update an existing user
-    public function update(Request $request, $id)
+    public function update(Request $request)
     {
         try {
-            $user = User::with('roles.role')->findOrFail($id);
+            $user = auth()->user(); // Get the currently authenticated user
 
-            $validator = Validator::make($request->all(), [
-                'username'   => 'sometimes|string|max:255|unique:users,username,' . $id,
-                'password'   => 'nullable|string|min:6|confirmed', // Use password_confirmation field for matching
-                'firstname'  => 'sometimes|string|max:255',
-                'lastname'   => 'sometimes|string|max:255',
-                'is_active'  => 'sometimes|boolean',
-                'role'       => 'sometimes|exists:roles,id',
-                'newPassword' => 'sometimes|string|min:6',
+            // Validation for new password only
+            $rules = [
+                'newPassword' => 'sometimes|string|min:6',  // New Password
                 'confirmPassword' => 'sometimes|string|same:newPassword',
-            ]);
+            ];
+
+            $validator = Validator::make($request->all(), $rules);
 
             if ($validator->fails()) {
                 return response()->json([
@@ -131,30 +130,13 @@ class UserController extends Controller
                 ], 422);
             }
 
-            $userData = $request->only(['username', 'firstname', 'lastname', 'is_active']);
-
-            if ($request->filled('newPassword')) {
-                $userData['password'] = Hash::make($request->newPassword);
-            }
-           
-            if (!empty($userData)) {
-                $user->update($userData);
-            }
-
-            if ($request->has('role')) {
-                $user->roles()->updateOrCreate(
-                    ['user_id' => $user->id],
-                    ['role_id' => $request->role]
-                );
-            }
-
-            // Reload updated user data
-            $user->load('roles.role');
+            // Update the password
+            $user->password = Hash::make($request->newPassword);
+            $user->save();
 
             return response()->json([
-                'data' => $user,
-                'code' => 200,
-                'message' => 'User updated successfully'
+                'message' => 'Password updated successfully',
+                'code' => 200
             ]);
         } catch (Exception $e) {
             return response()->json([
@@ -163,6 +145,7 @@ class UserController extends Controller
             ], 500);
         }
     }
+
 
     // Soft delete a user
     public function destroy($id)
@@ -206,6 +189,21 @@ class UserController extends Controller
                 'message' => $e->getMessage(),
                 'code' => 500
             ], 500);
+        }
+    }
+
+    public function updateProfile(UpdateProfileRequest $request)
+    {
+        try {
+            $user = auth()->user();
+            $userData = $user->prepareUserData($request, $user);
+            $user->handleImageUpload($request, $user, $userData);
+            $user->updateRole($request, $user);
+            $user->update($userData);
+
+            return back()->with('success', 'Profile updated successfully!');
+        } catch (Exception $e) {
+            return back()->with('error', 'Something went wrong: ' . $e->getMessage());
         }
     }
 }

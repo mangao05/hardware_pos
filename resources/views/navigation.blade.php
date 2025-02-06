@@ -66,7 +66,7 @@
         <!-- Logout Form -->
         <form action="{{ route('auth.logout') }}" method="POST" id="logoutForm">
             @csrf
-            @method('POST') 
+            @method('POST')
             <button type="submit" style="background: none; border: none; padding: 0;">
                 <a href="#">
                     <i class='bx bx-log-out'></i>

@@ -41,11 +41,8 @@ Route::get('/', function () {
 Route::get('/roles', GetRoles::class)->name('role.index');
 Route::post('/login', Login::class)->name('auth.login');
 
-
-
-
 Route::middleware(['auth'])->group(function () {
-    
+
     Route::middleware('check.role:Super Admin,Front Desk,Supervisor')->group(function () {
         Route::get('/dashboard', function () {
             return view('features.dashboard');
@@ -91,13 +88,10 @@ Route::middleware(['auth'])->group(function () {
         Route::delete('/{id}', [UserController::class, 'destroy']);
         Route::get('/{id}', [UserController::class, 'view']);
         Route::post('/restore/{id}', [UserController::class, 'restore']);
-        Route::post('/update-user', [UserController::class, 'updateUser'])->name('user.update');
+        // Route for updating user profile (name, password, image, etc.)
+        Route::post('/profile', [UserController::class, 'updateProfile'])->name('users.profile');
     });
 
-
-    // Route::prefix('supervisor')->group(function () {
-    //     Route::post('/change-void-password', [UserController::class, 'updateProfile']);
-    // });
 
     Route::resource('room-categories', RoomCategoryController::class)->only([
         'index',
@@ -172,6 +166,14 @@ Route::middleware(['auth'])->group(function () {
 
     Route::post('/user/verify-password', [UserVerifyPasswordController::class, 'verify']);
     Route::post('/payments/delete', [ReservationController::class, 'voidPayment']);
+    Route::get('/profile', function () {
+        $roles = \App\Models\Role::pluck('name', 'id');
+        return view('account.profile', compact('roles'));
+    });
 });
 
 Route::post('checkout', [ReservationController::class, 'checkout']);
+
+Route::get('check-password', function () {
+    return \Hash::check('Pantukan@2025', auth()->user()->password);
+});

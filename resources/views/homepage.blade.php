@@ -95,7 +95,9 @@
         align-items: center;
     }
 
-    .hours, .minutes, .ampm {
+    .hours,
+    .minutes,
+    .ampm {
         padding: 0 5px;
     }
 
@@ -106,7 +108,9 @@
     }
 
     @keyframes blink {
-        50% { opacity: 0; }
+        50% {
+            opacity: 0;
+        }
     }
 </style>
 
@@ -140,11 +144,11 @@
                 </div>
             </div>
             <div class="profile-details">
-                <img src="https://media.licdn.com/dms/image/v2/C5603AQF1WA6mvPPN7g/profile-displayphoto-shrink_400_400/profile-displayphoto-shrink_400_400/0/1655827862331?e=2147483647&v=beta&t=A0HGyBn7tNazpYnwQoiEMf4K_-fa9AZXAOLuQ-wXg0A"
+                <img src="{{ auth()->user()->image ? asset('storage/' . auth()->user()->image) : 'https://media.licdn.com/dms/image/v2/C5603AQF1WA6mvPPN7g/profile-displayphoto-shrink_400_400/profile-displayphoto-shrink_400_400/0/1655827862331?e=2147483647&v=beta&t=A0HGyBn7tNazpYnwQoiEMf4K_-fa9AZXAOLuQ-wXg0A' }}"
                     alt="">
-                <span
-                    class="admin_name">{{ auth()->check() ? auth()->user()->firstname . ' ' . auth()->user()->lastname : '' }}</span>
-                <i class='bx bx-chevron-down'></i>
+                <a href="/profile" class="admin_name">
+                    {{ auth()->check() ? auth()->user()->firstname . ' ' . auth()->user()->lastname : '' }}
+                </a>
             </div>
         </nav>
 
@@ -153,59 +157,60 @@
             <div class="container-fluid">
                 @yield('content')
             </div>
-
-
         </div>
-    </section>
 
-    {{-- <div class="modal fade d-block @if (\Hash::check('Pantukan@2025', auth()->user()->password)) show @endif" id="changePasswordModal"
-        tabindex="-1" aria-labelledby="changePasswordModalLabel" aria-hidden="true" data-bs-backdrop="static"
-        data-bs-keyboard="false">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content shadow-lg">
-                <div class="modal-header">
-                    <h5 class="modal-title fw-bold" id="changePasswordModalLabel">Change Password</h5>
-                </div>
-                <div class="modal-body">
-                    <form id="changePasswordForm">
-                        <input type="hidden" name="_token" value="{{ csrf_token() }}"> <!-- CSRF Token -->
-                        <input type="hidden" name="userId" id="userId" value="{{ auth()->user()->id }}">
-                        @method('PUT')
-                        <!-- New Password -->
-                        <div class="mb-3">
-                            <label for="newPassword" class="form-label">New Password</label>
-                            <div class="input-group">
-                                <input type="password" class="form-control" id="newPassword" name="newPassword"
-                                    placeholder="Enter new password" required minlength="6">
-                                <button class="btn btn-outline-secondary toggle-password" type="button"
-                                    data-target="newPassword">
-                                    <i class="bx bx-show"></i>
-                                </button>
+        <div class="modal fade @if (\Hash::check('Pantukan@2025', auth()->user()->password)) show @endif" id="changePasswordModal" tabindex="-1"
+            aria-labelledby="changePasswordModalLabel" aria-hidden="true" data-bs-backdrop="static"
+            data-bs-keyboard="false">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content shadow-lg">
+                    <div class="modal-header">
+                        <h5 class="modal-title fw-bold" id="changePasswordModalLabel">Change Password</h5>
+                    </div>
+                    <div class="modal-body">
+                        <form id="changePasswordForm">
+                            <input type="hidden" name="_token" value="{{ csrf_token() }}"> <!-- CSRF Token -->
+                            <input type="hidden" name="userId" id="userId" value="{{ auth()->user()->id }}">
+                            @method('PUT')
+                            <!-- New Password -->
+                            <div class="mb-3">
+                                <label for="newPassword" class="form-label">New Password</label>
+                                <div class="input-group">
+                                    <input type="password" tabindex="1" class="form-control" id="newPassword"
+                                        name="newPassword" placeholder="Enter new password" required minlength="6">
+                                    <button class="btn btn-outline-secondary toggle-password" type="button"
+                                        data-target="newPassword">
+                                        <i class="bx bx-show"></i>
+                                    </button>
+                                </div>
                             </div>
-                        </div>
 
-                        <!-- Confirm New Password -->
-                        <div class="mb-3">
-                            <label for="confirmPassword" class="form-label">Confirm New Password</label>
-                            <div class="input-group">
-                                <input type="password" class="form-control" id="confirmPassword" name="confirmPassword"
-                                    placeholder="Confirm new password" required minlength="6">
-                                <button class="btn btn-outline-secondary toggle-password" type="button"
-                                    data-target="confirmPassword">
-                                    <i class="bx bx-show"></i>
-                                </button>
+                            <!-- Confirm New Password -->
+                            <div class="mb-3">
+                                <label for="confirmPassword" class="form-label">Confirm New Password</label>
+                                <div class="input-group">
+                                    <input type="password" class="form-control" id="confirmPassword"
+                                        name="confirmPassword" placeholder="Confirm new password" required
+                                        minlength="6" tabindex="2">
+                                    <button class="btn btn-outline-secondary toggle-password" type="button"
+                                        data-target="confirmPassword">
+                                        <i class="bx bx-show"></i>
+                                    </button>
+                                </div>
                             </div>
-                        </div>
 
-                        <!-- Submit Button -->
-                        <div class="d-grid">
-                            <button type="submit" class="btn btn-primary">Update Password</button>
-                        </div>
-                    </form>
+                            <!-- Submit Button -->
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-primary">Update Password</button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
-    </div> --}}
+    </section>
+
+
 
     <script>
         let sidebar = document.querySelector(".sidebar");
@@ -228,47 +233,60 @@
     @yield('js')
     <script>
         $(document).ready(function() {
+            checkPassword();
 
-            // $(".toggle-password").click(function() {
-            //     let input = $("#" + $(this).data("target"));
-            //     let icon = $(this).find("i");
+            function checkPassword() {
+                $.ajax({
+                    url: '/check-password',
+                    type: 'GET',
+                    success: function(response) {
+                        if (response) {
+                            $("#changePasswordModal").modal('show');
+                        }
+                    }
+                });
+            }
 
-            //     if (input.attr("type") === "password") {
-            //         input.attr("type", "text");
-            //         icon.removeClass("bx-show").addClass("bx-hide");
-            //     } else {
-            //         input.attr("type", "password");
-            //         icon.removeClass("bx-hide").addClass("bx-show");
-            //     }
-            // });
+            $(".toggle-password").click(function() {
+                let input = $("#" + $(this).data("target"));
+                let icon = $(this).find("i");
 
-            // $("#changePasswordForm").submit(function(e) {
-            //     e.preventDefault();
+                if (input.attr("type") === "password") {
+                    input.attr("type", "text");
+                    icon.removeClass("bx-show").addClass("bx-hide");
+                } else {
+                    input.attr("type", "password");
+                    icon.removeClass("bx-hide").addClass("bx-show");
+                }
+            });
 
-            //     let userId = $("#userId").val(); // Get the user ID dynamically
-            //     let formData = $(this).serialize() +
-            //         "&_method=PUT";
+            $("#changePasswordForm").submit(function(e) {
+                e.preventDefault();
 
-            //     $.ajax({
-            //         url: `/users/${userId}`,
-            //         type: "POST",
-            //         data: formData,
-            //         success: function(response) {
-            //             if (response.code === 200) {
-            //                 toaster(response.message, "success");
-            //                 setTimeout(() => $("#changePasswordModal").removeClass('show'),
-            //                     1500);
-            //             } else {
-            //                 toaster(response.message, "error");
-            //             }
-            //         },
-            //         error: function(xhr) {
-            //             let errorMsg = xhr.responseJSON?.message ||
-            //                 "Error updating user.";
-            //             toaster(errorMsg, "error");
-            //         }
-            //     });
-            // });
+                let userId = $("#userId").val(); // Get the user ID dynamically
+                let formData = $(this).serialize() +
+                    "&_method=PUT";
+
+                $.ajax({
+                    url: `/users/${userId}`,
+                    type: "POST",
+                    data: formData,
+                    success: function(response) {
+                        if (response.code === 200) {
+                            toaster(response.message, "success");
+                            setTimeout(() => $("#changePasswordModal").modal('hide'),
+                                1500);
+                        } else {
+                            toaster(response.message, "error");
+                        }
+                    },
+                    error: function(xhr) {
+                        let errorMsg = xhr.responseJSON?.message ||
+                            "Error updating user.";
+                        toaster(errorMsg, "error");
+                    }
+                });
+            });
 
         });
     </script>
@@ -281,36 +299,36 @@
                 month: "long",
                 day: "numeric",
             });
-    
+
             let formattedTime = now.toLocaleTimeString("en-US", {
                 hour: "numeric",
                 minute: "2-digit",
                 hour12: true,
             }).split(" ");
-    
+
             // Extract time parts
             let hours = formattedTime[0].split(":")[0];
             let minutes = formattedTime[0].split(":")[1];
             let ampm = formattedTime[1];
-    
+
             // Cache elements
             const $currentDate = $("#currentDate");
             const $hours = $("#hours");
             const $minutes = $("#minutes");
             const $ampm = $("#ampm");
-    
+
             // Update only if values have changed (reduces unnecessary DOM updates)
             if ($currentDate.text() !== formattedDate) $currentDate.text(formattedDate);
             if ($hours.text() !== hours) $hours.text(hours);
             if ($minutes.text() !== minutes) $minutes.text(minutes);
             if ($ampm.text() !== ampm) $ampm.text(ampm);
-    
+
             requestAnimationFrame(updateDateTime);
         }
-    
+
         $(document).ready(updateDateTime);
     </script>
-    
+
 
 </body>
 
