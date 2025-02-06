@@ -107,7 +107,7 @@ async function loadRoom(){
                 <tr>
                     <td>${item.name}</td>
                     <td>₱${item.price}</td>
-                    <td>pending data ${item.room_category_id}</td>
+                    <td>${item.category.display_name}</td>
                     <td>${item.pax}</td>
                     <td>
                         ${item.availability == 0?`<span class="badge bg-danger">Inactive</span>`:`<span class="badge bg-success">Active</span>`}

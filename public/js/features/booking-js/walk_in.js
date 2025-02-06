@@ -24,6 +24,8 @@ function confirm_transaction(){
     
     $('.order_details_summary_walk_in tbody').empty()
     selectedAddOns.forEach(add_ons => {
+        console.log(add_ons);
+        
         const name = add_ons.name
         const qty = add_ons.qty
         const addon_price = add_ons.addon_price

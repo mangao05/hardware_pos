@@ -69,6 +69,45 @@
     .logo_name {
         margin-left: 11px;
     }
+
+    /* Container styling */
+    .clock-container {
+        text-align: center;
+        padding: 20px;
+        border-radius: 10px;
+        /* background: rgba(255, 255, 255, 0.1);
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3); */
+    }
+
+    /* Date styling */
+    .date {
+        font-size: 14px;
+        font-weight: 400;
+        color: #bbb;
+    }
+
+    /* Time styling */
+    .time {
+        font-size: 20px;
+        font-weight: bold;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .hours, .minutes, .ampm {
+        padding: 0 5px;
+    }
+
+    /* Blinking colon */
+    #colon {
+        padding: 0 5px;
+        animation: blink 1s infinite;
+    }
+
+    @keyframes blink {
+        50% { opacity: 0; }
+    }
 </style>
 
 <body>
@@ -89,7 +128,16 @@
                 </span>
             </div>
             <div class="search-box">
-                <span>Current Date and Time: {{ \Carbon\Carbon::now()->format('F d, Y h:i A') }}</span>
+                {{-- <span>Current Date and Time: {{ \Carbon\Carbon::now()->format('F d, Y h:i A') }}</span> --}}
+                <div class="clock-container">
+                    <div class="date" id="currentDate"></div>
+                    <div class="time">
+                        <span class="hours" id="hours"></span>
+                        <span id="colon">:</span>
+                        <span class="minutes" id="minutes"></span>
+                        <span class="ampm" id="ampm"></span>
+                    </div>
+                </div>
             </div>
             <div class="profile-details">
                 <img src="https://media.licdn.com/dms/image/v2/C5603AQF1WA6mvPPN7g/profile-displayphoto-shrink_400_400/profile-displayphoto-shrink_400_400/0/1655827862331?e=2147483647&v=beta&t=A0HGyBn7tNazpYnwQoiEMf4K_-fa9AZXAOLuQ-wXg0A"
@@ -110,7 +158,7 @@
         </div>
     </section>
 
-    <div class="modal fade d-block @if (\Hash::check('Pantukan@2025', auth()->user()->password)) show @endif" id="changePasswordModal"
+    {{-- <div class="modal fade d-block @if (\Hash::check('Pantukan@2025', auth()->user()->password)) show @endif" id="changePasswordModal"
         tabindex="-1" aria-labelledby="changePasswordModalLabel" aria-hidden="true" data-bs-backdrop="static"
         data-bs-keyboard="false">
         <div class="modal-dialog modal-dialog-centered">
@@ -157,7 +205,7 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> --}}
 
     <script>
         let sidebar = document.querySelector(".sidebar");
@@ -181,49 +229,89 @@
     <script>
         $(document).ready(function() {
 
-            $(".toggle-password").click(function() {
-                let input = $("#" + $(this).data("target"));
-                let icon = $(this).find("i");
+            // $(".toggle-password").click(function() {
+            //     let input = $("#" + $(this).data("target"));
+            //     let icon = $(this).find("i");
 
-                if (input.attr("type") === "password") {
-                    input.attr("type", "text");
-                    icon.removeClass("bx-show").addClass("bx-hide");
-                } else {
-                    input.attr("type", "password");
-                    icon.removeClass("bx-hide").addClass("bx-show");
-                }
-            });
+            //     if (input.attr("type") === "password") {
+            //         input.attr("type", "text");
+            //         icon.removeClass("bx-show").addClass("bx-hide");
+            //     } else {
+            //         input.attr("type", "password");
+            //         icon.removeClass("bx-hide").addClass("bx-show");
+            //     }
+            // });
 
-            $("#changePasswordForm").submit(function(e) {
-                e.preventDefault();
+            // $("#changePasswordForm").submit(function(e) {
+            //     e.preventDefault();
 
-                let userId = $("#userId").val(); // Get the user ID dynamically
-                let formData = $(this).serialize() +
-                    "&_method=PUT";
+            //     let userId = $("#userId").val(); // Get the user ID dynamically
+            //     let formData = $(this).serialize() +
+            //         "&_method=PUT";
 
-                $.ajax({
-                    url: `/users/${userId}`,
-                    type: "POST",
-                    data: formData,
-                    success: function(response) {
-                        if (response.code === 200) {
-                            toaster(response.message, "success");
-                            setTimeout(() => $("#changePasswordModal").removeClass('show'),
-                                1500);
-                        } else {
-                            toaster(response.message, "error");
-                        }
-                    },
-                    error: function(xhr) {
-                        let errorMsg = xhr.responseJSON?.message ||
-                            "Error updating user.";
-                        toaster(errorMsg, "error");
-                    }
-                });
-            });
+            //     $.ajax({
+            //         url: `/users/${userId}`,
+            //         type: "POST",
+            //         data: formData,
+            //         success: function(response) {
+            //             if (response.code === 200) {
+            //                 toaster(response.message, "success");
+            //                 setTimeout(() => $("#changePasswordModal").removeClass('show'),
+            //                     1500);
+            //             } else {
+            //                 toaster(response.message, "error");
+            //             }
+            //         },
+            //         error: function(xhr) {
+            //             let errorMsg = xhr.responseJSON?.message ||
+            //                 "Error updating user.";
+            //             toaster(errorMsg, "error");
+            //         }
+            //     });
+            // });
 
         });
     </script>
+
+    <script>
+        function updateDateTime() {
+            let now = new Date();
+            let formattedDate = now.toLocaleDateString("en-US", {
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+            });
+    
+            let formattedTime = now.toLocaleTimeString("en-US", {
+                hour: "numeric",
+                minute: "2-digit",
+                hour12: true,
+            }).split(" ");
+    
+            // Extract time parts
+            let hours = formattedTime[0].split(":")[0];
+            let minutes = formattedTime[0].split(":")[1];
+            let ampm = formattedTime[1];
+    
+            // Cache elements
+            const $currentDate = $("#currentDate");
+            const $hours = $("#hours");
+            const $minutes = $("#minutes");
+            const $ampm = $("#ampm");
+    
+            // Update only if values have changed (reduces unnecessary DOM updates)
+            if ($currentDate.text() !== formattedDate) $currentDate.text(formattedDate);
+            if ($hours.text() !== hours) $hours.text(hours);
+            if ($minutes.text() !== minutes) $minutes.text(minutes);
+            if ($ampm.text() !== ampm) $ampm.text(ampm);
+    
+            requestAnimationFrame(updateDateTime);
+        }
+    
+        $(document).ready(updateDateTime);
+    </script>
+    
+
 </body>
 
 </html>

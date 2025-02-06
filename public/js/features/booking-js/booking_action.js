@@ -266,9 +266,9 @@ $(".selected_add_ons").on("change", function () {
         const row = `
             <tr>
                 <td class="table-custome-align">
-                    <input type="checkbox" class="add-on-checkbox" data-id="${add_ons.id}">
+                    <input type="checkbox" class="add-on-checkbox" data-id="${add_ons.id}" data-name="${add_ons.item_name}">
                 </td>
-                <td class="table-custome-align"><span id="selected_add_on_name">${add_ons.item_name}</span></td>
+                <td class="table-custome-align"><span>${add_ons.item_name}</span></td>
                 <td class="table-custome-align">
                     <input type="number" class="form-control add-on-qty" data-id="${add_ons.id}" value="1" min="1">
                 </td>
@@ -292,11 +292,11 @@ $(".selected_add_ons").on("change", function () {
 
 $(".add_ons_table").on("change", ".add-on-checkbox", function () {
     const addOnId = $(this).data("id");
+    const addOnName = $(this).data("name"); // ✅ Now correctly retrieves item_name
     const quantityInput = $(`.add-on-qty[data-id="${addOnId}"]`);
     const qty = parseInt(quantityInput.val()) || 1; 
-    const add_ons_name = $('#selected_add_on_name').text()
-    
-    const priceRate = parseFloat($(`td:contains("₱")`, $(this).closest('tr')).text().replace("₱", ""));
+
+    const priceRate = parseFloat($(this).closest("tr").find("td:nth-child(4)").text().replace("₱", ""));
 
     if ($(this).is(":checked")) {
         if (!selectedAddOns.some(addOn => addOn.addon_id === addOnId)) {
@@ -304,13 +304,14 @@ $(".add_ons_table").on("change", ".add-on-checkbox", function () {
                 addon_id: addOnId, 
                 qty: qty, 
                 addon_price: priceRate,
-                name:add_ons_name
+                name: addOnName
             });
         }
     } else {
         selectedAddOns = selectedAddOns.filter(addOn => addOn.addon_id !== addOnId);
     }
 });
+
 
 $(".add_ons_table").on("input", ".add-on-qty", function () {
     const addOnId = $(this).data("id");
