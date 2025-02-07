@@ -19,7 +19,7 @@ class SupervisorUserSeeder extends Seeder
             'lastname' => 'Supervisor',
             'username' => 'supervisor',
             'password' => Hash::make('Pantukan@2025'),
-            'active' => true
+            'is_active' => true
         ]);
 
         $user->roles()->create([
