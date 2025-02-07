@@ -80,7 +80,7 @@
                 </div>
 
                 <!-- Roles -->
-                <div class="col-md-6 mb-3">
+                {{-- <div class="col-md-6 mb-3">
                     <label for="roles" class="form-label">Role</label>
                     <select name="role" id="role" class="form-select form-control">
                         <option value="">Select Role</option>
@@ -89,7 +89,7 @@
                                 {{ $role }}</option>
                         @endforeach
                     </select>
-                </div>
+                </div> --}}
             </div>
 
             <div class="row">
