@@ -64,9 +64,9 @@ class ReportsController extends Controller
     private function sales_summary($date)
     {
         $payments = ReservationPayments::select('initial_payment', 'user_name')
-            ->whereHas('reservation', function ($query) {
-                $query->whereNull('deleted_at');
-            })
+            // ->whereHas('reservation', function ($query) {
+            //     $query->whereNull('deleted_at');
+            // })
             ->whereDate('created_at', $date)
             ->get();
 
