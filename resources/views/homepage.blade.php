@@ -73,7 +73,6 @@
     /* Container styling */
     .clock-container {
         text-align: center;
-        padding: 20px;
         border-radius: 10px;
         /* background: rgba(255, 255, 255, 0.1);
         box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3); */
