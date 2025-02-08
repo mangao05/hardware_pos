@@ -61,10 +61,12 @@ Route::get('history-logs', [HistoryLogController::class, 'list']);
 // Route::put('/reservation-rooms/addon/{id}', [ReservationDetailsController::class, 'updateAddon']);
 // Route::delete('/reservation-rooms/addon/{id}', [ReservationDetailsController::class, 'deleteAddon']);
 // Route::get('/reservation-rooms/{id}/addons', [ReservationDetailsController::class, 'listAddons']);
-Route::put('/reservation-rooms/room/{reservationRoomDetails}/extend', [ReservationDetailsController::class,'extendRoom']);
+Route::put('/reservation-rooms/room/{reservationRoomDetails}/extend', [ReservationDetailsController::class, 'extendRoom']);
 
 Route::get('reports/rooms-status', [ReportsController::class, 'room_statuses']);
 Route::get('reports/walk-in/payments-summary', [ReportsController::class, 'payments_summary']);
+Route::get('/reports/bookings', [ReportsController::class, 'getRoomBookings']);
+
 Route::post('checkout', [ReservationController::class, 'checkout']);
 
 Route::get('/categories/{category}/available-rooms', [RoomCategoryController::class, 'getAvailableRooms'])

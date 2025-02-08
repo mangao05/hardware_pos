@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Traits\ResponseFormatter;
-use App\Models\ReservationPayments;
-use App\Models\ReservationRoomDetails;
+use Carbon\Carbon;
 use App\Models\Room;
 use Illuminate\Http\Request;
+use App\Models\ReservationPayments;
+use App\Http\Traits\ResponseFormatter;
+use App\Models\ReservationRoomDetails;
 
 class ReportsController extends Controller
 {
@@ -101,5 +102,41 @@ class ReportsController extends Controller
         } catch (\Exception $e) {
             return $this->error([], $e->getMessage());
         };
+    }
+
+    public function getRoomBookings(Request $request)
+    {
+        // Determine type (default to 'range')
+        $type = $request->type ?? 'range';
+
+        if ($type === 'range') {
+            // Default: Current month's first and last day
+            $startDate = $request->from ? Carbon::createFromFormat('m-d-Y', $request->from) : Carbon::now()->startOfMonth();
+            $endDate = $request->to ? Carbon::createFromFormat('m-d-Y', $request->to) : Carbon::now()->endOfMonth();
+
+            $bookings = ReservationRoomDetails::where(function ($query) use ($startDate, $endDate) {
+                $query->whereBetween('check_in_date', [$startDate, $endDate])
+                    ->orWhereBetween('check_out_date', [$startDate, $endDate]);
+            });
+        } else {
+            // Default: Current Year
+            $year = $request->year ?? now()->year;
+
+            $bookings = ReservationRoomDetails::whereYear('check_in_date', $year)
+                ->orWhereYear('check_out_date', $year);
+        }
+
+        // Group and calculate total bookings & total sales per room
+        $bookings = $bookings
+            ->selectRaw('
+            room_id, 
+            COUNT(*) as total_bookings, 
+            SUM(DATEDIFF(check_out_date, check_in_date) * JSON_UNQUOTE(JSON_EXTRACT(room_details, "$.price"))) as total_sales
+        ')
+            ->groupBy('room_id')
+            ->orderByDesc('total_sales')
+            ->get();
+
+        return response()->json($bookings);
     }
 }
