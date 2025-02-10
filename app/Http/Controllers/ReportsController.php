@@ -103,7 +103,7 @@ class ReportsController extends Controller
         foreach ($reports as $userName => $totalPayment) {
             $finalReports[] = [
                 'user_name' => $userName,
-                'sales' => $totalPayment,
+                'sales' => (int) $totalPayment,
             ];
         }
 

@@ -427,7 +427,7 @@ async function loadCategory(category_id = null, checkedRoomId = null) {
         liveReload(selectedCategory)
         selected_category = selectedCategory
         
-        await load_available_room_per_category(selected_category,start_book, end_book)
+        
     });
 }
 
@@ -975,6 +975,7 @@ $(function() {
         start_book = start.format('YYYY-MM-DD')
         end_book = end.format('YYYY-MM-DD')
         // console.log("A new date selection was made: " + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD'));
+        load_available_room_per_category(selected_category,start_book, end_book)
     });
 });
 

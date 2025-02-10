@@ -171,7 +171,9 @@
   </div> --}}
 
         <style scoped>
-
+            tr{
+              line-height: 12px;
+            }
         </style>
 
         <div class="container-fluid">
@@ -180,10 +182,30 @@
             @endphp
             <input type="hidden" name="roles_input" value="{{ json_encode($userRoles) }}">
             <div class="row" @if(!in_array(12, $userRoles)) style="display:none;" @endif>
-                <div class="col">
-                    <canvas id="myChart" style="width:100%;max-width:700px"></canvas>
+                <div class="col border">
+                    <div class="row">
+                      <div class="col-4">
+                          <select name="" id="filterSelect" class="form-control" onchange="selectFilter()">
+                            <option value="today">Today</option>
+                            <option value="date_range">Date Range</option>
+                            <option value="per_year">Per Year</option>
+                        </select>
+                      </div>
+                      <div class="col">
+                        <div>
+                          <input type="text" name="daterange" style="display: none" id="daterange" class="form-control" placeholder="Select date range" />
+                          <select id="yearSelect" class="form-control" onchange="selectYear()" style="display: none">
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                    <div id="myChart" style="width: 95%; height: 400px;"></div>
+                </div>
+                <div class="col border">
+                  <div id="myChart_room" style="width:95%; height:500px;"></div>
                 </div>
             </div>
+            <hr>
             <div class="row">
                 <div class="col">
                     <div>
@@ -197,10 +219,119 @@
                 </div>
             </div>
         </div>
+
+
+        {{-- modal  --}}
+        <div class="modal fade" id="chartModal" tabindex="-1" aria-labelledby="modalTitle" aria-hidden="true">
+          <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="modalTitle">Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body" id="sales_report">
+                <div class="row">
+                  <div class="col">
+                    <div class="col" id="printableArea">
+                      <img src="{{ asset('img/pantukan_logo.png') }}" class="mt-3" style="width: 70px" alt="">
+                      <hr>
+                      <div class="row">
+                        <div class="col">
+                          <div class="row">
+                            <div class="col-5">
+                              <strong>Name:</strong>
+                            </div>
+                            <div class="col">
+                              <span>Khenneth S Alaiza</span>
+                            </div>
+                          </div>
+    
+                          <div class="row">
+                            <div class="col-5">
+                              <strong>Employee #:</strong>
+                            </div>
+                            <div class="col">
+                              <span>PEMP-000001</span>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="col">
+                          <div class="row">
+                            <div class="col-2">
+                              <strong>Date:</strong>
+                            </div>
+                            <div class="col-5">
+                              <span>Feb 10, 2025</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      
+
+                      <hr>
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col">
+                    <table class="table">
+                      <thead>
+                        <th>TR#</th>
+                        <th>Customer</th>
+                        <th>Payment</th>
+                        <th>Date</th>
+                      </thead>
+
+                      <tbody>
+                        <tr>
+                          <td>TR#:01252025-000001</td>
+                          <td>Khenneth S Alaiza</td>
+                          <td>21000</td>
+                          <td>Feb 10, 2025 08:38 PM</td>
+                        </tr>
+                        <tr>
+                          <td>TR#:01252025-000001</td>
+                          <td>Khenneth S Alaiza</td>
+                          <td>21000</td>
+                          <td>Feb 10, 2025 08:38 PM</td>
+                        </tr>
+                        <tr>
+                          <td>TR#:01252025-000001</td>
+                          <td>Khenneth S Alaiza</td>
+                          <td>21000</td>
+                          <td>Feb 10, 2025 08:38 PM</td>
+                        </tr>
+                        <tr>
+                          <td>TR#:01252025-000001</td>
+                          <td>Khenneth S Alaiza</td>
+                          <td>21000</td>
+                          <td>Feb 10, 2025 08:38 PM</td>
+                        </tr>
+                        <tr>
+                          <td>TR#:01252025-000001</td>
+                          <td>Khenneth S Alaiza</td>
+                          <td>21000</td>
+                          <td>Feb 10, 2025 08:38 PM</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button class="btn btn-success" onclick="printDiv('sales_report')">Print</button>
+              </div>
+            </div>
+          </div>
+        </div>
     @endsection
 
     @section('js')
+        <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+        <script src="https://www.gstatic.com/charts/loader.js"></script>
         <script src="{{ asset('js/helper/app_helper.js') }}"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+        
         <script src="{{ asset('js/dashboard/chart.js') }}"></script>
+        {{-- <script src="{{ asset('js/dashboard/piechart.js') }}"></script>  --}}
     @endsection
