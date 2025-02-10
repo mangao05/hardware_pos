@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Carbon\Carbon;
 use App\Models\Room;
+use App\Models\User;
 use Illuminate\Http\Request;
 use App\Models\ReservationPayments;
 use App\Http\Traits\ResponseFormatter;
@@ -64,11 +65,17 @@ class ReportsController extends Controller
 
     private function sales_summary($date)
     {
-        $payments = ReservationPayments::select('initial_payment', 'user_name')
+        $payments = ReservationPayments::select('initial_payment', 'user_name', 'user_id')
             // ->whereHas('reservation', function ($query) {
             //     $query->whereNull('deleted_at');
             // })
             ->whereDate('created_at', $date)
+            ->get();
+
+        $userIdWithSales = array_unique($payments->pluck('user_id')->toArray());
+        $users = User::whereHas('roles', function ($query) {
+            return $query->whereIn('role_id', [2]);
+        })->whereNotIn('id', $userIdWithSales)
             ->get();
 
         $reports = [];
@@ -81,6 +88,10 @@ class ReportsController extends Controller
             }
         }
 
+        foreach ($users as $user) {
+            $reports[$user->firstname . ' ' . $user->lastname] = 0;
+        }
+
         $finalReports = [];
         foreach ($reports as $userName => $totalPayment) {
             $finalReports[] = [
@@ -88,6 +99,7 @@ class ReportsController extends Controller
                 'sales' => $totalPayment,
             ];
         }
+
         return $finalReports;
     }
 
@@ -106,37 +118,52 @@ class ReportsController extends Controller
 
     public function getRoomBookings(Request $request)
     {
-        // Determine type (default to 'range')
-        $type = $request->type ?? 'range';
 
-        if ($type === 'range') {
-            // Default: Current month's first and last day
-            $startDate = $request->from ? Carbon::createFromFormat('m-d-Y', $request->from) : Carbon::now()->startOfMonth();
-            $endDate = $request->to ? Carbon::createFromFormat('m-d-Y', $request->to) : Carbon::now()->endOfMonth();
+        $startDate = $request->from ? Carbon::createFromFormat('m-d-Y', $request->from) : Carbon::now()->startOfMonth();
+        $endDate = $request->to ? Carbon::createFromFormat('m-d-Y', $request->to) : Carbon::now()->endOfMonth();
 
-            $bookings = ReservationRoomDetails::where(function ($query) use ($startDate, $endDate) {
+        $bookings = ReservationRoomDetails::when($request->type === 'range', function ($query)  use ($startDate, $endDate) {
+            return $query->where(function ($query) use ($startDate, $endDate) {
                 $query->whereBetween('check_in_date', [$startDate, $endDate])
-                    ->orWhereBetween('check_out_date', [$startDate, $endDate]);
+                    ->whereBetween('check_out_date', [$startDate, $endDate]);
             });
-        } else {
-            // Default: Current Year
+        })->when($request->type === 'year', function ($query) use ($request) {
             $year = $request->year ?? now()->year;
 
-            $bookings = ReservationRoomDetails::whereYear('check_in_date', $year)
-                ->orWhereYear('check_out_date', $year);
+            return $query->whereYear('check_in_date', $year)
+                ->whereYear('check_out_date', $year);
+        })->when($request->room_category_id, function ($query) use ($request) {
+            return $query->whereHas('room', function ($query) use ($request) {
+                $query->where('room_category_id', $request->room_category_id);
+            });
+        })->orderBy('room_id')->get();
+
+        $total_bookings = [];
+        
+        foreach($bookings as $booking) {
+            if(! isset($total_bookings[$booking->room_id])) {
+                $total_bookings[$booking->room_id] = [
+                    'room_id' => $booking->room_id,
+                    'room_name' => $booking->room->name,
+                    'total_bookings' => 1,
+                    'reservation_id' => $booking->reservation_id
+                ];
+            } else {
+                $total_bookings[$booking->room_id]['total_bookings'] += 1;
+            }
+            $total_bookings[$booking->room_id]['total_sales'] = 0;
         }
-
         // Group and calculate total bookings & total sales per room
-        $bookings = $bookings
-            ->selectRaw('
-            room_id, 
-            COUNT(*) as total_bookings, 
-            SUM(DATEDIFF(check_out_date, check_in_date) * JSON_UNQUOTE(JSON_EXTRACT(room_details, "$.price"))) as total_sales
-        ')
-            ->groupBy('room_id')
-            ->orderByDesc('total_sales')
-            ->get();
+        // $bookings = $bookings
+        //     ->selectRaw('
+        //     room_id, 
+        //     COUNT(*) as total_bookings, 
+        //     SUM(DATEDIFF(check_out_date, check_in_date) * JSON_UNQUOTE(JSON_EXTRACT(room_details, "$.price"))) as total_sales
+        // ')
+        //     ->groupBy('room_id')
+        //     ->orderByDesc('total_sales')
+        //     ->get();
 
-        return response()->json($bookings);
+        return response()->json(array_values($total_bookings));
     }
 }

@@ -14,6 +14,7 @@ use App\Http\Controllers\Rooms\RoomController;
 use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\ReservationDetailsController;
 use App\Http\Controllers\Rooms\RoomCategoryController;
+use App\Http\Controllers\TransactionsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -73,5 +74,5 @@ Route::get('/categories/{category}/available-rooms', [RoomCategoryController::cl
     ->name('categories.available-rooms');
 
 Route::post('/payments/delete', [ReservationController::class, 'voidPayment']);
-
+Route::get('/transactions', [TransactionsController::class, 'getTransactions']);
 // Route::get('reports/sales-summary',[ReportsController::class, 'sales_summary']);
