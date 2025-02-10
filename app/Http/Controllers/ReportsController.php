@@ -66,10 +66,17 @@ class ReportsController extends Controller
     private function sales_summary($date)
     {
         $payments = ReservationPayments::select('initial_payment', 'user_name', 'user_id')
-            // ->whereHas('reservation', function ($query) {
-            //     $query->whereNull('deleted_at');
-            // })
-            ->whereDate('created_at', $date)
+            ->when(request()->filled('from') && request()->filled('to'), function ($query) {
+                $startDate = Carbon::createFromFormat('m-d-Y', request()->get('from'));
+                $endDate = Carbon::createFromFormat('m-d-Y', request()->get('to'));
+                return $query->whereBetween('created_at', [$startDate, $endDate]);
+            })
+            ->when(request()->filled('year') && !request()->filled('from') && !request()->filled('to'), function ($query) {
+                return $query->whereYear('created_at', request()->get('year'));
+            })
+            ->when(!request()->filled('year') && !request()->filled('from') && !request()->filled('to'), function ($query) use ($date){
+                return $query->whereDate('created_at', $date);
+            })
             ->get();
 
         $userIdWithSales = array_unique($payments->pluck('user_id')->toArray());
@@ -84,10 +91,10 @@ class ReportsController extends Controller
             if (isset($reports[$payment->user_name])) {
                 $reports[$payment->user_name] += $payment->initial_payment;
             } else {
-                $reports[$payment->user_name] = $payment->initial_payment;
+                $reports[$payment->user_name] = (double)$payment->initial_payment;
             }
         }
-
+        
         foreach ($users as $user) {
             $reports[$user->firstname . ' ' . $user->lastname] = 0;
         }
@@ -139,9 +146,9 @@ class ReportsController extends Controller
         })->orderBy('room_id')->get();
 
         $total_bookings = [];
-        
-        foreach($bookings as $booking) {
-            if(! isset($total_bookings[$booking->room_id])) {
+
+        foreach ($bookings as $booking) {
+            if (! isset($total_bookings[$booking->room_id])) {
                 $total_bookings[$booking->room_id] = [
                     'room_id' => $booking->room_id,
                     'room_name' => $booking->room->name,
