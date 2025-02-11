@@ -74,40 +74,37 @@ class ReportsController extends Controller
             ->when(request()->filled('year') && !request()->filled('from') && !request()->filled('to'), function ($query) {
                 return $query->whereYear('created_at', request()->get('year'));
             })
-            ->when(!request()->filled('year') && !request()->filled('from') && !request()->filled('to'), function ($query) use ($date){
+            ->when(!request()->filled('year') && !request()->filled('from') && !request()->filled('to'), function ($query) use ($date) {
                 return $query->whereDate('created_at', $date);
             })
             ->get();
 
         $userIdWithSales = array_unique($payments->pluck('user_id')->toArray());
-        $users = User::whereHas('roles', function ($query) {
-            return $query->whereIn('role_id', [2]);
-        })->whereNotIn('id', $userIdWithSales)
-            ->get();
+        $usersWithoutSales  = User::hasRole([2])->whereNotIn('id', $userIdWithSales)->get();
 
-        $reports = [];
+        $reports = $payments->groupBy('user_id')
+            ->mapWithKeys(function ($group, $userId) {
+                return [
+                    $userId => [
+                        'user_id' => $userId,
+                        'user_name' => $group->first()->user_name,
+                        'sales' => $group->sum('initial_payment'),
+                    ],
+                ];
+            })
+            ->sortByDesc('sales')
+            ->toArray();
 
-        foreach ($payments as $payment) {
-            if (isset($reports[$payment->user_name])) {
-                $reports[$payment->user_name] += $payment->initial_payment;
-            } else {
-                $reports[$payment->user_name] = (double)$payment->initial_payment;
-            }
-        }
-        
-        foreach ($users as $user) {
-            $reports[$user->firstname . ' ' . $user->lastname] = 0;
-        }
 
-        $finalReports = [];
-        foreach ($reports as $userName => $totalPayment) {
-            $finalReports[] = [
-                'user_name' => $userName,
-                'sales' => (int) $totalPayment,
+        foreach ($usersWithoutSales as $user) {
+            $reports[$user->id] = [
+                'user_id' => $user->id,
+                'user_name' => $user->firstname . ' ' . $user->lastname,
+                'sales' => 0,
             ];
         }
 
-        return $finalReports;
+        return array_values($reports);
     }
 
     public function payments_summary()
