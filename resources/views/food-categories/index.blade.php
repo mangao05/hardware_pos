@@ -43,7 +43,7 @@
                     <tr>
                         <td colspan="3" class="text-center"><i>No data found...</i></td>
                     </tr>
-                @endforeach
+                @endforelse
             </tbody>
         </table>
 

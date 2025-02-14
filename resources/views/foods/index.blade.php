@@ -55,7 +55,7 @@
                     <tr>
                         <td colspan="6" class="text-center"><i>No data found...</i></td>
                     </tr>
-                @endforeach
+                @endforelse
             </tbody>
         </table>
 
