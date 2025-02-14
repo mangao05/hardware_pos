@@ -81,7 +81,7 @@ class ReportsController extends Controller
 
         $userIdWithSales = array_unique($payments->pluck('user_id')->toArray());
         $usersWithoutSales  = User::hasRole([2])->whereNotIn('id', $userIdWithSales)->get();
-
+        
         $reports = $payments->groupBy('user_id')
             ->mapWithKeys(function ($group, $userId) {
                 return [
@@ -94,7 +94,6 @@ class ReportsController extends Controller
             })
             ->sortByDesc('sales')
             ->toArray();
-
 
         foreach ($usersWithoutSales as $user) {
             $reports[$user->id] = [
@@ -157,6 +156,16 @@ class ReportsController extends Controller
             }
             $total_bookings[$booking->room_id]['total_sales'] = 0;
         }
+
+        $reservationIds = collect($total_bookings)
+            ->pluck('reservation_id')
+            ->sort()
+            ->unique()
+            ->values()
+            ->toArray();
+
+        $paidReservations = ReservationPayments::whereIn('reservation_id', $reservationIds)->get();
+        dd($paidReservations);
         // Group and calculate total bookings & total sales per room
         // $bookings = $bookings
         //     ->selectRaw('

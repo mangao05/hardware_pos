@@ -2,65 +2,93 @@
     @php
         $userRoles = auth()->user()->roles()->pluck('role_id')->toArray();
     @endphp
-    @if (in_array(12, $userRoles) || in_array(11, $userRoles) || in_array(2, $userRoles))
-        <li>
-            <a href="{{ route('cms.dashboard') }}" class="{{ request()->routeIs('cms.dashboard') ? 'active' : '' }}">
-                <i class='bx bx-grid-alt'></i>
-                <span class="links_name">Dashboard</span>
-            </a>
-        </li>
-    @endif
 
-    @if (in_array(12, $userRoles) || in_array(11, $userRoles))
-        <li>
-            <a href="{{ url('/user-management') }}" class="{{ request()->is('user-management') ? 'active' : '' }}">
-                <i class='bx bx-user'></i>
-                <span class="links_name">User Management</span>
-            </a>
-        </li>
-        <li>
-            <a href="{{ url('/room-category') }}" class="{{ request()->is('room-category') ? 'active' : '' }}">
-                <i class='bx bx-box'></i>
-                <span class="links_name">Room Category</span>
-            </a>
-        </li>
-        <li>
-            <a href="{{ url('/rooms') }}" class="{{ request()->is('rooms') ? 'active' : '' }}">
-                <i class='bx bx-list-ul'></i>
-                <span class="links_name">Rooms</span>
-            </a>
-        </li>
-        <li>
-            <a href="{{ url('/package') }}" class="{{ request()->is('package') ? 'active' : '' }}">
-                <i class='bx bx-pie-chart-alt-2'></i>
-                <span class="links_name">Package</span>
-            </a>
-        </li>
-        <li>
-            <a href="{{ url('/leisures-add-ons') }}" class="{{ request()->is('leisures-add-ons') ? 'active' : '' }}">
-                <i class='bx bx-coin-stack'></i>
-                <span class="links_name">Leisures/Add-ons</span>
-            </a>
-        </li>
-    @endif
+    @php
+        $routes = [
+            [
+                'url' => '/dashboard',
+                'name' => 'cms.dashboard',
+                'label' => 'Dashboard',
+                'icon' => 'bx bx-grid-alt',
+                'roles' => [12, 2, 11],
+            ],
+            [
+                'url' => '/user-management',
+                'name' => 'user-management',
+                'label' => 'User Management',
+                'roles' => [12, 11],
+                'icon' => 'bx bx-user',
+            ],
+            [
+                'url' => '/room-category',
+                'name' => 'room-category',
+                'label' => 'Room Category',
+                'icon' => 'bx bx-box',
+                'roles' => [12, 11],
+            ],
+            [
+                'url' => '/rooms',
+                'name' => 'rooms',
+                'label' => 'Rooms',
+                'icon' => 'bx bx-list-ul',
+                'roles' => [12, 11],
+            ],
+            [
+                'url' => '/package',
+                'name' => 'package',
+                'label' => 'Package',
+                'icon' => 'bx bx-pie-chart-alt-2',
+                'roles' => [12, 11],
+            ],
+            [
+                'url' => '/leisures-add-ons',
+                'name' => 'leisures-add-ons',
+                'label' => 'Leisures/Add-ons',
+                'icon' => 'bx bx-coin-stack',
+                'roles' => [12, 11],
+            ],
+            [
+                'url' => '/booking',
+                'name' => 'booking',
+                'label' => 'Booking',
+                'icon' => 'bx bx-heart',
+                'roles' => [12, 2, 11],
+            ],
+            [
+                'url' => '/food-categories',
+                'name' => 'food-categories',
+                'label' => 'Food Categories',
+                'icon' => 'bx bx-food-menu',
+                'roles' => [12, 11],
+            ],
+            [
+                'url' => '/foods',
+                'name' => 'foods',
+                'label' => 'Foods',
+                'icon' => 'bx bx-food-menu',
+                'roles' => [12, 11],
+            ],
+            [
+                'url' => '/pos',
+                'name' => 'POS',
+                'label' => 'Point of Sale',
+                'icon' => 'bx bx-calculator',
+                'roles' => [],
+            ],
+        ];
+    @endphp
 
-    @if (in_array(12, $userRoles) || in_array(2, $userRoles) || in_array(11, $userRoles))
-        <li>
-            <a href="{{ url('/booking') }}" class="{{ request()->is('booking') ? 'active' : '' }}">
-                <i class='bx bx-heart'></i>
-                <span class="links_name">Booking</span>
-            </a>
-        </li>
-    @endif
+    @foreach ($routes as $route)
+        @if (collect($userRoles)->intersect($route['roles'])->isNotEmpty() || collect($route['roles'])->isEmpty())
+            <li>
+                <a href="{{ url($route['url']) }}" class="{{ request()->is(ltrim($route['url'], '/')) ? 'active' : '' }}">
+                    <i class='{{ $route['icon'] }}'></i>
+                    <span class="links_name">{{ $route['label'] }}</span>
+                </a>
+            </li>
+        @endif
+    @endforeach
 
-    {{-- @if (in_array(12, $userRoles) || in_array(2, $userRoles) || in_array(11, $userRoles)) --}}
-    <li>
-        <a href="{{ url('/booking') }}" class="{{ request()->is('POS') ? 'active' : '' }}">
-            <i class='bx bx-heart'></i>
-            <span class="links_name">Point of Sale</span>
-        </a>
-    </li>
-    {{-- @endif --}}
 
     <li class="log_out">
         <!-- Logout Form -->

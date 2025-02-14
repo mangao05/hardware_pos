@@ -1,8 +1,11 @@
 <?php
 
+use Illuminate\Http\Request;
 use App\Http\Controllers\GetRoles;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\FoodController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AgentController;
 use App\Http\Controllers\LeisureController;
@@ -14,11 +17,10 @@ use App\Http\Controllers\RestoTableController;
 use App\Http\Controllers\Rooms\RoomController;
 use App\Http\Controllers\Authentication\Logout;
 use App\Http\Controllers\ReservationController;
+use App\Http\Controllers\FoodCategoryController;
 use App\Http\Controllers\ReservationDetailsController;
 use App\Http\Controllers\Rooms\RoomCategoryController;
 use App\Http\Controllers\UserVerifyPasswordController;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 
 /*
 |--------------------------------------------------------------------------
@@ -170,6 +172,9 @@ Route::middleware(['auth'])->group(function () {
         $roles = \App\Models\Role::pluck('name', 'id');
         return view('account.profile', compact('roles'));
     });
+
+    Route::resource('foods', FoodController::class);
+    Route::resource('food-categories', FoodCategoryController::class);
 });
 
 Route::post('checkout', [ReservationController::class, 'checkout']);
