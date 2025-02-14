@@ -21,13 +21,13 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach ($categories as $category)
+                @forelse ($categories as $category)
                     <tr>
                         <td>{{ $category->name }}</td>
                         <td>{{ $category->is_available ? 'Available' : 'Unavailable' }}</td>
                         <td>
-                            <a href="{{ route('food-categories.edit', $category->id) }}"
-                                class="btn btn-warning btn-sm"> <i class="bx bx-pencil"></i> Edit</a>
+                            <a href="{{ route('food-categories.edit', $category->id) }}" class="btn btn-warning btn-sm"> <i
+                                    class="bx bx-pencil"></i> Edit</a>
                             <form action="{{ route('food-categories.destroy', $category->id) }}" method="POST"
                                 style="display:inline;">
                                 @csrf
@@ -38,6 +38,10 @@
                                 </button>
                             </form>
                         </td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="3" class="text-center"><i>No data found...</i></td>
                     </tr>
                 @endforeach
             </tbody>

@@ -27,7 +27,7 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach ($foods as $food)
+                @forelse ($foods as $food)
                     <tr>
                         <td>{{ $food->id }}</td>
                         <td>{{ $food->name }}</td>
@@ -40,15 +40,20 @@
                         </td>
                         <td>
                             <a href="{{ route('foods.edit', $food->id) }}" class="btn btn-warning btn-sm">
-                                <i class='bx bx-edit' ></i> Edit
+                                <i class='bx bx-edit'></i> Edit
                             </a>
                             <form action="{{ route('foods.destroy', $food->id) }}" method="POST" class="d-inline"
                                 onsubmit="return confirm('Are you sure?')">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="btn btn-danger btn-sm"><i class='bx bx-trash' ></i> Delete</button>
+                                <button type="submit" class="btn btn-danger btn-sm"><i class='bx bx-trash'></i>
+                                    Delete</button>
                             </form>
                         </td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="6" class="text-center"><i>No data found...</i></td>
                     </tr>
                 @endforeach
             </tbody>
