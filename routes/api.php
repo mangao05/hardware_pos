@@ -94,4 +94,4 @@ Route::post('check-fo-password', function () {
         'status' => $isPasswordValid,
         'message' => $isPasswordValid ? 'Password is correct.' : 'Invalid password.'
     ]);
-});
+})->middleware('throttle:5,1');
