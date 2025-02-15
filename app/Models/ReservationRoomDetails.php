@@ -55,4 +55,12 @@ class ReservationRoomDetails extends Model
         }
         return $rooms;
     }
+
+    public function scopePaid($query)
+    {
+        return $query->whereHas('reservation.payments', function ($q) {
+            $q->where('balance', '<=', 0)
+                ->whereRaw('created_at = (SELECT MAX(created_at) FROM reservation_payments WHERE reservation_id = reservations.id)');
+        });
+    }
 }
