@@ -1,20 +1,22 @@
 <?php
 
+use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\GetRoles;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AgentController;
-use App\Http\Controllers\HistoryLogController;
 use App\Http\Controllers\LeisureController;
 use App\Http\Controllers\PackageController;
 use App\Http\Controllers\ReportsController;
+use App\Http\Controllers\HistoryLogController;
 use App\Http\Controllers\RestoTableController;
 use App\Http\Controllers\Rooms\RoomController;
 use App\Http\Controllers\ReservationController;
+use App\Http\Controllers\TransactionsController;
 use App\Http\Controllers\ReservationDetailsController;
 use App\Http\Controllers\Rooms\RoomCategoryController;
-use App\Http\Controllers\TransactionsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -76,3 +78,20 @@ Route::get('/categories/{category}/available-rooms', [RoomCategoryController::cl
 Route::post('/payments/delete', [ReservationController::class, 'voidPayment']);
 Route::get('/transactions', [TransactionsController::class, 'getTransactions']);
 // Route::get('reports/sales-summary',[ReportsController::class, 'sales_summary']);
+
+Route::post('check-fo-password', function () {
+    $username = request()->get('username');
+    $password = request()->get('password');
+
+    $user = User::active()->hasRole([2])->where('username', $username)->first();
+
+    if (!$user) {
+        return response()->json(['status' => false, 'message' => 'User not found.'], 404);
+    }
+
+    $isPasswordValid = Hash::check($password, $user->password);
+    return response()->json([
+        'status' => $isPasswordValid,
+        'message' => $isPasswordValid ? 'Password is correct.' : 'Invalid password.'
+    ]);
+});
