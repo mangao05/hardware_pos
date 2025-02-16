@@ -163,20 +163,26 @@ class ReportsController extends Controller
             ->groupBy('reservation_room_details.room_id', 'rooms.name')
             ->get();
 
-        $roomIds = $bookings->map(function ($booking) { return $booking->room_id; })->toArray();
+        $roomIds = $bookings->map(function ($booking) {
+            return $booking->room_id;
+        })->toArray();
+
         $roomsWithoutTransactions = Room::whereNotIn('id', $roomIds)
-                                ->get()
-                                ->map(function($room){
-                                    return [
-                                        'room_id' => $room->id,
-                                        'room_name' => $room->name,
-                                        'total_bookings' => 0,
-                                        'total_sales' => 0,
-                                    ];
-                                });
+            ->when($request->filled('room_category_id'), function ($q) use ($request) {
+                $q->where('room_category_id', $request->room_category_id);
+            })
+            ->get()
+            ->map(function ($room) {
+                return [
+                    'room_id' => $room->id,
+                    'room_name' => $room->name,
+                    'total_bookings' => 0,
+                    'total_sales' => 0,
+                ];
+            });
         $allRooms = array_merge($bookings->toArray(), $roomsWithoutTransactions->toArray());
         $allRooms = collect($allRooms)->sortByDesc('total_sales');
-        
+
         return response()->json($allRooms);
     }
 }
