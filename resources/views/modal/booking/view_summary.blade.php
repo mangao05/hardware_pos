@@ -10,7 +10,7 @@
         <div class="col border">
           <div class="row mt-2">
             <div class="col-6">
-                  <label for="">Type of Rate</label>
+                  <label for="">Type of Rate <small>(Optional)</small></label>
                   <select name="" class="form-control" id="type_rate" onchange="savePayment()">
                     <option value="" disabled selected>--Select Type of Rate--</option>
                     <option value="10%">EMPLOYEE RATE</option>
@@ -21,7 +21,35 @@
                   </select>
               </div>
             </div>
-            
+            <hr>
+            <div class="row">
+              <div class="col-3">
+                <label for="">Type of Payment</label>
+                <select name="" class="form-control" onchange="typeOfPayment()" id="type_payment">
+                  <option value="cash">Cash</option>
+                  <option value="online">Online Bank</option>
+                </select>
+                <small><span id="type_payment_error" class="text-danger"></span></small>
+              </div>
+            </div>
+
+            <div class="row" id="bank_type_div" style="display: none">
+              <div class="col">
+                <label for="">Online Bank:</label>
+                <select name="" class="form-control" id="selected_bank">
+                  <option value="" selected hidden>--Select Bank--</option>
+                  <option value="gcash">GCash</option>
+                  <option value="paymaya">Paymaya</option>
+                </select>
+                <small><span id="selected_bank_error" class="text-danger"></span></small>
+              </div>
+              <div class="col">
+                <label for="">Transaction Number:</label>
+                <input type="text" class="form-control" id="bank_transaction_no">
+                <small><span id="bank_transaction_no_error" class="text-danger"></span></small>
+              </div>
+            </div>
+            <hr>
             <div class="row">
               <div class="col">
                 <label for="">Customer:</label>
@@ -58,6 +86,9 @@
                       <th class="summary_label">Initial Payment</th>
                       <th class="summary_label">Balance</th>
                       <th class="summary_label">Date</th>
+                      <th class="summary_label">Type</th>
+                      <th class="summary_label">Bank</th>
+                      <th class="summary_label">TR#</th>
                     </thead>
                     <tbody>
                       
@@ -148,6 +179,9 @@
                         <th style="font-size: 12px;padding:1px">Payment</th>
                         <th style="font-size: 12px;padding:1px">Balance</th>
                         <th style="font-size: 12px;padding:1px">Date</th>
+                        <th style="font-size: 12px;padding:1px">Type</th>
+                        <th style="font-size: 12px;padding:1px">Bank</th>
+                        <th style="font-size: 12px;padding:1px">TR#</th>
                       </thead>
                       <tbody>
                          

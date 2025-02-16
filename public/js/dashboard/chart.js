@@ -1,15 +1,48 @@
+let currentYear = new Date().getFullYear();
+let chart; 
+let type_filter = "year";
+let selected
+
 $(document).ready(() => {
   var currentdate = new Date().toISOString().split('T')[0];
+  var for_sales = `/api/reports/rooms-status?year=${currentYear}`
+  var for_room = `/api/reports/bookings?type=year&year=${currentYear}&room_category_id=10`
   for (var year = 2025; year <= 2030; year++) {
     $("#yearSelect").append(`<option value="${year}">${year}</option>`);
   }
 
-  loadReport(`/api/reports/rooms-status?date=${currentdate}`)
+  loadReport(for_sales,for_room)
+  getAllRoomCategory()
 });
 
+async function getAllRoomCategory(){
+  myUrl = "/api/show-all-category"
+  var category = await get_data(myUrl)
+  
+  category.forEach(item => {
+      const option_list = `
+        <option value="${item.id}">${item.display_name}</option>
+      `
+      $('#list_category').append(option_list)
+  });
+} 
 
 
-let chart; // Global chart variable
+function selectedCategory(){
+  selected =  $('#list_category').val()
+  var type = $("#filterSelect").val();
+  var for_room = ""
+  if(type == "date_range"){
+    for_room = `/api/reports/bookings?type=range&room_category_id=${selected}&from=${start.format('MM-DD-YYYY')}&to=${end.format('MM-DD-YYYY')}`
+  }else{
+    for_room = `/api/reports/bookings?type=year&year=${currentYear}&room_category_id=${selected}`
+  }
+  
+  drawChartRoom(for_room);
+ 
+}
+
+
 
 function selectFilter() {
   var type = $("#filterSelect").val();
@@ -17,6 +50,7 @@ function selectFilter() {
   if (type === "per_year") {
       $("#yearSelect").show(); 
       $("#daterange").hide(); 
+      loadReport(`/api/reports/rooms-status?year=${currentYear}`)
   } else if(type === "date_range") {
       $("#yearSelect").hide(); 
       $("#daterange").show(); 
@@ -29,16 +63,16 @@ function selectFilter() {
 function selectYear(){
   var year = $('#yearSelect').val()
   
-  loadReport(`api/reports/rooms-status?year=${year}`)
+  loadReport(`api/reports/rooms-status?year=${year}`,`/api/reports/bookings?type=year&year=${year}&room_category_id=${selected}`)
 }
 
 
-async function loadReport(myUrl) {
+async function loadReport(myUrl,for_room) {
   const res = await get_data(myUrl);
   
   const sales_summary = res.data.sales_summary
   
-  drawCharts(sales_summary)
+  drawCharts(sales_summary,for_room)
   $('#report_room').empty();
     res.data.room_statuses.forEach(element => {
     const percent = (element.occupied / element.total) * 100 || 0; // Handle divide-by-zero
@@ -89,51 +123,54 @@ document.addEventListener("DOMContentLoaded", function () {
   // google.charts.setOnLoadCallback(drawCharts);
 });
 
-function drawCharts(sales_summary) {
+function drawCharts(sales_summary,for_room) {
   drawChart(sales_summary);
-  drawChartRoom();
+  drawChartRoom(for_room);
 }
 
-function drawChartRoom() {
-    if (!google.visualization) {
+async function drawChartRoom(link) {
+  if (!google.visualization) {
       console.error("Google Charts failed to load.");
       return;
-    }
+  }
 
-  // JSON data (your room dataset)
-    const roomData = [
-      { "room_id": 9, "total_bookings": 1, "total_sales": 7000 },
-      { "room_id": 22, "total_bookings": 1, "total_sales": 6400 },
-      { "room_id": 23, "total_bookings": 1, "total_sales": 2500 },
-      { "room_id": 24, "total_bookings": 1, "total_sales": 1000 },
-      { "room_id": 25, "total_bookings": 1, "total_sales": 1500 },
-      { "room_id": 26, "total_bookings": 1, "total_sales": 1000 },
-      { "room_id": 27, "total_bookings": 1, "total_sales": 14000 },
-      { "room_id": 28, "total_bookings": 1, "total_sales": 15000 },
-      { "room_id": 29, "total_bookings": 1, "total_sales": 6400 },
-      { "room_id": 30, "total_bookings": 1, "total_sales": 7000 },
-      { "room_id": 31, "total_bookings": 1, "total_sales": 3000 },
-      { "room_id": 32, "total_bookings": 1, "total_sales": 3000 },
-      { "room_id": 33, "total_bookings": 1, "total_sales": 2000 },
-    ];
+  const myUrl = link;
+  const roomData = await get_data(myUrl);
 
-    // Convert JSON to Google Charts format
-    const chartData = [['Room ID', 'Total Sales']];
-    roomData.forEach(room => {
-      chartData.push([`Room ${room.room_id}`, room.total_sales]);
-    });
+  if (!roomData || roomData.length === 0) {
+      console.warn("No data available for room sales.");
+      return;
+  }
 
-    const data = google.visualization.arrayToDataTable(chartData);
+  // Compute total sales
+  const totalSales = roomData.reduce((sum, room) => sum + room.total_sales, 0);
+  
+  const chartData = [['Room ID', 'Total Sales']];
+  roomData.forEach(room => {
+    console.log(room);
+    
+      chartData.push([`${room.room_name}`, room.total_sales]);
+  });
 
-    const options = {
-      title: 'Room Sales',
+  const data = google.visualization.arrayToDataTable(chartData);
+
+  const options = {
+      title: `Room Sales`,
       backgroundColor: 'transparent',
       legend: { position: 'bottom', textStyle: { color: 'black' } }
-    };
+  };
 
-    const chart = new google.visualization.BarChart(document.getElementById('myChart_room'));
-    chart.draw(data, options);
+  const chart = new google.visualization.BarChart(document.getElementById('myChart_room'));
+  chart.draw(data, options);
+
+  // Add total sales under the chart
+  const totalSalesDiv = document.getElementById('totalSalesDisplay');
+  if (totalSalesDiv) {
+      totalSalesDiv.innerHTML = `<b>Total Sales: ${totalSales.toLocaleString()}</b>`;
+  }
 }
+
+
 
 function drawChart(sales_summary) {
   var tag = []
@@ -143,10 +180,10 @@ function drawChart(sales_summary) {
   }
   
   
-  const chartData = [['User', 'Sales']]; // Header row
+  const chartData = [['User', 'Sales',"User ID"]]; // Header row
   sales_summary.forEach(item => {
     tag.push(item.sales)
-    chartData.push([item.user_name, item.sales]);
+    chartData.push([item.user_name, item.sales, item.user_id]);
   });
 
   sum = tag.reduce((acc, val) => acc + val, 0);
@@ -156,8 +193,6 @@ function drawChart(sales_summary) {
     return;
   }
 
-  
-  console.log(sum);
   
 
   const data = google.visualization.arrayToDataTable(chartData);
@@ -174,17 +209,50 @@ function drawChart(sales_summary) {
   chart.draw(data, options);
 
   // Click Event Listener for Modal
-  google.visualization.events.addListener(chart, 'select', function () {
+  google.visualization.events.addListener(chart, 'select',async function () {
     const selectedItem = chart.getSelection()[0];
     if (selectedItem && selectedItem.row !== null) {
       const userName = chartData[selectedItem.row + 1][0]; 
       const sales = chartData[selectedItem.row + 1][1]; 
-      
-      // Update modal content
-      document.getElementById('modalTitle').innerText = `Details for ${userName}`;
-      // document.getElementById('modalBody').innerHTML = `<p><strong>Sales:</strong> ${sales}</p>`;
+      const user_id = chartData[selectedItem.row + 1][2]
+      let formattedNumber = `PEMP-${String(user_id).padStart(6, '0')}`;
+      let today = new Date();
+      let formattedDate = today.toLocaleString('en-US', { month: 'short', day: '2-digit', year: 'numeric' });
+      var type = $("#filterSelect").val();
+      var year = $('#yearSelect').val()
 
-      // Show Bootstrap Modal
+      document.getElementById('modalTitle').innerText = `Details for ${userName}`;
+
+      $('#chart_name_modal').text(userName)
+      $('#emp_num').text(formattedNumber)
+      $('#current_date').text(formattedDate)
+      
+      if(type=="per_year"){
+        myUrl = `/api/transactions?user_id=${user_id}&year=${year}`
+      }else{
+        myUrl = `/api/transactions?user_id=${user_id}&start_date=${start_book}&end_date=${end_book}`
+      }
+      
+      res = await get_data(myUrl)
+      var total = 0
+      
+      $('#sales_report_list tbody').empty()
+      res.transactions.forEach(element => {
+        let date = new Date(element.created_at);
+        total += parseInt(element.initial_payment)
+        const row = `
+          <tr>
+            <td>${element.transaction_number?element.transaction_number:"TR#:01252025-000000"}</td>
+            <td>${element.customer}</td>
+            <td>₱${element.initial_payment}</td>
+            <td>${date.toLocaleString('en-US', { month: 'short', day: '2-digit', year: 'numeric' })}</td>
+          </tr>
+        `
+        $('#sales_report_list tbody').append(row)
+      });
+
+      $('#total_sales').text(`₱${total}`)
+     
       var myModal = new bootstrap.Modal(document.getElementById('chartModal'));
       myModal.show();
     }
@@ -192,16 +260,21 @@ function drawChart(sales_summary) {
 }
 
 
+
+
 $(function() {
   $('input[name="daterange"]').daterangepicker({
       opens: 'left'
   }, function(start, end, label) {
+      
       start_book = start.format('YYYY-MM-DD')
       end_book = end.format('YYYY-MM-DD')
+      var for_room = `/api/reports/bookings?type=range&room_category_id=${selected}&from=${start.format('MM-DD-YYYY')}&to=${end.format('MM-DD-YYYY')}`
       
-      loadReport(`/api/reports/rooms-status?from=${start.format('MM-DD-YYYY')}&to=${end.format('MM-DD-YYYY')}`)
+      loadReport(`/api/reports/rooms-status?from=${start.format('MM-DD-YYYY')}&to=${end.format('MM-DD-YYYY')}`,for_room)
   });
 });
+
 
 
 function printDiv(divId) {

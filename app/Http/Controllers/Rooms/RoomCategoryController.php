@@ -121,4 +121,9 @@ class RoomCategoryController extends Controller
 
         return response()->json($availableRooms);
     }
+
+    public function getAllCategory(){
+        $category = RoomCategory::all();
+        return $category;
+    }
 }
