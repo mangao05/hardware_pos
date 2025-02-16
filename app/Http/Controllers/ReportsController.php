@@ -129,9 +129,9 @@ class ReportsController extends Controller
 
     public function getRoomBookings(Request $request)
     {
-
         $bookings = ReservationRoomDetails::query()
-            ->paid() 
+            ->paid()
+            ->join('rooms', 'reservation_room_details.room_id', '=', 'rooms.id')
             ->when($request->type === 'range', function ($query) use ($request) {
                 $startDate = $request->from
                     ? Carbon::createFromFormat('m-d-Y', $request->from)->startOfDay()
@@ -155,14 +155,28 @@ class ReportsController extends Controller
                 $q->roomCategory($request->room_category_id);
             })
             ->selectRaw('
-                room_id, 
+                reservation_room_details.room_id, 
+                rooms.name as room_name,
                 COUNT(*) as total_bookings, 
                 SUM(DATEDIFF(check_out_date, check_in_date) * JSON_UNQUOTE(JSON_EXTRACT(room_details, "$.price"))) as total_sales
             ')
-            ->groupBy('room_id')
-            ->orderByDesc('total_sales')
+            ->groupBy('reservation_room_details.room_id', 'rooms.name')
             ->get();
 
-        return response()->json($bookings);
+        $roomIds = $bookings->map(function ($booking) { return $booking->room_id; })->toArray();
+        $roomsWithoutTransactions = Room::whereNotIn('id', $roomIds)
+                                ->get()
+                                ->map(function($room){
+                                    return [
+                                        'room_id' => $room->id,
+                                        'room_name' => $room->name,
+                                        'total_bookings' => 0,
+                                        'total_sales' => 0,
+                                    ];
+                                });
+        $allRooms = array_merge($bookings->toArray(), $roomsWithoutTransactions->toArray());
+        $allRooms = collect($allRooms)->sortByDesc('total_sales');
+        
+        return response()->json($allRooms);
     }
 }
