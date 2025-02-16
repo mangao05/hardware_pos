@@ -95,3 +95,7 @@ Route::post('check-fo-password', function () {
         'message' => $isPasswordValid ? 'Password is correct.' : 'Invalid password.'
     ]);
 })->middleware('throttle:5,1');
+
+
+
+Route::get('/show-all-category', [RoomCategoryController::class, 'getAllCategory']);

@@ -422,7 +422,7 @@ async function loadCategory(category_id = null, checkedRoomId = null) {
             $('#booking_date_picker').hide()
             $('#tour_date_picker').show()
         }
-
+        load_available_room_per_category(selectedCategory,start_book, end_book)
         attachRoomCheckboxEvent(); // Attach event listener to room checkboxes
         liveReload(selectedCategory)
         selected_category = selectedCategory
@@ -593,25 +593,7 @@ function add_booking_modal(){
     $('#add_booking').modal('show')
 }
 
-function cancelReservation() {
-    const reservation_room_details_id = $('#reservation_room_details_id').val();
-    Swal.fire({
-        title: "Are you sure?",
-        text: "You won't be able to revert this!",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonColor: "#3085d6",
-        cancelButtonColor: "#d33",
-        confirmButtonText: "Yes, delete it!"
-    }).then(async (result) => {
-        if (result.isConfirmed) {
-            let myUrl = "/api/reservation-rooms/" + reservation_room_details_id;
-            await delete_record(myUrl); 
 
-            window.location.reload();
-        }
-    });
-}
 
 
 function update_booking() {

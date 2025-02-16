@@ -186,15 +186,14 @@
                     <div class="row">
                       <div class="col-4">
                           <select name="" id="filterSelect" class="form-control" onchange="selectFilter()">
-                            <option value="today">Today</option>
-                            <option value="date_range">Date Range</option>
                             <option value="per_year">Per Year</option>
+                            <option value="date_range">Date Range</option>
                         </select>
                       </div>
                       <div class="col">
                         <div>
                           <input type="text" name="daterange" style="display: none" id="daterange" class="form-control" placeholder="Select date range" />
-                          <select id="yearSelect" class="form-control" onchange="selectYear()" style="display: none">
+                          <select id="yearSelect" class="form-control" onchange="selectYear()">
                           </select>
                         </div>
                       </div>
@@ -202,7 +201,15 @@
                     <div id="myChart" style="width: 95%; height: 400px;"></div>
                 </div>
                 <div class="col border">
+                  <div class="row">
+                    <div class="col-4">
+                        <select name="" id="list_category" class="form-control" onchange="selectedCategory()">
+                          <option value="" selected hidden>--Select Category--</option>
+                      </select>
+                    </div>
+                  </div>
                   <div id="myChart_room" style="width:95%; height:500px;"></div>
+                  <div id="totalSalesDisplay" style="text-align: center; margin-top: 10px; font-weight: bold;"></div>
                 </div>
             </div>
             <hr>
@@ -242,7 +249,7 @@
                               <strong>Name:</strong>
                             </div>
                             <div class="col">
-                              <span>Khenneth S Alaiza</span>
+                              <span id="chart_name_modal">Khenneth S Alaiza</span>
                             </div>
                           </div>
     
@@ -251,7 +258,7 @@
                               <strong>Employee #:</strong>
                             </div>
                             <div class="col">
-                              <span>PEMP-000001</span>
+                              <span id="emp_num">PEMP-000001</span>
                             </div>
                           </div>
                         </div>
@@ -261,9 +268,19 @@
                               <strong>Date:</strong>
                             </div>
                             <div class="col-5">
-                              <span>Feb 10, 2025</span>
+                              <span id="current_date">Feb 10, 2025</span>
                             </div>
                           </div>
+
+                          <div class="row">
+                            <div class="col-2">
+                              <strong>Total:</strong>
+                            </div>
+                            <div class="col-5">
+                              <span style="font-weight: bold;font-size:15px" id="total_sales"></span>
+                            </div>
+                          </div>
+
                         </div>
                       </div>
                       
@@ -274,7 +291,7 @@
                 </div>
                 <div class="row">
                   <div class="col">
-                    <table class="table">
+                    <table class="table" id="sales_report_list">
                       <thead>
                         <th>TR#</th>
                         <th>Customer</th>
@@ -283,36 +300,7 @@
                       </thead>
 
                       <tbody>
-                        <tr>
-                          <td>TR#:01252025-000001</td>
-                          <td>Khenneth S Alaiza</td>
-                          <td>21000</td>
-                          <td>Feb 10, 2025 08:38 PM</td>
-                        </tr>
-                        <tr>
-                          <td>TR#:01252025-000001</td>
-                          <td>Khenneth S Alaiza</td>
-                          <td>21000</td>
-                          <td>Feb 10, 2025 08:38 PM</td>
-                        </tr>
-                        <tr>
-                          <td>TR#:01252025-000001</td>
-                          <td>Khenneth S Alaiza</td>
-                          <td>21000</td>
-                          <td>Feb 10, 2025 08:38 PM</td>
-                        </tr>
-                        <tr>
-                          <td>TR#:01252025-000001</td>
-                          <td>Khenneth S Alaiza</td>
-                          <td>21000</td>
-                          <td>Feb 10, 2025 08:38 PM</td>
-                        </tr>
-                        <tr>
-                          <td>TR#:01252025-000001</td>
-                          <td>Khenneth S Alaiza</td>
-                          <td>21000</td>
-                          <td>Feb 10, 2025 08:38 PM</td>
-                        </tr>
+                        
                       </tbody>
                     </table>
                   </div>

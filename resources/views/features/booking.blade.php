@@ -206,6 +206,7 @@
         @include('modal.booking.edit_booking')
         @include('modal.booking.view_summary')
         @include('modal.booking.walk_in')
+        @include('modal.booking.void_password')
     </div>
     <div class="row">
         <div class="col-12" style="overflow: auto"> 
@@ -235,6 +236,7 @@
     <script src="{{ asset('js/helper/app_helper.js') }}"></script>
     <script src="{{ asset('js/features/booking-js/summary.js') }}"></script>
     <script src="{{ asset('js/features/booking-js/walk_in.js') }}"></script>
+    <script src="{{ asset('js/features/booking-js/void.js') }}"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
     
 @endsection

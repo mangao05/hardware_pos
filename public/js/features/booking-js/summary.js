@@ -3,6 +3,7 @@ let type_rate = null
 let customer = null
 let initial = null
 let bal = null
+let fields = null
 
 function savePayment(){
     type_rate = $('#type_rate').val()
@@ -13,23 +14,37 @@ function savePayment(){
 function preview(){
     const intial_customer = $('#intial_customer').val()
     const intial_payment = $('#intial_payment').val()
+    const type_payment = $('#type_payment').val()
+    const selected_bank = $('#selected_bank').val()
+    const bank_transaction_no = $('#bank_transaction_no').val()
+    const total_bal = $('#total_balance').text()
+    
+    fields = {
+        customer_name:intial_customer,
+        payment:intial_payment,
+        type_payment:type_payment,
+        selected_bank:selected_bank,
+        bank_transaction_no:bank_transaction_no
+    }   
 
-    if(intial_customer == ""){
-        $('#intial_customer_error').text("Customer field is required!")
-        $('#intial_payment_error').text("Customer field is required!")
-    }else{
+    if(check_if_valid_field(fields)){
         const currentDate = new Date();
         const formattedDate = dayjs(currentDate).format("MMM D, YYYY h:mm A");
 
         customer = intial_customer;
         initial = intial_payment
-    
-        const row = `
-            <tr>
-                <td>${intial_customer}</td>
-                <td>₱${intial_payment}</td>
-                <td>₱${total_balance - initial}</td>
-                <td>${formattedDate}</td>
+        console.log(total_bal);
+        console.log(initial);
+        
+        const row = `   
+            <tr class="bg-success text-white">
+                <td style="font-size: 12px;padding:1px">${intial_customer}</td>
+                <td style="font-size: 12px;padding:1px">₱${intial_payment}</td>
+                <td style="font-size: 12px;padding:1px">₱${parseInt(total_bal.replace(/₱/, "")) - parseInt(initial)}</td>
+                <td style="font-size: 12px;padding:1px">${formattedDate}</td>
+                <td style="font-size: 12px;padding:1px">${type_payment}</td>
+                <td style="font-size: 12px;padding:1px">${selected_bank}</td>
+                <td style="font-size: 12px;padding:1px">${bank_transaction_no}</td>
             </tr>
         `
         $('.transaction_history tbody').append(row)
@@ -43,7 +58,56 @@ function preview(){
         
         toaster("Transaction history successfully updated!","success")
     }
+}
+
+
+function check_if_valid_field(fields){
+    var res = false
+    var cus_name    = false
+    var cus_payment = false
+    var bank = true
+    var transaction_no = true
     
+    if(fields.customer_name == ""){
+        $('#intial_customer_error').text("Customer field is required!")
+    }else{
+        $('#intial_customer_error').text("")
+        cus_name = true
+    }
+
+    if(fields.payment == ""){
+        $('#intial_payment_error').text("Customer payment field is required!")
+    }else{
+        $('#intial_payment_error').text("")
+        cus_payment = true
+    }
+
+    if(fields.type_payment == "online"){
+        bank = false
+        transaction_no = false
+
+        if(fields.selected_bank == ""){
+            $('#selected_bank_error').text("Type of bank field is required!")
+        }else{
+            $('#selected_bank_error').text("")
+            bank = true
+        }
+
+        if(fields.bank_transaction_no == ""){
+            $('#bank_transaction_no_error').text("Transaction number field is required!")
+        }else{
+            $('#bank_transaction_no_error').text("")
+            transaction_no = true
+        }
+    }
+
+    
+
+    if (cus_name & cus_payment & bank & transaction_no){
+        res = true
+    }
+ 
+    return res
 }
 
 function store_transaction(){
@@ -54,9 +118,10 @@ function store_transaction(){
         "initial_payment":initial,
         "reservation_id":reservation_id,
         "discount":type_rate,
-        "total":sum
+        "total":sum,
+        "payment_method":fields
     }
-
+   
     Swal.fire({
         title: "Are you sure?",
         text: "You won't be able to revert this!",
@@ -82,6 +147,7 @@ function store_transaction(){
                 : "₱" + a.balance);
                 initial_pyment_list = []
                 change_status_after_payment(a.balance)
+                $('#btn_preview_transaction').show()
             })
         }
     });
@@ -111,7 +177,7 @@ async function change_status_after_payment(balance){
         status:status
     }
     await update_data(myUrl,myData)
-    window.location.reload();
+    // window.location.reload();
     
 }
 
@@ -122,6 +188,8 @@ async function fetchTransaction(payments){
     $('.transaction_receipt_logs tbody').empty()
 
     payments.forEach(payment => {
+        console.log(payment);
+        
         const formattedDate = dayjs(payment.created_at).format("MMM D, YYYY h:mm A");
 
         const row = `
@@ -130,6 +198,9 @@ async function fetchTransaction(payments){
                 <td style="font-size: 12px;padding:1px">₱${payment.initial_payment}</td>
                 <td style="font-size: 12px;padding:1px">₱${payment.balance}</td>
                 <td style="font-size: 12px;padding:1px">${formattedDate}</td>
+                <td style="font-size: 12px;padding:1px">${payment.payment_method.type_payment.toUpperCase()}</td>
+                <td style="font-size: 12px;padding:1px">${payment.payment_method.selected_bank?payment.payment_method.selected_bank.toUpperCase():"N/A"}</td>
+                <td style="font-size: 12px;padding:1px">${payment.payment_method.bank_transaction_no?payment.payment_method.bank_transaction_no:"N/A"}</td>
             </tr>
         `
         $('.transaction_history tbody').append(row)
@@ -150,6 +221,15 @@ async function fetchTransaction(payments){
                 </td>
                 <td class="summary_label">
                     ${formattedDate}
+                </td>
+                <td class="summary_label">
+                    ${payment.payment_method.type_payment.toUpperCase()}
+                </td>
+                <td class="summary_label">
+                    ${payment.payment_method.selected_bank?payment.payment_method.selected_bank.toUpperCase():"N/A"}
+                </td>
+                <td class="summary_label">
+                    ${payment.payment_method.bank_transaction_no?payment.payment_method.bank_transaction_no:"N/A"}
                 </td>
             </tr>
         `
@@ -195,6 +275,16 @@ function printDiv(divId) {
 function close_summary_modal(){
     $('#view_summary_modal').modal('hide')
     $('#btn_preview_transaction').show()
+}
+
+function typeOfPayment(){
+    var payment_type = $('#type_payment').val()
+    
+    if(payment_type == "cash"){
+        $('#bank_type_div').hide()
+    }else{
+        $('#bank_type_div').show()
+    }
 }
 
 
