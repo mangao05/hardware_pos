@@ -233,7 +233,14 @@ function drawChart(sales_summary) {
       if(type=="per_year"){
         myUrl = `/api/transactions?user_id=${user_id}&year=${year}`
       }else{
-        myUrl = `/api/transactions?user_id=${user_id}&start_date=${start_book}&end_date=${end_book}`
+        var from = start_book.split("-")
+        var from = from[2]+"-"+from[0]+"-"+from[1]
+
+        var to = end_book.split("-")
+        var to = to[2]+"-"+to[0]+"-"+to[1]
+  
+        
+        myUrl = `/api/transactions?user_id=${user_id}&start_date=${from}&end_date=${to}`
       }
       
       res = await get_data(myUrl)
