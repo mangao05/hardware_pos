@@ -5,28 +5,33 @@ let selected
 let start_book;
 let end_book;
 
+
 $(document).ready(() => {
-  var currentdate = new Date().toISOString().split('T')[0];
-  var for_sales = `/api/reports/rooms-status?year=${currentYear}`
-  var for_room = `/api/reports/bookings?type=year&year=${currentYear}&room_category_id=10`
+  
+  getAllRoomCategory()
+  
   for (var year = 2025; year <= 2030; year++) {
     $("#yearSelect").append(`<option value="${year}">${year}</option>`);
   }
-
-  loadReport(for_sales,for_room)
-  getAllRoomCategory()
+  
+  
 });
 
 async function getAllRoomCategory(){
   myUrl = "/api/show-all-category"
   var category = await get_data(myUrl)
   
+
   category.forEach(item => {
       const option_list = `
         <option value="${item.id}">${item.display_name}</option>
       `
       $('#list_category').append(option_list)
   });
+  selected = category[0]['id']
+  var for_sales = `/api/reports/rooms-status?year=${currentYear}`
+  var for_room = `/api/reports/bookings?type=year&year=${currentYear}&room_category_id=${category[0]['id']}`
+  loadReport(for_sales,for_room)
 } 
 
 
@@ -280,6 +285,7 @@ $(function() {
       start_book = start.format('MM-DD-YYYY')
       end_book = end.format('MM-DD-YYYY')
       var for_room = `/api/reports/bookings?type=range&room_category_id=${selected}&from=${start.format('MM-DD-YYYY')}&to=${end.format('MM-DD-YYYY')}`
+      console.log(for_room);
       
       loadReport(`/api/reports/rooms-status?from=${start.format('MM-DD-YYYY')}&to=${end.format('MM-DD-YYYY')}`,for_room)
   });
