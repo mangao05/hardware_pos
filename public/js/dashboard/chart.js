@@ -2,6 +2,8 @@ let currentYear = new Date().getFullYear();
 let chart; 
 let type_filter = "year";
 let selected
+let start_book;
+let end_book;
 
 $(document).ready(() => {
   var currentdate = new Date().toISOString().split('T')[0];
@@ -32,8 +34,11 @@ function selectedCategory(){
   selected =  $('#list_category').val()
   var type = $("#filterSelect").val();
   var for_room = ""
+
+  
+  
   if(type == "date_range"){
-    for_room = `/api/reports/bookings?type=range&room_category_id=${selected}&from=${start.format('MM-DD-YYYY')}&to=${end.format('MM-DD-YYYY')}`
+    for_room = `/api/reports/bookings?type=range&room_category_id=${selected}&from=${start_book}&to=${end_book}`
   }else{
     for_room = `/api/reports/bookings?type=year&year=${currentYear}&room_category_id=${selected}`
   }
@@ -147,8 +152,6 @@ async function drawChartRoom(link) {
   
   const chartData = [['Room ID', 'Total Sales']];
   roomData.forEach(room => {
-    console.log(room);
-    
       chartData.push([`${room.room_name}`, room.total_sales]);
   });
 
@@ -267,8 +270,8 @@ $(function() {
       opens: 'left'
   }, function(start, end, label) {
       
-      start_book = start.format('YYYY-MM-DD')
-      end_book = end.format('YYYY-MM-DD')
+      start_book = start.format('MM-DD-YYYY')
+      end_book = end.format('MM-DD-YYYY')
       var for_room = `/api/reports/bookings?type=range&room_category_id=${selected}&from=${start.format('MM-DD-YYYY')}&to=${end.format('MM-DD-YYYY')}`
       
       loadReport(`/api/reports/rooms-status?from=${start.format('MM-DD-YYYY')}&to=${end.format('MM-DD-YYYY')}`,for_room)
