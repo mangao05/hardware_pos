@@ -12,6 +12,10 @@ class ReservationPayments extends Model
 
     protected $guarded = [];
 
+    protected $casts = [
+        'payment_method' => 'json'
+    ];
+
     public function reservation()
     {
         return $this->belongsTo(Reservation::class);

@@ -220,7 +220,6 @@ class ReservationController extends Controller
                 // Retrieve the most recent payment entry
                 $lastPayment = $reservation->payments()->orderBy('created_at', 'desc')->first();
 
-                // Initialize balance calculation
                 $initial_balance = $total_amount - $payment;
                 $current_balance = $initial_balance;
 
@@ -228,7 +227,6 @@ class ReservationController extends Controller
                     $previous_total_amount = (float) $reservation->total_amount; // Assuming `total_amount` is stored on the reservation
                     $balance_change = $total_amount - $previous_total_amount;
 
-                    // Adjust the new balance based on total amount changes and last payment balance
                     $current_balance = $lastPayment->balance + $balance_change - $payment;
                 }
 
@@ -238,7 +236,9 @@ class ReservationController extends Controller
                     'user_name' => auth()->check() ? auth()->user()->firstname . ' ' . auth()->user()->lastname : 'Guest',
                     'initial_payment' => $payment,
                     'balance' => $current_balance,
-                    'transaction_number' => $request->transaction_number
+                    'transaction_number' => $request->transaction_number,
+                    'payment_method' => $request->payment_method,
+                    'payment_type' => $request->payment_method['type_payment']
                 ];
 
                 $reservation->payments()->create($data);

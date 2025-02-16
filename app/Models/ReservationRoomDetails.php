@@ -63,4 +63,11 @@ class ReservationRoomDetails extends Model
                 ->whereRaw('created_at = (SELECT MAX(created_at) FROM reservation_payments WHERE reservation_id = reservations.id)');
         });
     }
+
+    public function scopeRoomCategory($query, $category_id)
+    {
+        return $query->whereHas('room', function ($q) use ($category_id) {
+            $q->where('room_category_id', $category_id);
+        });
+    }
 }
