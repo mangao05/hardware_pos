@@ -41,7 +41,8 @@
     }
 
     .sidebar {
-        background: rgb(32, 80, 153) !important;
+        /* background: rgb(32, 80, 153) !important; */
+        background: white !important;
     }
 
     .modal-padding {
@@ -67,6 +68,16 @@
     }
     .logo_name{
         margin-left:11px; 
+    }
+    .links_name{
+        color: black !important
+    }
+    .nav-links li:hover .links_name{
+        color: white !important; 
+    }
+
+    .nav-links a:hover i {
+        color: white !important; 
     }
 </style>
 
