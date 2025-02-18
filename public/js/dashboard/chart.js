@@ -14,7 +14,6 @@ $(document).ready(() => {
     $("#yearSelect").append(`<option value="${year}">${year}</option>`);
   }
   
-  
 });
 
 async function getAllRoomCategory(){
