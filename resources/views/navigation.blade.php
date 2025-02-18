@@ -75,6 +75,13 @@
                 'icon' => 'bx bx-calculator',
                 'roles' => [],
             ],
+            [
+                'url' => '/payment-methods',
+                'name' => 'payment-methods',
+                'label' => 'Payment Methods',
+                'icon' => 'bx bx-calculator',
+                'roles' => [12, 11],
+            ],
         ];
     @endphp
 

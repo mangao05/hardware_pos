@@ -18,6 +18,7 @@ use App\Http\Controllers\Rooms\RoomController;
 use App\Http\Controllers\Authentication\Logout;
 use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\FoodCategoryController;
+use App\Http\Controllers\PaymentMethodController;
 use App\Http\Controllers\ReservationDetailsController;
 use App\Http\Controllers\Rooms\RoomCategoryController;
 use App\Http\Controllers\UserVerifyPasswordController;
@@ -175,6 +176,7 @@ Route::middleware(['auth'])->group(function () {
 
     Route::resource('foods', FoodController::class);
     Route::resource('food-categories', FoodCategoryController::class);
+    Route::resource('payment-methods', PaymentMethodController::class);
 });
 
 Route::post('checkout', [ReservationController::class, 'checkout']);
