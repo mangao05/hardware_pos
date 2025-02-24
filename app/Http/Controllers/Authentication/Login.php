@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers\Authentication;
 
 use Illuminate\Http\Request;
@@ -17,7 +18,7 @@ class Login extends Controller
         // Attempt to authenticate using the username and password
         if (Auth::attempt(['username' => $credentials['username'], 'password' => $credentials['password']])) {
             $request->session()->regenerate();
-            return redirect()->route('cms.dashboard')
+            return redirect()->to('/pos')
                 ->withSuccess('You have successfully logged in!');
         }
 
